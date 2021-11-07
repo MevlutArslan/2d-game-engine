@@ -1,5 +1,6 @@
 package engine;
 
+import engine.utility.Time;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -7,6 +8,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.time.Instant;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -20,6 +22,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
     // Singleton
     private static Window instance = null;
+
+    private final double FIXED_TIME_STEP = 1.0/30.0;
 
     private int height;
     private int width;
@@ -123,13 +127,28 @@ public class Window {
         // Set the clear color
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
+
+        double previousTime = Time.getTime();
+        double lag = 0.0;
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(window)) {
+
+            // fixed time interval game loop pattern mentioned in the book 'GAME PROGRAMMING PATTERNS' by Robert Nystrom
+            double currentTime = Time.getTime();
+            double elapsed = currentTime - previousTime;
+            previousTime = currentTime;
+            lag += elapsed;
+
+            System.out.println("FPS : " + (1.0f/elapsed));
+
+            while(lag >= FIXED_TIME_STEP){
+                glClearColor((float)(elapsed+0.3),(float)(elapsed+0.3),(float)(elapsed+0.3),1);
+                lag -= FIXED_TIME_STEP;
+            }
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             glfwSwapBuffers(window); // swap the color buffers
-
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
