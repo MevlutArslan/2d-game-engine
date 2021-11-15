@@ -1,0 +1,11 @@
+#version 330 core
+
+out vec4 color;
+
+void main()
+{
+     float rBase = 0.01;
+     float gBase = 0.1;
+     float bBase = 0.5;
+     color = vec4(rBase,gBase,bBase, 1.0);
+}

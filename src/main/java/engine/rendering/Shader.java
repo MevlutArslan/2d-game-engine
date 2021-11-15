@@ -11,20 +11,24 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
-    private String sourceUrl;
-    private String sourceScript;
     private int shaderProgramId;
 
-    public Shader(String url, int shaderProgramId){
-        this.sourceUrl = url;
-        this.shaderProgramId = shaderProgramId;
-        this.getShaderScript();
+    private int vertexShaderId;
+    private int fragmentShaderId;
+
+    private String vertexShaderSrc;
+    private String fragmentShaderSrc;
+
+
+    public Shader(String vertexShaderSrc, String fragmentShaderSrc) {
+        this.vertexShaderSrc = vertexShaderSrc;
+        this.fragmentShaderSrc = fragmentShaderSrc;
     }
 
-    public void getShaderScript(){
+    private String getShaderScript(String url){
         StringBuilder sb = new StringBuilder();
         try{
-            BufferedReader br = new BufferedReader(new FileReader(this.sourceUrl));
+            BufferedReader br = new BufferedReader(new FileReader(url));
             String line;
             while((line = br.readLine()) != null){
                 sb.append(line);
@@ -32,14 +36,71 @@ public class Shader {
             }
         }
         catch (IOException exception){
-            System.out.println(exception);
+            System.err.println("Error loading script!");
         }
-        this.sourceScript = sb.toString();
+
+        return sb.toString();
     }
 
-    public String getShaderSource(){
-        return this.sourceScript;
+    public void compile() {
+        // ============================================================
+        // Compile and link shaders
+        // ============================================================
+        int vertexID, fragmentID;
+
+        // First load and compile the vertex shader
+        vertexID = glCreateShader(GL_VERTEX_SHADER);
+        // Pass the shader source to the GPU
+        glShaderSource(vertexID, getShaderScript(vertexShaderSrc));
+        glCompileShader(vertexID);
+
+        // Check for errors in compilation
+        int success = glGetShaderi(vertexID, GL_COMPILE_STATUS);
+        if (success == GL_FALSE) {
+            int len = glGetShaderi(vertexID, GL_INFO_LOG_LENGTH);
+            System.out.println("ERROR: '" + vertexShaderSrc + "'\n\tVertex shader compilation failed.");
+            System.out.println(glGetShaderInfoLog(vertexID, len));
+            assert false : "";
+        }
+
+        // First load and compile the vertex shader
+        fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
+        // Pass the shader source to the GPU
+        glShaderSource(fragmentID, getShaderScript(fragmentShaderSrc));
+        glCompileShader(fragmentID);
+
+        // Check for errors in compilation
+        success = glGetShaderi(fragmentID, GL_COMPILE_STATUS);
+        if (success == GL_FALSE) {
+            int len = glGetShaderi(fragmentID, GL_INFO_LOG_LENGTH);
+            System.out.println("ERROR: '" + fragmentShaderSrc + "'\n\tFragment shader compilation failed.");
+            System.out.println(glGetShaderInfoLog(fragmentID, len));
+            assert false : "";
+        }
+
+        // Link shaders and check for errors
+        shaderProgramId = glCreateProgram();
+        glAttachShader(shaderProgramId, vertexID);
+        glAttachShader(shaderProgramId, fragmentID);
+        glLinkProgram(shaderProgramId);
+
+        // Check for linking errors
+        success = glGetProgrami(shaderProgramId, GL_LINK_STATUS);
+        if (success == GL_FALSE) {
+            int len = glGetProgrami(shaderProgramId, GL_INFO_LOG_LENGTH);
+            System.out.println(glGetProgramInfoLog(shaderProgramId, len));
+            assert false : "";
+        }
     }
+
+    public void bind() {
+        glUseProgram(shaderProgramId);
+    }
+
+    public void unbind() {
+        glUseProgram(0);
+    }
+
 
     public int getShaderProgramId(){
         return this.shaderProgramId;

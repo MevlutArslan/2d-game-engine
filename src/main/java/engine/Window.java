@@ -1,12 +1,22 @@
 package engine;
 
+import engine.input.KeyListener;
+import engine.input.MouseListener;
+import engine.rendering.Shader;
+import engine.scene.LevelEditorScene;
+import engine.scene.LevelScene;
+import engine.scene.Scene;
 import engine.utility.Time;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.time.Instant;
 
@@ -14,8 +24,12 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 
 /** Window setup according to https://www.lwjgl.org/guide **/
@@ -23,7 +37,7 @@ public class Window {
     // Singleton
     private static Window instance = null;
 
-    private final double FIXED_TIME_STEP = 1.0/30.0;
+    private final double FIXED_TIME_STEP = 1.0/60.0;
 
     private int height;
     private int width;
@@ -32,6 +46,16 @@ public class Window {
     // The window handle
     private long window;
 
+
+
+
+    // Scene Manager related
+    private static Scene currentScene = null;
+
+    // testing things
+    public int r,g,b;
+
+    // Methods
     private Window() {
         this.height = 1080;
         this.width = 1920;
@@ -45,11 +69,26 @@ public class Window {
         return Window.instance;
     }
 
+    public static void changeScene(int newScene){
+        switch(newScene){
+            case 0:
+                currentScene = new LevelEditorScene();
+                currentScene.init();
+                break;
+            case 1:
+                currentScene = new LevelScene();
+                currentScene.init();
+                break;
+            default:
+                System.err.println("Unknown Scene");
+        }
+    }
+
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
         init();
-        loop();
+        update();
 
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -60,7 +99,7 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    private void init() {
+    private void init(){
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
@@ -83,10 +122,15 @@ public class Window {
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-        });
+        glfwSetKeyCallback(window, KeyListener::keyCallback);
+
+        // call the function whenever there is a mouse event
+        // the '::' syntax is shorthand for () -> {}
+        glfwSetCursorPosCallback(window, MouseListener::mouseCursorPositionCallback);
+        glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
+
+        glfwSetWindowCloseCallback(window, handleWindowClose(window));
 
         // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {
@@ -107,6 +151,8 @@ public class Window {
             );
         } // the stack frame is popped automatically
 
+
+
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
         // Enable v-sync
@@ -114,9 +160,7 @@ public class Window {
 
         // Make the window visible
         glfwShowWindow(window);
-    }
 
-    private void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
@@ -124,36 +168,54 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
+
+
+        Window.changeScene(0);
+    }
+
+    public void update() {
         // Set the clear color
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
+        float beginTime = Time.getTime();
+        float endTime = Time.getTime();
+        float lag = 0.0f;
 
-        double previousTime = Time.getTime();
-        double lag = 0.0;
+        float deltaTime = -1.0f;
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(window)) {
 
-            // fixed time interval game loop pattern mentioned in the book 'GAME PROGRAMMING PATTERNS' by Robert Nystrom
-            double currentTime = Time.getTime();
-            double elapsed = currentTime - previousTime;
-            previousTime = currentTime;
-            lag += elapsed;
-
-            System.out.println("FPS : " + (1.0f/elapsed));
-
-            while(lag >= FIXED_TIME_STEP){
-                glClearColor((float)(elapsed+0.3),(float)(elapsed+0.3),(float)(elapsed+0.3),1);
-                lag -= FIXED_TIME_STEP;
-            }
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
-            glfwSwapBuffers(window); // swap the color buffers
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            if(deltaTime >= 0){
+                currentScene.update(deltaTime);
+            }
+
+            glfwSwapBuffers(window); // swap the color buffers
+
+            endTime = Time.getTime();
+            deltaTime = endTime - beginTime;
+            beginTime = endTime;
+            lag += deltaTime;
+
+            System.out.println("FPS : " + (1.0f/deltaTime));
+
+            while(lag >= FIXED_TIME_STEP){
+                lag -= FIXED_TIME_STEP;
+            }
         }
     }
 
+    public GLFWWindowCloseCallbackI handleWindowClose(long glfwWindow){
+        if(glfwWindowShouldClose(glfwWindow)){
+            glfwTerminate();
+        }
+
+        return null;
+    }
 }
 

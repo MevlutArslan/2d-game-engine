@@ -2,7 +2,6 @@ package engine.utility;
 
 public class Time {
     public static float timeStarted = System.nanoTime();
-
     // Time since our application started as static
     // variables get assigned at the start of the application
     public static float getTime(){
