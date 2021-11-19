@@ -1,23 +1,21 @@
 package engine.scene;
 
-import engine.Window;
+import components.Entity;
 import engine.camera.Camera;
-import engine.input.KeyListener;
 import engine.rendering.Shader;
 import engine.rendering.Texture;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
-import java.awt.event.KeyEvent;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryUtil.memFree;
@@ -122,5 +120,9 @@ public class LevelEditorScene extends Scene {
 
 
         defaultShader.unbind();
+
+        for(Entity entity : this.entities){
+            entity.update(deltaTime);
+        }
     }
 }
