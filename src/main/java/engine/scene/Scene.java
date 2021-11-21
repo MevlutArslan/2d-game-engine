@@ -2,6 +2,7 @@ package engine.scene;
 
 import components.Entity;
 import engine.camera.Camera;
+import engine.rendering.Renderer;
 
 import java.util.ArrayList;
 
@@ -12,6 +13,8 @@ public abstract class Scene {
     protected ArrayList<Entity> entities = new ArrayList<>();
 
     private boolean isRunning;
+
+    protected Renderer renderer = new Renderer();
 
     public Scene(){
 
@@ -24,8 +27,8 @@ public abstract class Scene {
     public void start(){
         for(Entity entity : entities){
             entity.start();
+            this.renderer.add(entity);
         }
-
         isRunning = true;
     }
 
@@ -36,10 +39,14 @@ public abstract class Scene {
         }else{
             entities.add(entity);
             entity.start();
+            this.renderer.add(entity);
+            System.out.println("here");
         }
     }
 
     public abstract void update(float deltaTime);
 
-
+    public Camera getCamera(){
+        return this.camera;
+    }
 }

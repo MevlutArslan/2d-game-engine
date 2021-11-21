@@ -4,12 +4,21 @@ import java.util.ArrayList;
 
 public class Entity {
 
-    public ArrayList<Component> components;
-    public String name;
+    private ArrayList<Component> components;
+    private String name;
+
+    public Transform transform;
 
     public Entity(String name){
         this.name = name;
         this.components = new ArrayList<>();
+        this.transform = new Transform();
+    }
+
+    public Entity(String name, Transform transform){
+        this.name = name;
+        this.components = new ArrayList<>();
+        this.transform = transform;
     }
 
     public void start(){
@@ -38,11 +47,13 @@ public class Entity {
     }
 
     public <T extends Component> void removeComponent(Class<T> componentClass){
+        this.getComponent(componentClass).parent = null;
         this.components.remove(componentClass);
     }
 
     public void addComponent(Component component){
         this.components.add(component);
+        component.parent = this;
     }
 
 

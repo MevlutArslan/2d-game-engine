@@ -2,35 +2,19 @@ package engine;
 
 import engine.input.KeyListener;
 import engine.input.MouseListener;
-import engine.rendering.Shader;
 import engine.scene.LevelEditorScene;
 import engine.scene.LevelScene;
 import engine.scene.Scene;
 import engine.utility.Time;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.time.Instant;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memFree;
-
 
 /** Window setup according to https://www.lwjgl.org/guide **/
 public class Window {
@@ -46,9 +30,6 @@ public class Window {
     // The window handle
     private long window;
 
-
-
-
     // Scene Manager related
     private static Scene currentScene = null;
 
@@ -60,6 +41,10 @@ public class Window {
         this.height = 1080;
         this.width = 1920;
         this.title = "Game Engine";
+
+        r = 1;
+        g = 1;
+        b = 1;
     }
 
     public static Window get() {
@@ -70,20 +55,23 @@ public class Window {
     }
 
     public static void changeScene(int newScene){
-        switch(newScene){
-            case 0:
+        switch (newScene) {
+            case 0 -> {
                 currentScene = new LevelEditorScene();
                 currentScene.init();
                 currentScene.start();
-                break;
-            case 1:
+            }
+            case 1 -> {
                 currentScene = new LevelScene();
                 currentScene.init();
                 currentScene.start();
-                break;
-            default:
-                System.err.println("Unknown Scene");
+            }
+            default -> System.err.println("Unknown Scene");
         }
+    }
+
+    public static Scene getScene(){
+        return get().currentScene;
     }
 
     public void run() {
@@ -134,27 +122,6 @@ public class Window {
 
         glfwSetWindowCloseCallback(window, handleWindowClose(window));
 
-        // Get the thread stack and push a new frame
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1); // int*
-            IntBuffer pHeight = stack.mallocInt(1); // int*
-
-            // Get the window size passed to glfwCreateWindow
-            glfwGetWindowSize(window, pWidth, pHeight);
-
-            // Get the resolution of the primary monitor
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-            // Center the window
-            glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
-        } // the stack frame is popped automatically
-
-
-
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
         // Enable v-sync
@@ -170,28 +137,36 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
-
-
         Window.changeScene(0);
     }
 
     public void update() {
-        // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
         float beginTime = Time.getTime();
-        float endTime = Time.getTime();
+        float endTime;
         float lag = 0.0f;
 
         float deltaTime = -1.0f;
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(window)) {
+            System.out.println("FPS : " + (1.0f/deltaTime));
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
+
+            glClearColor(r, g, b, 1);
             glClear(GL_COLOR_BUFFER_BIT);
+
+
+            endTime = Time.getTime();
+            deltaTime = endTime - beginTime;
+            beginTime = endTime;
+            lag += deltaTime;
+
+            while(lag >= FIXED_TIME_STEP){
+                lag -= FIXED_TIME_STEP;
+            }
 
             if(deltaTime >= 0){
                 currentScene.update(deltaTime);
@@ -199,16 +174,6 @@ public class Window {
 
             glfwSwapBuffers(window); // swap the color buffers
 
-            endTime = Time.getTime();
-            deltaTime = endTime - beginTime;
-            beginTime = endTime;
-            lag += deltaTime;
-
-            System.out.println("FPS : " + (1.0f/deltaTime));
-
-            while(lag >= FIXED_TIME_STEP){
-                lag -= FIXED_TIME_STEP;
-            }
         }
     }
 
