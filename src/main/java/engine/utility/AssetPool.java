@@ -1,6 +1,7 @@
 package engine.utility;
 
 import engine.rendering.Shader;
+import engine.rendering.SpriteSheet;
 import engine.rendering.Texture;
 
 import java.io.File;
@@ -11,6 +12,8 @@ public class AssetPool {
     private static HashMap<String[], Shader> shaders = new HashMap<>();
 
     private static HashMap<String, Texture> textures = new HashMap<>();
+
+    private static HashMap<String, SpriteSheet> spriteSheets = new HashMap<>();
 
     public static Shader getShader(String[] resourcePath){
         File file = new File(resourcePath[0]);
@@ -40,5 +43,20 @@ public class AssetPool {
             AssetPool.textures.put(file.getAbsolutePath(), texture);
             return texture;
         }
+    }
+
+    public static void addSpriteSheet(String resourceName, SpriteSheet spriteSheet){
+        File file = new File(resourceName);
+        if(!AssetPool.spriteSheets.containsKey(file.getAbsolutePath())){
+            AssetPool.spriteSheets.put(file.getAbsolutePath(), spriteSheet);
+        }
+    }
+
+    public static SpriteSheet getSpriteSheet(String resourceName){
+        File file = new File(resourceName);
+        if(!AssetPool.spriteSheets.containsKey(file.getAbsolutePath())){
+            System.err.println("You tried to access a spritesheet that does not exist! : \n" + resourceName);
+        }
+        return AssetPool.spriteSheets.getOrDefault(file.getAbsolutePath(), null);
     }
 }

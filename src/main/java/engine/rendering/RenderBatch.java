@@ -242,6 +242,14 @@ public class RenderBatch {
 
     }
 
+    public boolean hasTexture(Texture texture){
+        return this.textures.contains(texture);
+    }
+
+    public boolean hasTextureRoom(){
+        // 8 being the maximum number of textures we have on the gpu
+        return this.textures.size() < 8;
+    }
 
     public boolean hasRoom(){
         return this.hasRoom;

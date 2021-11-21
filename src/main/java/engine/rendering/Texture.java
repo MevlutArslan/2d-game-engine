@@ -13,6 +13,9 @@ public class Texture {
     private String filepath;
     private int textureId;
 
+    private int height;
+    private int width;
+
     public Texture(String filepath){
         this.filepath = filepath;
 
@@ -38,6 +41,9 @@ public class Texture {
         ByteBuffer image = stbi_load(filepath, width, height, channels, 0);
 
         if(image != null){
+            this.width = width.get(0);
+            this.height = height.get(0);
+
             if(channels.get(0) == 3){
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width.get(0), height.get(0),0, GL_RGB, GL_UNSIGNED_BYTE, image);
             }
@@ -54,6 +60,14 @@ public class Texture {
         stbi_image_free(image);
 
 
+    }
+
+    public int getHeight(){
+        return this.height;
+    }
+
+    public int getWidth() {
+        return this.width;
     }
 
     public void bind(){
