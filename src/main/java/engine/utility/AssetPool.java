@@ -6,7 +6,7 @@ import engine.rendering.Texture;
 import java.io.File;
 import java.util.HashMap;
 
-/** Remember to set reference **/
+/** https://www.youtube.com/watch?v=mEXCabDeGpg&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=13 **/
 public class AssetPool {
     private static HashMap<String[], Shader> shaders = new HashMap<>();
 

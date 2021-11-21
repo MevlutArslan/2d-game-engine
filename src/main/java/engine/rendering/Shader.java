@@ -158,4 +158,9 @@ public class Shader {
         glUniform1i(uniformLocation, slot);
     }
 
+    public void uploadIntArray(String uniformName, int[] array){
+        int uniformLocation = glGetUniformLocation(this.getShaderProgramId(),uniformName);
+        glUniform1iv(uniformLocation, array);
+    }
+
 }

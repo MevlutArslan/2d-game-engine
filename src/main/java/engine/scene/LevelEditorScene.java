@@ -16,26 +16,21 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init() {
-        int xOffset = 10;
-        int yOffset = 10;
+        Entity entity_1 = new Entity("Object_1",
+                new Transform(new Vector2f(100,100),
+                              new Vector2f(256,256)));
+        entity_1.addComponent(
+                new SpriteRenderer(
+                        AssetPool.getTexture("src/main/resources/textures/Wraith_02_Idle_000.png")));
+        this.addEntityToScene(entity_1);
 
-        float totalWidth = (float)(600 - xOffset * 2);
-        float totalHeight = (float)(300 - yOffset * 2);
-        float sizeX = totalWidth / 100.0f;
-        float sizeY = totalHeight / 100.0f;
-        float padding = 3;
-
-        for (int x=0; x < 100; x++) {
-            for (int y=0; y < 100; y++) {
-                float xPos = xOffset + (x * sizeX) + (padding * x);
-                float yPos = yOffset + (y * sizeY) + (padding * y);
-
-                Entity entity = new Entity("Obj" + x + "" + y, new Transform(new Vector2f(xPos, yPos), new Vector2f(sizeX, sizeY)));
-                entity.addComponent(new SpriteRenderer(new Vector4f(xPos / totalWidth, yPos / totalHeight, 1, 1)));
-                this.addEntityToScene(entity);
-            }
-        }
-
+        Entity entity_2 = new Entity("Object_2",
+                new Transform(new Vector2f(400,100),
+                        new Vector2f(256,256)));
+        entity_2.addComponent(
+                new SpriteRenderer(
+                        AssetPool.getTexture("src/main/resources/textures/Wraith_01_Idle_000.png")));
+        this.addEntityToScene(entity_2);
         loadResources();
     }
 

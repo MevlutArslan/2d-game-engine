@@ -141,7 +141,7 @@ public class Window {
     }
 
     public void update() {
-        float beginTime = Time.getTime();
+        float beginTime = (float)glfwGetTime();
         float endTime;
         float lag = 0.0f;
 
@@ -155,11 +155,11 @@ public class Window {
             // invoked during this call.
             glfwPollEvents();
 
-            glClearColor(r, g, b, 1);
+            glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
 
-            endTime = Time.getTime();
+            endTime = (float)glfwGetTime();
             deltaTime = endTime - beginTime;
             beginTime = endTime;
             lag += deltaTime;
