@@ -11,7 +11,7 @@ public class GraphicsComponent extends Component {
     }
 
     @Override
-    public void update(Entity entity, float deltaTime) {
+    public void update(float deltaTime) {
 
     }
 }

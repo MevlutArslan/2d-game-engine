@@ -29,7 +29,7 @@ public class Entity {
 
     public void update(float deltaTime){
         for(Component component : components){
-            component.update(this, deltaTime);
+            component.update(deltaTime);
         }
     }
 

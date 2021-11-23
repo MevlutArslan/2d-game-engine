@@ -105,11 +105,20 @@ public class RenderBatch {
 
 
     public void render(){
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        // I will buffer some data into vbo, the vertices starting from 0..
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        boolean rebufferNeeded = false;
+        for(int i = 0; i < numberOfSprites; i++){
+            if(sprites[i].hasChanged()){
+                loadVertexPropertiesIndex(i);
+                sprites[i].setHasChangedToFalse();
+                rebufferNeeded = true;
 
-
+            }
+        }
+        if(rebufferNeeded){
+            glBindBuffer(GL_ARRAY_BUFFER, vboId);
+            // I will buffer some data into vbo, the vertices starting from 0..
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
         shader.bind();
         shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
 

@@ -158,7 +158,6 @@ public class Window {
             glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
-
             endTime = (float)glfwGetTime();
             deltaTime = endTime - beginTime;
             beginTime = endTime;
@@ -173,7 +172,6 @@ public class Window {
             }
 
             glfwSwapBuffers(window); // swap the color buffers
-
         }
     }
 

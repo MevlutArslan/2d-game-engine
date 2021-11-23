@@ -1,5 +1,6 @@
 package engine.rendering;
 
+import components.Transform;
 import org.joml.Vector2f;
 
 public class Sprite {
@@ -29,4 +30,6 @@ public class Sprite {
     public Vector2f[] getTextureCoords(){
         return this.textureCoords;
     }
+
+
 }
