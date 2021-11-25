@@ -137,6 +137,9 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
         Window.changeScene(0);
     }
 
@@ -155,7 +158,7 @@ public class Window {
             // invoked during this call.
             glfwPollEvents();
 
-            glClearColor(0, 0, 0, 1);
+            glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
             endTime = (float)glfwGetTime();
