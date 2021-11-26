@@ -137,7 +137,14 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
+        // https://learnopengl.com/Advanced-OpenGL/Blending
         glEnable(GL_BLEND);
+        /* Cresult=Csource∗Fsource+Cdestination∗Fdestination
+          *  C¯source: the source color vector. This is the color output of the fragment shader.
+          *  C¯destination: the destination color vector. This is the color vector that is currently stored in the color buffer.
+          *  Fsource: the source factor value. Sets the impact of the alpha value on the source color.
+          *  Fdestination: the destination factor value. Sets the impact of the alpha value on the destination color.
+        */
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         Window.changeScene(0);

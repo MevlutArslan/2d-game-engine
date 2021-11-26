@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class RenderBatch {
+public class RenderBatch implements Comparable<RenderBatch> {
     // Vertex
     // ------
     // Position                      Color                           TexCoords        TexId
@@ -44,13 +44,16 @@ public class RenderBatch {
     private int maxBatchSize;
     private Shader shader;
 
+    private int zIndex;
+
     private List<Texture> textures;
 
     private int[] textureSlots = {
             0,1,2,3,4,5,6,7
     };
 
-    public RenderBatch(int maxBatchSize){
+    public RenderBatch(int maxBatchSize, int zIndex){
+        this.zIndex = zIndex;
         this.maxBatchSize = maxBatchSize;
         this.shader =
                 AssetPool.getShader(
@@ -262,5 +265,14 @@ public class RenderBatch {
 
     public boolean hasRoom(){
         return this.hasRoom;
+    }
+
+    public int getzIndex(){
+        return this.zIndex;
+    }
+
+    @Override
+    public int compareTo(RenderBatch o) {
+        return Integer.compare(this.zIndex, o.zIndex);
     }
 }

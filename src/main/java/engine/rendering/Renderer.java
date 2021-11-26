@@ -4,6 +4,8 @@ import components.Entity;
 import components.rendering.SpriteRenderer;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -27,7 +29,7 @@ public class Renderer {
     public void add(SpriteRenderer spr){
         boolean added = false;
         for(RenderBatch batch : batches){
-            if(batch.hasRoom()){
+            if(batch.hasRoom() && batch.getzIndex() == spr.parent.getzIndex()){
                 Texture tex = spr.getTexture();
                 if(tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
                     batch.addSprite(spr);
@@ -38,11 +40,12 @@ public class Renderer {
         }
 
         if(!added){
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE,spr.parent.getzIndex());
             newBatch.start();
 
             batches.add(newBatch);
             newBatch.addSprite(spr);
+            Collections.sort(batches);
         }
     }
 

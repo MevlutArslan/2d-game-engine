@@ -9,16 +9,22 @@ public class Entity {
 
     public Transform transform;
 
+    // TODO : Turn every zIndex into ENUMS instead of using Integers
+    // Like -> BACKGROUND_LAYER, PLAYABLE_LEVEL, EFFECTS...
+    private int zIndex;
+
     public Entity(String name){
         this.name = name;
         this.components = new ArrayList<>();
         this.transform = new Transform();
+        this.zIndex = 0;
     }
 
-    public Entity(String name, Transform transform){
+    public Entity(String name, Transform transform, int zIndex){
         this.name = name;
         this.components = new ArrayList<>();
         this.transform = transform;
+        this.zIndex = zIndex;
     }
 
     public void start(){
@@ -56,6 +62,9 @@ public class Entity {
         component.parent = this;
     }
 
+    public int getzIndex(){
+        return this.zIndex;
+    }
 
 
 }

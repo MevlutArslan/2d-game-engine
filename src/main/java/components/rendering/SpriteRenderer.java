@@ -25,11 +25,13 @@ public class SpriteRenderer extends Component {
         this.sprite = sprite;
         // white
         this.color = new Vector4f(1,1,1,1);
+        this.hasChanged = true;
     }
 
     public SpriteRenderer(Vector4f color){
         this.color = color;
         this.sprite = new Sprite(null);
+        this.hasChanged = true;
     }
 
     @Override
@@ -42,6 +44,7 @@ public class SpriteRenderer extends Component {
         if(!this.lastTransform.equals(parent.transform)){
             this.parent.transform.copyTo(lastTransform);
             hasChanged = true;
+
         }
     }
 
