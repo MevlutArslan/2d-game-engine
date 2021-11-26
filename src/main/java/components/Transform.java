@@ -7,7 +7,6 @@ public class Transform {
     public Vector2f position;
     public Vector2f scale;
 
-
     public Transform(){
         this.position = new Vector2f();
         this.scale = new Vector2f();
@@ -40,5 +39,4 @@ public class Transform {
         Transform t = (Transform) o;
         return t.position.equals(this.position) && t.scale.equals(this.scale);
     }
-
 }

@@ -3,6 +3,7 @@ package engine.scene;
 import components.Entity;
 import engine.camera.Camera;
 import engine.rendering.Renderer;
+import imgui.ImGui;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,8 @@ public abstract class Scene {
     private boolean isRunning;
 
     protected Renderer renderer = new Renderer();
+
+    protected Entity selectedEntity = null;
 
     public Scene(){
 
@@ -48,5 +51,19 @@ public abstract class Scene {
 
     public Camera getCamera(){
         return this.camera;
+    }
+
+    public void imguiScene(){
+        if(selectedEntity != null){
+            ImGui.begin("Inspect");
+            selectedEntity.imgui();
+            ImGui.end();
+        }
+
+        imgui();
+    }
+
+    public void imgui(){
+
     }
 }

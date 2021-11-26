@@ -4,9 +4,9 @@ import components.Entity;
 import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.camera.Camera;
-import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.utility.AssetPool;
+import imgui.ImGui;
 import org.joml.Vector2f;
 
 public class LevelEditorScene extends Scene {
@@ -33,6 +33,7 @@ public class LevelEditorScene extends Scene {
                 new SpriteRenderer(
                        sprites.getSprite(0)));
         this.addEntityToScene(entity_1);
+        this.selectedEntity = entity_1;
 
         Entity entity_2 = new Entity("Object_2",
                 new Transform(new Vector2f(400,100),
@@ -63,4 +64,5 @@ public class LevelEditorScene extends Scene {
 
         this.renderer.render();
     }
+
 }

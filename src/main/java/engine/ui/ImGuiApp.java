@@ -1,5 +1,6 @@
 package engine.ui;
 
+import engine.scene.Scene;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.gl3.ImGuiImplGl3;
@@ -32,6 +33,8 @@ public class ImGuiApp {
     public void init(){
         context = ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
+
+        io.setIniFilename("imgui.ini");
         // Setup Platform/Renderer bindings
         glfwBinding = new ImGuiImplGlfw();
         glfwBinding.init(window,true);
@@ -41,9 +44,10 @@ public class ImGuiApp {
         ImGui.styleColorsDark();
     }
 
-    public void update(float deltaTime){
+    public void update(float deltaTime, Scene currentScene){
         glfwBinding.newFrame();
         ImGui.newFrame();
+        currentScene.imguiScene();
 
         ImGui.begin("window");
         ImGui.button("Button");

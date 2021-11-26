@@ -5,6 +5,9 @@ import components.Entity;
 import components.Transform;
 import engine.rendering.Sprite;
 import engine.rendering.Texture;
+import engine.ui.ImGuiApp;
+import imgui.ImGui;
+import imgui.type.ImFloat;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -78,5 +81,16 @@ public class SpriteRenderer extends Component {
 
     public void setHasChangedToFalse(){
         this.hasChanged = false;
+    }
+
+    @Override
+    public void imgui() {
+        System.out.println("I AM CALLED");
+        ImFloat imFloat =  new ImFloat(parent.transform.position.y);
+        if(ImGui.inputFloat("Change height :", imFloat)){
+            parent.transform.position.set(parent.transform.position.x, imFloat.get());
+            this.hasChanged = true;
+            System.out.println("here");
+        }
     }
 }

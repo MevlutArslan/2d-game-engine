@@ -66,5 +66,9 @@ public class Entity {
         return this.zIndex;
     }
 
-
+    public void imgui(){
+        for(Component c : components){
+            c.imgui();
+        }
+    }
 }
