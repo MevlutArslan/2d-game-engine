@@ -6,6 +6,11 @@ import engine.scene.LevelEditorScene;
 import engine.scene.LevelScene;
 import engine.scene.Scene;
 import engine.utility.Time;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
+import imgui.internal.ImGuiContext;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
@@ -14,6 +19,7 @@ import org.lwjgl.opengl.GL;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.GL_SHADING_LANGUAGE_VERSION;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /** Window setup according to https://www.lwjgl.org/guide **/
@@ -35,6 +41,12 @@ public class Window {
 
     // testing things
     public int r,g,b;
+
+    // ImGUI
+    private ImGuiContext imGuiContext;
+
+    private ImGuiImplGlfw glfwBindingGui;
+    private ImGuiImplGl3 glBindingGui;
 
     // Methods
     private Window() {
@@ -147,6 +159,18 @@ public class Window {
         */
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+        // Setup Dear ImGui context
+        imGuiContext = ImGui.createContext();
+        ImGuiIO io = ImGui.getIO();
+        // Setup Platform/Renderer bindings
+        glfwBindingGui = new ImGuiImplGlfw();
+        glfwBindingGui.init(window,true);
+        glBindingGui = new ImGuiImplGl3();
+        System.out.println();
+        glBindingGui.init("#version 330");
+        // Setup Dear ImGui style
+        ImGui.styleColorsDark();
+
         Window.changeScene(0);
     }
 
@@ -168,6 +192,10 @@ public class Window {
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
+
+            glfwBindingGui.newFrame();
+            ImGui.newFrame();
+
             endTime = (float)glfwGetTime();
             deltaTime = endTime - beginTime;
             beginTime = endTime;
@@ -181,12 +209,23 @@ public class Window {
                 currentScene.update(deltaTime);
             }
 
+            ImGui.begin("window");
+            ImGui.button("Button");
+            ImGui.end();
+
+            ImGui.render();
+            glBindingGui.renderDrawData(ImGui.getDrawData());
+
             glfwSwapBuffers(window); // swap the color buffers
         }
     }
 
     public GLFWWindowCloseCallbackI handleWindowClose(long glfwWindow){
         if(glfwWindowShouldClose(glfwWindow)){
+            glBindingGui.dispose();
+            glfwBindingGui.dispose();
+            ImGui.destroyContext();
+
             glfwTerminate();
         }
 
