@@ -5,7 +5,6 @@ import components.Component;
 
 import java.lang.reflect.Type;
 
-
 // https://www.javacodegeeks.com/2012/04/json-with-gson-and-abstract-classes.html
 public class ComponentGsonAdapter implements JsonSerializer<Component> ,JsonDeserializer<Component> {
     @Override
