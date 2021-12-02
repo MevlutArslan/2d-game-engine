@@ -2,13 +2,14 @@ package engine.scene;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import components.Component;
 import components.Entity;
 import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.camera.Camera;
 import engine.rendering.SpriteSheet;
 import engine.utility.AssetPool;
-import imgui.ImGui;
+import engine.utility.ComponentGsonAdapter;
 import org.joml.Vector2f;
 
 public class LevelEditorScene extends Scene {
@@ -46,9 +47,12 @@ public class LevelEditorScene extends Scene {
         this.addEntityToScene(entity_2);
         loadResources();
 
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        System.out.println(gson.toJson(entity_1));
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Component.class, new ComponentGsonAdapter());
+        Gson gson = gsonBuilder.setPrettyPrinting().create();
+        String json = gson.toJson(entity_1);
+        Entity loaded = gson.fromJson(json, Entity.class);
+        System.out.println(loaded);
     }
 
     public void loadResources(){
