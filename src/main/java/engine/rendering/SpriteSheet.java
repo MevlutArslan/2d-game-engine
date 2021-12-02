@@ -32,7 +32,9 @@ public class SpriteSheet {
                     new Vector2f(leftX,topY)
             };
 
-            Sprite sprite = new Sprite(this.texture, texCoords);
+            Sprite sprite = new Sprite();
+            sprite.setTexture(this.texture);
+            sprite.setTextureCoords(texCoords);
             this.sprites.add(sprite);
             currentX+= spriteWidth + spacing;
             if(currentX >= texture.getWidth()){

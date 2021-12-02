@@ -2,7 +2,7 @@ package components;
 
 public abstract class Component {
 
-    public Entity parent;
+    public transient Entity parent;
 
     public abstract void start();
 

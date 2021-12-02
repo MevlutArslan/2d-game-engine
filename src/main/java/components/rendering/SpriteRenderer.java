@@ -15,27 +15,14 @@ import java.util.List;
 
 public class SpriteRenderer extends Component {
 
-    private Vector4f color;
+    private Vector4f color = new Vector4f(1,1,1,1);
 
     private List<Vector2f> textureCoords;
 
-    private Sprite sprite;
-    private Transform lastTransform;
+    private Sprite sprite = new Sprite();
 
-    private boolean hasChanged = false;
-
-    public SpriteRenderer(Sprite sprite){
-        this.sprite = sprite;
-        // white
-        this.color = new Vector4f(1,1,1,1);
-        this.hasChanged = true;
-    }
-
-    public SpriteRenderer(Vector4f color){
-        this.color = color;
-        this.sprite = new Sprite(null);
-        this.hasChanged = true;
-    }
+    private transient Transform lastTransform;
+    private transient boolean hasChanged = false;
 
     @Override
     public void start() {
@@ -93,4 +80,5 @@ public class SpriteRenderer extends Component {
             System.out.println("here");
         }
     }
+
 }

@@ -49,9 +49,6 @@ public class ImGuiApp {
         ImGui.newFrame();
         currentScene.imguiScene();
 
-        ImGui.begin("window");
-        ImGui.button("Button");
-        ImGui.end();
 
         ImGui.render();
         glBinding.renderDrawData(ImGui.getDrawData());

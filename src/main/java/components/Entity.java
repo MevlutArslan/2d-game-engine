@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Entity {
 
-    private ArrayList<Component> components;
     private String name;
-
     public Transform transform;
+
+    private ArrayList<Component> components;
 
     // TODO : Turn every zIndex into ENUMS instead of using Integers
     // Like -> BACKGROUND_LAYER, PLAYABLE_LEVEL, EFFECTS...

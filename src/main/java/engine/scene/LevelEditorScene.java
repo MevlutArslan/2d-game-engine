@@ -1,5 +1,7 @@
 package engine.scene;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import components.Entity;
 import components.Transform;
 import components.rendering.SpriteRenderer;
@@ -30,8 +32,8 @@ public class LevelEditorScene extends Scene {
                 new Transform(new Vector2f(100,100),
                               new Vector2f(256,256)), 3);
         entity_1.addComponent(
-                new SpriteRenderer(
-                       sprites.getSprite(0)));
+                new SpriteRenderer());
+        entity_1.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(0));
         this.addEntityToScene(entity_1);
         this.selectedEntity = entity_1;
 
@@ -39,10 +41,14 @@ public class LevelEditorScene extends Scene {
                 new Transform(new Vector2f(400,100),
                         new Vector2f(256,256)), -1);
         entity_2.addComponent(
-                new SpriteRenderer(
-                        sprites.getSprite(1)));
+                new SpriteRenderer());
+        entity_2.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(1));
         this.addEntityToScene(entity_2);
         loadResources();
+
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        System.out.println(gson.toJson(entity_1));
     }
 
     public void loadResources(){
