@@ -11,7 +11,7 @@ public class ComponentGsonAdapter implements JsonSerializer<Component> ,JsonDese
     @Override
     public JsonElement serialize(Component src, Type typeOfSrc, JsonSerializationContext jsonSerializationContext){
         JsonObject result = new JsonObject();
-        result.add("type", new JsonPrimitive(src.getClass().getSimpleName()));
+        result.add("type", new JsonPrimitive(src.getClass().getCanonicalName()));
         result.add("properties", jsonSerializationContext.serialize(src, src.getClass()));
 
         return result;
@@ -24,7 +24,7 @@ public class ComponentGsonAdapter implements JsonSerializer<Component> ,JsonDese
         JsonElement element = jsonObject.get("properties");
 
         try{
-            return jsonDeserializationContext.deserialize(element, Class.forName("components." + type));
+            return jsonDeserializationContext.deserialize(element, Class.forName(type));
         } catch (ClassNotFoundException e){
             throw new JsonParseException("Unknown element type : " + type);
         }

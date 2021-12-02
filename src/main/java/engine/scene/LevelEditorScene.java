@@ -50,9 +50,9 @@ public class LevelEditorScene extends Scene {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Component.class, new ComponentGsonAdapter());
         Gson gson = gsonBuilder.setPrettyPrinting().create();
+
         String json = gson.toJson(entity_1);
         Entity loaded = gson.fromJson(json, Entity.class);
-        System.out.println(loaded);
     }
 
     public void loadResources(){
