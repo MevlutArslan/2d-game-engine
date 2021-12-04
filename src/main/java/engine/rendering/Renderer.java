@@ -1,6 +1,6 @@
 package engine.rendering;
 
-import components.Entity;
+import engine.Entity;
 import components.rendering.SpriteRenderer;
 
 import java.util.ArrayList;

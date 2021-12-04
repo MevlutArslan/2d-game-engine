@@ -1,6 +1,6 @@
 package engine.scene;
 
-import components.Entity;
+import engine.Entity;
 import engine.camera.Camera;
 import engine.rendering.Renderer;
 import imgui.ImGui;

@@ -1,7 +1,7 @@
-package engine.utility;
+package engine.utility.gson_adapter;
 
 import com.google.gson.*;
-import components.Component;
+import engine.Component;
 
 import java.lang.reflect.Type;
 

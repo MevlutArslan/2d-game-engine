@@ -1,4 +1,6 @@
-package components;
+package engine;
+
+import engine.Entity;
 
 public abstract class Component {
 
