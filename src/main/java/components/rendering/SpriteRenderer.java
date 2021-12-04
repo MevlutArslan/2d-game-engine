@@ -20,7 +20,7 @@ public class SpriteRenderer extends Component {
     private Sprite sprite = new Sprite();
 
     private transient Transform lastTransform;
-    private transient boolean hasChanged = false;
+    private transient boolean hasChanged = true;
 
     @Override
     public void start() {

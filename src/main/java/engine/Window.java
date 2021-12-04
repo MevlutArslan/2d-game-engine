@@ -60,11 +60,13 @@ public class Window {
         switch (newScene) {
             case 0 -> {
                 currentScene = new LevelEditorScene();
+                currentScene.load();
                 currentScene.init();
                 currentScene.start();
             }
             case 1 -> {
                 currentScene = new LevelScene();
+                currentScene.load();
                 currentScene.init();
                 currentScene.start();
             }
@@ -173,8 +175,6 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT);
 
 
-
-
             endTime = (float)glfwGetTime();
             deltaTime = endTime - beginTime;
             beginTime = endTime;
@@ -193,6 +193,8 @@ public class Window {
 
             glfwSwapBuffers(window); // swap the color buffers
         }
+
+        currentScene.save();
     }
 
     public GLFWWindowCloseCallbackI handleWindowClose(long glfwWindow){

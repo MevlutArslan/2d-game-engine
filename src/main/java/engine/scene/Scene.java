@@ -1,10 +1,20 @@
 package engine.scene;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import engine.Component;
 import engine.Entity;
 import engine.camera.Camera;
 import engine.rendering.Renderer;
+import engine.utility.gson_adapter.ComponentGsonAdapter;
+import engine.utility.gson_adapter.EntityGsonAdapter;
 import imgui.ImGui;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public abstract class Scene {
@@ -19,8 +29,15 @@ public abstract class Scene {
 
     protected Entity selectedEntity = null;
 
-    public Scene(){
+    protected boolean levelIsLoaded = false;
 
+    private Gson gson;
+
+    public Scene(){
+        gson = new GsonBuilder().
+                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
+                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
+                setPrettyPrinting().create();
     }
 
     public void init(){
@@ -64,6 +81,35 @@ public abstract class Scene {
     }
 
     public void imgui(){
+
+    }
+
+    public void save(){
+
+        try{
+            FileWriter fileWriter = new FileWriter("level.json");
+            fileWriter.write(gson.toJson(this.entities));
+            fileWriter.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void load(){
+        String loadedText = "";
+        try{
+            loadedText = new String(Files.readAllBytes(Paths.get("level.json")));
+        }catch (IOException exception){
+            exception.printStackTrace();
+        }
+
+        if(!loadedText.equals("")){
+            Entity[] entities = gson.fromJson(loadedText, Entity[].class);
+            for(Entity entity : entities){
+                addEntityToScene(entity);
+            }
+            this.levelIsLoaded = true;
+        }
 
     }
 }
