@@ -1,16 +1,12 @@
 package engine.scene;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import engine.Component;
+import components.VariableConnectionTestClass;
 import engine.Entity;
 import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.camera.Camera;
 import engine.rendering.SpriteSheet;
 import engine.utility.AssetPool;
-import engine.utility.gson_adapter.ComponentGsonAdapter;
-import engine.utility.gson_adapter.EntityGsonAdapter;
 import org.joml.Vector2f;
 
 public class LevelEditorScene extends Scene {
@@ -32,14 +28,12 @@ public class LevelEditorScene extends Scene {
             return;
         }
 
-
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
-        System.out.println("here after");
         entity_1 = new Entity("Object_1",
                 new Transform(new Vector2f(100,100),
                               new Vector2f(256,256)), 3);
-        entity_1.addComponent(
-                new SpriteRenderer());
+        entity_1.addComponent(new SpriteRenderer());
+        entity_1.addComponent(new VariableConnectionTestClass());
         entity_1.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(0));
         this.addEntityToScene(entity_1);
         this.selectedEntity = entity_1;
@@ -50,11 +44,11 @@ public class LevelEditorScene extends Scene {
         entity_2.addComponent(
                 new SpriteRenderer());
         entity_2.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(1));
+
         this.addEntityToScene(entity_2);
     }
 
     public void loadResources(){
-        System.out.println("Here now");
         AssetPool.getShader(new String[]{
                 "src/main/resources/basicShader.vertex",
                 "src/main/resources/basicShader.fragment"

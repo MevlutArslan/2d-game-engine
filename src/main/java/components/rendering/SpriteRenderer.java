@@ -67,15 +67,15 @@ public class SpriteRenderer extends Component {
     public void setHasChangedToFalse(){
         this.hasChanged = false;
     }
-
-    @Override
-    public void imgui() {
-        ImFloat imFloat =  new ImFloat(parent.transform.position.y);
-        if(ImGui.inputFloat("Change height :", imFloat)){
-            parent.transform.position.set(parent.transform.position.x, imFloat.get());
-            this.hasChanged = true;
-            System.out.println("here");
-        }
-    }
+//
+//    @Override
+//    public void imgui() {
+//        ImFloat imFloat =  new ImFloat(parent.transform.position.y);
+//        if(ImGui.inputFloat("Change height :", imFloat)){
+//            parent.transform.position.set(parent.transform.position.x, imFloat.get());
+//            this.hasChanged = true;
+//            System.out.println("here");
+//        }
+//    }
 
 }
