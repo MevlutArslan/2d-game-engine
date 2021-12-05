@@ -25,14 +25,16 @@ public class LevelEditorScene extends Scene {
     @Override
     public void init() {
         this.camera = new Camera(new Vector2f(-100,0));
+        loadResources();
+
         if(levelIsLoaded){
             selectedEntity = entities.get(0);
             return;
         }
-        loadResources();
+
 
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
-
+        System.out.println("here after");
         entity_1 = new Entity("Object_1",
                 new Transform(new Vector2f(100,100),
                               new Vector2f(256,256)), 3);
@@ -49,11 +51,10 @@ public class LevelEditorScene extends Scene {
                 new SpriteRenderer());
         entity_2.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(1));
         this.addEntityToScene(entity_2);
-        loadResources();
-
     }
 
     public void loadResources(){
+        System.out.println("Here now");
         AssetPool.getShader(new String[]{
                 "src/main/resources/basicShader.vertex",
                 "src/main/resources/basicShader.fragment"
@@ -62,6 +63,7 @@ public class LevelEditorScene extends Scene {
         AssetPool.addSpriteSheet("src/main/resources/textures/spritesheet.png",
                                  new SpriteSheet(AssetPool.getTexture("src/main/resources/textures/spritesheet.png"),
                                          16, 16, 26, 0));
+
     }
 
     @Override

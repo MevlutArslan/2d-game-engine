@@ -1,7 +1,5 @@
 package engine;
 
-import engine.Entity;
-
 public abstract class Component {
 
     public transient Entity parent;
