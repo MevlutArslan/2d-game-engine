@@ -1,6 +1,7 @@
 package engine;
 
 import components.Transform;
+import imgui.ImGui;
 
 import java.util.ArrayList;
 
@@ -55,8 +56,10 @@ public class Entity {
     }
 
     public <T extends Component> void removeComponent(Class<T> componentClass){
-        this.getComponent(componentClass).parent = null;
-        this.components.remove(componentClass);
+        if(components.contains(componentClass)){
+            this.getComponent(componentClass).parent = null;
+            this.components.remove(componentClass);
+        }
     }
 
     public void addComponent(Component component){
@@ -70,7 +73,11 @@ public class Entity {
 
     public void imgui(){
         for(Component c : components){
-            c.imgui();
+            if(c.getClass().getDeclaredFields().length > 0){
+                if(ImGui.collapsingHeader(c.getClass().getSimpleName())){
+                    c.imgui();
+                }
+            }
         }
     }
 }

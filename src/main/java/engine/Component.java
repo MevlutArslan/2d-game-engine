@@ -85,8 +85,6 @@ public abstract class Component {
                    else if(type == Vector4f.class){
                        Vector4f value = (Vector4f) val;
                        float[] imVec4f = {value.x, value.y, value.z, value.w};
-                       // apparently inputInt requires imInt whereas dragInt
-                       // requires an int array with length 1
                        if(ImGui.dragFloat4(name, imVec4f)){
                            value.set(imVec4f[0], imVec4f[1], imVec4f[2], imVec4f[3]);
                            field.set(this, value);
