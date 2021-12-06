@@ -100,7 +100,7 @@ public class LevelEditorScene extends Scene {
             Vector2f[] texCoords = sprite.getTextureCoords();
 
             if(ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)){
-                System.out.println("Pressed " + i);
+                // TODO : Implement Drag & Drop
             }
 
             float lastButtonX2 = ImGui.getItemRectMaxX();
