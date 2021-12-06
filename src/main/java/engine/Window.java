@@ -40,8 +40,8 @@ public class Window {
 
     // Methods
     private Window() {
-        this.height = 1080;
-        this.width = 1920;
+        this.height = 720;
+        this.width = 1200;
         this.title = "Game Engine";
 
         r = 1;
@@ -125,6 +125,10 @@ public class Window {
         glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
 
         glfwSetWindowCloseCallback(window, handleWindowClose(window));
+        glfwSetWindowSizeCallback(window, (window, newWidth, newHeight) -> {
+            Window.setWidth(newWidth);
+            Window.setHeight(newHeight);
+        });
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
@@ -155,6 +159,8 @@ public class Window {
 
         Window.changeScene(0);
     }
+
+
 
     public void update() {
         float beginTime = (float)glfwGetTime();
@@ -205,6 +211,21 @@ public class Window {
         }
 
         return null;
+    }
+
+    public static int getHeight(){
+        return get().height;
+    }
+
+    public static int getWidth(){
+        return get().width;
+    }
+
+    private static void setWidth(int newWidth) {
+        get().width = newWidth;
+    }
+    private static void setHeight(int newHeight) {
+        get().height = newHeight;
     }
 }
 

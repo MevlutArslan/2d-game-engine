@@ -5,6 +5,7 @@ import engine.Entity;
 import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.camera.Camera;
+import engine.input.MouseListener;
 import engine.rendering.SpriteSheet;
 import engine.utility.AssetPool;
 import org.joml.Vector2f;
@@ -20,7 +21,7 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init() {
-        this.camera = new Camera(new Vector2f(-100,0));
+        this.camera = new Camera(new Vector2f(-250,0));
         loadResources();
 
         if(levelIsLoaded){
