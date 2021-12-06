@@ -77,4 +77,8 @@ public class Texture {
     public void unbind(){
         glBindTexture(GL_TEXTURE_2D,0);
     }
+
+    public int getTextureId(){
+        return this.textureId;
+    }
 }

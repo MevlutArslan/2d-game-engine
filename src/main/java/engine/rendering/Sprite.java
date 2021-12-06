@@ -14,6 +14,9 @@ public class Sprite {
             new Vector2f(0, 1)
     };
 
+    private float width;
+    private float height;
+
     public Texture getTexture(){
         return this.texture;
     }
@@ -30,4 +33,23 @@ public class Sprite {
         this.textureCoords = textureCoords;
     }
 
+    public float getHeight(){
+        return this.height;
+    }
+
+    public float getWidth(){
+        return this.width;
+    }
+
+    public int getTexId(){
+        return this.texture.getTextureId();
+    }
+
+    public void setWidth(int spriteWidth) {
+        this.width = spriteWidth;
+    }
+
+    public void setHeight(int spriteHeight){
+        this.height = spriteHeight;
+    }
 }

@@ -192,10 +192,8 @@ public class Window {
 
             if(deltaTime >= 0){
                 currentScene.update(deltaTime);
+                imGuiApp.update(deltaTime,currentScene);
             }
-
-            imGuiApp.update(deltaTime,currentScene);
-
 
             glfwSwapBuffers(window); // swap the color buffers
         }

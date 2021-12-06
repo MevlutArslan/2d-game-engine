@@ -49,7 +49,6 @@ public class ImGuiApp {
         ImGui.newFrame();
         currentScene.imguiScene();
 
-
         ImGui.render();
         glBinding.renderDrawData(ImGui.getDrawData());
 
