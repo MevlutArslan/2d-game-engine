@@ -2,6 +2,7 @@ package engine;
 
 import engine.input.KeyListener;
 import engine.input.MouseListener;
+import engine.rendering.FrameBuffer;
 import engine.scene.LevelEditorScene;
 import engine.scene.LevelScene;
 import engine.scene.Scene;
@@ -37,6 +38,7 @@ public class Window {
     public int r,g,b;
 
     private ImGuiApp imGuiApp;
+    private FrameBuffer frameBuffer;
 
     // Methods
     private Window() {
@@ -157,6 +159,11 @@ public class Window {
 
         imGuiApp = ImGuiApp.get(window);
 
+
+        //2560x1600
+        frameBuffer = new FrameBuffer(2560, 1600);
+
+
         Window.changeScene(0);
     }
 
@@ -194,6 +201,7 @@ public class Window {
                 currentScene.update(deltaTime);
                 imGuiApp.update(deltaTime,currentScene);
             }
+            frameBuffer.unbind();
 
             glfwSwapBuffers(window); // swap the color buffers
         }

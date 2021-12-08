@@ -11,10 +11,31 @@ import static org.lwjgl.stb.STBImage.*;
 public class Texture {
 
     private String filepath;
-    private int textureId;
+    private transient int textureId;
 
     private int height;
     private int width;
+
+    // https://www.youtube.com/watch?v=lALvR4j6RCM&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=28
+    /*
+        Because we are creating a new constructor for the framebuffer that takes in a width and height
+        we need to have a default one that does nothing and will give an error if anyone tries to use it.
+     */
+    public Texture(){
+        textureId = -1;
+        width = -1;
+        height = -1;
+    }
+
+    // SHOULD ONLY USE FOR THE FRAMEBUFFER!
+    public Texture(int width, int height){
+        filepath = "Generated!";
+
+        textureId = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, textureId);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    }
 
     public void init(String filepath){
         this.filepath = filepath;
@@ -53,13 +74,11 @@ public class Texture {
             else{
                 System.err.println("Unknown number of channels !");
             }
+
+            stbi_image_free(image);
         } else {
             System.err.println("Could not load image !");
         }
-
-        stbi_image_free(image);
-
-
     }
 
     public int getHeight(){
@@ -81,4 +100,19 @@ public class Texture {
     public int getTextureId(){
         return this.textureId;
     }
+
+    public String getFilepath(){
+        return this.filepath;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Texture texture = (Texture) o;
+        return texture.getWidth() == this.width && texture.getHeight() == this.height &&
+                texture.getTextureId() == this.getTextureId() &&
+                texture.getFilepath().equals(this.filepath);
+    }
+
 }

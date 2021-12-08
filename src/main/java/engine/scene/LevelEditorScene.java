@@ -29,12 +29,12 @@ public class LevelEditorScene extends Scene {
         loadResources();
 
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
-        System.out.println(sprites.length());
         if(levelIsLoaded){
-            selectedEntity = entities.get(0);
+            if(entities.size() > 0){
+                selectedEntity = entities.get(0);
+            }
             return;
         }
-
 
         entity_1 = new Entity("Object_1",
                 new Transform(new Vector2f(100,100),
@@ -65,6 +65,16 @@ public class LevelEditorScene extends Scene {
                                  new SpriteSheet(AssetPool.getTexture("src/main/resources/textures/spritesheet.png"),
                                          16, 16, 26, 0));
 
+        for(Entity entity : entities){
+            if(entity.getComponent(SpriteRenderer.class) != null){
+                SpriteRenderer spriteRenderer = entity.getComponent(SpriteRenderer.class);
+                if(spriteRenderer.getTexture() != null){
+                    spriteRenderer.setTexture(
+                            AssetPool.getTexture(spriteRenderer.getTexture().getFilepath())
+                    );
+                }
+            }
+        }
     }
 
     @Override
@@ -101,6 +111,7 @@ public class LevelEditorScene extends Scene {
 
             if(ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)){
                 // TODO : Implement Drag & Drop
+                // I need mouse picking first ( ability to select entities )
             }
 
             float lastButtonX2 = ImGui.getItemRectMaxX();
