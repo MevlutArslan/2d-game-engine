@@ -22,7 +22,7 @@ public class Camera {
 
     public void adjustProjection(){
         this.projectionMatrix.identity();
-        this.projectionMatrix.ortho(0, Constants.gridSize * 60,0.0f , Constants.gridSize * 34, 0.0f,  50.0f );
+        this.projectionMatrix.ortho(0, Constants.GRID_SIZE * Constants.GRID_WIDTH,0.0f , Constants.GRID_SIZE * Constants.GRID_HEIGHT, 0.0f,  50.0f );
         this.projectionMatrix.invert(this.inverseProjectionMatrix);
     }
 

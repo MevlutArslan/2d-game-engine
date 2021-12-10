@@ -2,6 +2,7 @@ package engine;
 
 import engine.input.KeyListener;
 import engine.input.MouseListener;
+import engine.rendering.DebugDraw;
 import engine.rendering.FrameBuffer;
 import engine.scene.LevelEditorScene;
 import engine.scene.LevelScene;
@@ -184,6 +185,8 @@ public class Window {
             // invoked during this call.
             glfwPollEvents();
 
+            DebugDraw.beginFrame();
+
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -193,11 +196,13 @@ public class Window {
             beginTime = endTime;
             lag += deltaTime;
 
+
             while(lag >= FIXED_TIME_STEP){
                 lag -= FIXED_TIME_STEP;
             }
 
             if(deltaTime >= 0){
+                DebugDraw.draw();
                 currentScene.update(deltaTime);
                 imGuiApp.update(deltaTime,currentScene);
             }

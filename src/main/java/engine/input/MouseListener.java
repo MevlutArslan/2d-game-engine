@@ -45,11 +45,6 @@ public class MouseListener {
         float currentX = getX();
         currentX = (currentX / (float) Window.getWidth()) * 2.0f - 1.0f;
 
-//        Does not work due to the inplace modification done by mul() method
-//        Matrix4f inverseMat = Window.getScene().getCamera().getInverseProjectionMatrix().mul(
-//                Window.getScene().getCamera().getInverseViewMatrix()
-//        );
-
         Vector4f vector = new Vector4f(currentX, 0, 0, 1);
         vector.mul(Window.getScene().getCamera().getInverseProjectionMatrix()).mul(Window.getScene().getCamera().getInverseViewMatrix());
         currentX = vector.x;
@@ -60,7 +55,7 @@ public class MouseListener {
     // I don't need to modify the above method as described by the answer on stack overflow as
     // I dont want to invert it and am working in 2D space not 3D
     public static float getWorldCoordsY() {
-        float currentY = getY();
+        float currentY = Window.getHeight() - getY();
         currentY = (currentY / (float) Window.getHeight()) * 2.0f - 1.0f;
 
         Vector4f vector = new Vector4f(0, currentY, 0, 1);

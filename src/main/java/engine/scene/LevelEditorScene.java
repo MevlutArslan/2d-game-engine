@@ -5,19 +5,27 @@ import engine.Entity;
 import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.camera.Camera;
+import engine.input.MouseControl;
 import engine.input.MouseListener;
+import engine.rendering.DebugDraw;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
+import engine.ui.Grid2d;
 import engine.utility.AssetPool;
+import engine.utility.EntityGenerator;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
 import imgui.ImVec2;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class LevelEditorScene extends Scene {
 
     private Entity entity_1;
     private SpriteSheet sprites;
+
+    private MouseControl mouseControl = new MouseControl();
+    private Grid2d grid = new Grid2d();
 
     public LevelEditorScene() {
 
@@ -35,24 +43,6 @@ public class LevelEditorScene extends Scene {
             }
             return;
         }
-
-        entity_1 = new Entity("Object_1",
-                new Transform(new Vector2f(100,100),
-                              new Vector2f(256,256)), 3);
-        entity_1.addComponent(new SpriteRenderer());
-        entity_1.addComponent(new VariableConnectionTestClass());
-        entity_1.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(0));
-        this.addEntityToScene(entity_1);
-        this.selectedEntity = entity_1;
-
-        Entity entity_2 = new Entity("Object_2",
-                new Transform(new Vector2f(400,100),
-                        new Vector2f(256,256)), -1);
-        entity_2.addComponent(
-                new SpriteRenderer());
-        entity_2.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(1));
-
-        this.addEntityToScene(entity_2);
     }
 
     public void loadResources(){
@@ -76,9 +66,11 @@ public class LevelEditorScene extends Scene {
             }
         }
     }
-
     @Override
     public void update(float deltaTime) {
+        mouseControl.update(deltaTime);
+
+        grid.update(deltaTime);
         for(Entity entity : this.entities){
             entity.update(deltaTime);
         }
@@ -111,7 +103,8 @@ public class LevelEditorScene extends Scene {
 
             if(ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)){
                 // TODO : Implement Drag & Drop
-                // I need mouse picking first ( ability to select entities )
+                Entity entity = EntityGenerator.generate(sprite, spriteWidth, spriteHeight);
+                mouseControl.pickUpEntity(entity);
             }
 
             float lastButtonX2 = ImGui.getItemRectMaxX();

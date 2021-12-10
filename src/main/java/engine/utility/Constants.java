@@ -1,17 +1,10 @@
 package engine.utility;
 
 public class Constants {
-    private static Constants instance = null;
+    public static final int GRID_SIZE = 32;
 
-    public static final float gridSize = 32.0f;
+    public static final float GRID_WIDTH = 40.0f;
+    public static final float GRID_HEIGHT = 21.0f;
 
-    private Constants(){}
 
-    public Constants get(){
-        if(Constants.instance == null){
-            Constants.instance = new Constants();
-        }
-
-        return Constants.instance;
-    }
 }
