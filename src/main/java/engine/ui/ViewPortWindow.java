@@ -1,9 +1,11 @@
 package engine.ui;
 
 import engine.Window;
+import engine.input.MouseListener;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
+import org.joml.Vector2f;
 
 public class ViewPortWindow{
 
@@ -15,8 +17,22 @@ public class ViewPortWindow{
 
         ImGui.setCursorPos(windowPos.x, windowPos.y);
 
+        ImVec2 topLeft = new ImVec2();
+        ImGui.getCursorScreenPos(topLeft);
+
+        topLeft.x -= ImGui.getScrollX();
+        topLeft.y -= ImGui.getScrollY();
+
+        // For making sure my 0,0 is topLeft
+//        ImVec2 bottomLeft = new ImVec2();
+//        bottomLeft.x = topLeft.x - ImGui.getScrollX();;
+//        bottomLeft.y -= topLeft.y - windowSize.y - ImGui.getScrollY();
+
         int textureId = Window.getFramebuffer().getTextureId();
         ImGui.image(textureId, windowSize.x, windowSize.y, 0, 1, 1, 0);
+
+        MouseListener.setViewPortPos(new Vector2f(topLeft.x, topLeft.y));
+        MouseListener.setViewPortSize(new Vector2f(windowSize.x, windowSize.y));
 
         ImGui.end();
     }

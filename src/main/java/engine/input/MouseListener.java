@@ -1,6 +1,8 @@
 package engine.input;
 
 import engine.Window;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
@@ -19,6 +21,9 @@ public class MouseListener {
 
     private boolean mouseButtonPressed[] = new boolean[3];
     private boolean isDragging;
+
+    private Vector2f viewPortPos = new Vector2f();
+    private Vector2f viewPortSize = new Vector2f();
 
     private MouseListener() {
         //Important to initialize values if we are using them
@@ -42,26 +47,36 @@ public class MouseListener {
 
     // https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
     public static float getWorldCoordsX() {
-        float currentX = getX();
-        currentX = (currentX / (float) Window.getWidth()) * 2.0f - 1.0f;
+        // subtracting the viewportPos.x from x gives us the start point for the viewport's accurate position
+        float currentX = getX() - get().viewPortPos.x;
+        currentX = (currentX / get().viewPortSize.x) * 2.0f - 1.0f;
+
+        Matrix4f viewProjection = new Matrix4f();
+        Window.getScene().getCamera().getInverseViewMatrix().mul(Window.getScene().getCamera().getInverseProjectionMatrix(),viewProjection);
 
         Vector4f vector = new Vector4f(currentX, 0, 0, 1);
-        vector.mul(Window.getScene().getCamera().getInverseProjectionMatrix()).mul(Window.getScene().getCamera().getInverseViewMatrix());
-        currentX = vector.x;
+        vector.mul(viewProjection);
 
+        currentX = vector.x;
+        System.out.println("Current X : " + currentX);
         return currentX;
     }
 
     // I don't need to modify the above method as described by the answer on stack overflow as
     // I dont want to invert it and am working in 2D space not 3D
     public static float getWorldCoordsY() {
-        float currentY = Window.getHeight() - getY();
-        currentY = (currentY / (float) Window.getHeight()) * 2.0f - 1.0f;
+        float currentY =  getY() - get().viewPortPos.y;
+        currentY = -((currentY / get().viewPortSize.y) * 2.0f - 1.0f);
+
+        Matrix4f viewProjection = new Matrix4f();
+        Window.getScene().getCamera().getInverseViewMatrix().mul(Window.getScene().getCamera().getInverseProjectionMatrix(), viewProjection);
 
         Vector4f vector = new Vector4f(0, currentY, 0, 1);
-        vector.mul(Window.getScene().getCamera().getInverseProjectionMatrix()).mul(Window.getScene().getCamera().getInverseViewMatrix());
+        vector.mul(viewProjection);
+
         currentY = vector.y;
 
+        System.out.println("Current Y : " + currentY);
         return currentY;
     }
 
@@ -140,4 +155,11 @@ public class MouseListener {
         }
     }
 
+    public static void setViewPortPos(Vector2f viewPortPos) {
+        get().viewPortPos.set(viewPortPos);
+    }
+
+    public static void setViewPortSize(Vector2f viewPortSize) {
+        get().viewPortSize.set(viewPortSize);
+    }
 }
