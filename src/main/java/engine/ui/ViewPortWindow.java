@@ -41,12 +41,12 @@ public class ViewPortWindow{
         windowSize.x -= ImGui.getScrollX();
         windowSize.y -= ImGui.getScrollY();
 
-        float aspectWidth = windowSize.y;
-        float aspectHeight = aspectWidth / (16/9);
+        float aspectWidth = windowSize.x;
+        float aspectHeight = aspectWidth / (16.0f/9.0f);
 
         if(aspectHeight > windowSize.y){
             aspectHeight = windowSize.y;
-            aspectWidth = aspectHeight * (16/9);
+            aspectWidth = aspectHeight * (16.0f/9.0f);
         }
 
         return new ImVec2(aspectWidth, aspectHeight);
