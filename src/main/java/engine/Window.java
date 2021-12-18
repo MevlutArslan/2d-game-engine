@@ -16,6 +16,8 @@ import org.lwjgl.opengl.GL;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glCheckFramebufferStatus;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /** Window setup according to https://www.lwjgl.org/guide **/
@@ -127,7 +129,7 @@ public class Window {
         glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
 
-        glfwSetWindowCloseCallback(window, handleWindowClose(window));
+//        glfwSetWindowCloseCallback(window, handleWindowClose(window));
         glfwSetWindowSizeCallback(window, (window, newWidth, newHeight) -> {
             Window.setWidth(newWidth);
             Window.setHeight(newHeight);
@@ -159,11 +161,8 @@ public class Window {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         imGuiApp = ImGuiApp.get(window);
-
-
-        //2560x1600
         frameBuffer = new FrameBuffer(2560, 1600);
-
+        glViewport(0,0, 2560, 1600);
 
         Window.changeScene(0);
     }
@@ -186,16 +185,15 @@ public class Window {
             glfwPollEvents();
 
             DebugDraw.beginFrame();
+            frameBuffer.bind();
 
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
-
 
             endTime = (float)glfwGetTime();
             deltaTime = endTime - beginTime;
             beginTime = endTime;
             lag += deltaTime;
-
 
             while(lag >= FIXED_TIME_STEP){
                 lag -= FIXED_TIME_STEP;
@@ -204,9 +202,10 @@ public class Window {
             if(deltaTime >= 0){
                 DebugDraw.draw();
                 currentScene.update(deltaTime);
-                imGuiApp.update(deltaTime,currentScene);
             }
             frameBuffer.unbind();
+
+            imGuiApp.update(deltaTime,currentScene);
 
             glfwSwapBuffers(window); // swap the color buffers
         }
@@ -235,8 +234,13 @@ public class Window {
     private static void setWidth(int newWidth) {
         get().width = newWidth;
     }
+
     private static void setHeight(int newHeight) {
         get().height = newHeight;
+    }
+
+    public static FrameBuffer getFramebuffer(){
+        return get().frameBuffer;
     }
 }
 

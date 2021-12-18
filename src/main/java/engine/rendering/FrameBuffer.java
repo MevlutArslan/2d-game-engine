@@ -1,5 +1,7 @@
 package engine.rendering;
 
+import java.util.Arrays;
+
 import static org.lwjgl.opengl.GL30.*;
 
 // https://learnopengl.com/Advanced-OpenGL/Framebuffers
@@ -11,10 +13,10 @@ public class FrameBuffer {
     public FrameBuffer(int width, int height){
         fboId = glGenFramebuffers();
         glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-//
+
         this.texture = new Texture(width, height);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                GL_TEXTURE_2D, texture.getTextureId(), 0);
+                GL_TEXTURE_2D, this.texture.getTextureId(), 0);
 
         int rboId = glGenRenderbuffers();
         glBindRenderbuffer(GL_RENDERBUFFER, rboId);
@@ -28,6 +30,7 @@ public class FrameBuffer {
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     }
 
     public void bind(){
@@ -36,5 +39,9 @@ public class FrameBuffer {
 
     public void unbind(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    public int getTextureId(){
+        return this.texture.getTextureId();
     }
 }

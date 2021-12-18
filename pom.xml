@@ -118,7 +118,7 @@
         <dependency>
             <groupId>io.github.spair</groupId>
             <artifactId>imgui-java-app</artifactId>
-            <version>1.84.1.4</version>
+            <version>1.85.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
