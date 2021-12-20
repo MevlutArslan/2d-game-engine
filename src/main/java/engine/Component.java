@@ -14,9 +14,28 @@ public abstract class Component {
 
     public transient Entity parent;
 
+    // We are giving Components IDs for the sole purpose of loading them in properly
+    private static long componentCounter = 0;
+    // Same reason as in the Entity class
+    private long componentId = -1;
+
     public abstract void start();
 
+    public static void init(long maxComponentCount) {
+        componentCounter = maxComponentCount;
+    }
+
     public abstract void update(float deltaTime);
+
+    public void generateComponentId(){
+        if(componentId == -1){
+            this.componentId = componentCounter++;
+        }
+    }
+
+    public long getComponentId(){
+        return this.componentId;
+    }
 
     public void imgui() {
         // I want every component to have their section of properties like in unity

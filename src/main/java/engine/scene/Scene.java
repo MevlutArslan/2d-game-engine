@@ -104,10 +104,33 @@ public abstract class Scene {
         }
 
         if(!loadedText.equals("")){
+            long maxEntityCount = -1;
+            long maxComponentCount = -1;
+
             Entity[] entities = gson.fromJson(loadedText, Entity[].class);
+            // IF FACING ANY PROBLEMS RELATED TO LOADING ENTITIES LOOK HERE
+            // Switching from a for-each loop to a regular for loop might be better
+            // need to read more about the difference
             for(Entity entity : entities){
                 addEntityToScene(entity);
+
+                for(Component component : entity.getAllComponents()){
+                    if(component.getComponentId() > maxComponentCount){
+                        maxComponentCount = component.getComponentId();
+                    }
+                }
+
+                if(entity.getEntityId() > maxEntityCount){
+                    maxEntityCount = entity.getEntityId();
+                }
             }
+
+            // https://www.youtube.com/watch?v=bRha19j-gB8&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=24
+            maxEntityCount++;
+            maxComponentCount++;
+
+            Entity.init(maxEntityCount);
+            Component.init(maxComponentCount);
             this.levelIsLoaded = true;
         }
 

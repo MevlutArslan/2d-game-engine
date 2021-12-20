@@ -15,6 +15,7 @@ public class EntityGsonAdapter implements JsonDeserializer<Entity> {
         String name = jsonObject.get("name").getAsString();
         Transform transform = jsonDeserializationContext.deserialize(jsonObject.get("transform"), Transform.class);
         JsonArray components = jsonObject.getAsJsonArray("components");
+//        long entityId = jsonObject.get("entityId").getAsLong();
         int zIndex = jsonDeserializationContext.deserialize(jsonObject.get("zIndex"), int.class);
 
         Entity entity = new Entity(name, transform, zIndex);

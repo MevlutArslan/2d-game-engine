@@ -4,6 +4,7 @@ import components.Transform;
 import imgui.ImGui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Entity {
 
@@ -15,6 +16,14 @@ public class Entity {
     // TODO : Turn every zIndex into ENUMS instead of using Integers
     // Like -> BACKGROUND_LAYER, PLAYABLE_LEVEL, EFFECTS...
     private int zIndex;
+
+    // We need to seperate the entityCounter from the entityId
+    // as when serializing & deserializing it will overlap and restart the counter if we keep it
+    // all in a static variable
+    private static long entityCounter = 0;
+    // set to -1 to specify this id has not been set
+    // to make sure we don't have duplicate components
+    private long entityId = -1;
 
     public Entity(String name){
         this.name = name;
@@ -28,6 +37,13 @@ public class Entity {
         this.components = new ArrayList<>();
         this.transform = transform;
         this.zIndex = zIndex;
+
+        // IF ANY PROBLEMS RELATED TO IDS CHECK HERE FIRST
+        this.entityId = entityCounter++;
+    }
+
+    public static void init(long maxEntityCount){
+        entityCounter = maxEntityCount;
     }
 
     public void start(){
@@ -63,6 +79,9 @@ public class Entity {
     }
 
     public void addComponent(Component component){
+        // if the component already has an id it wont generate a new one
+        // which means it has been loaded in
+        component.generateComponentId();
         this.components.add(component);
         component.parent = this;
     }
@@ -79,5 +98,13 @@ public class Entity {
                 }
             }
         }
+    }
+
+    public long getEntityId(){
+        return this.entityId;
+    }
+
+    public List<Component> getAllComponents() {
+        return this.components;
     }
 }
