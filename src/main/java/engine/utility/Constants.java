@@ -6,5 +6,7 @@ public class Constants {
     public static final float GRID_WIDTH = 40.0f;
     public static final float GRID_HEIGHT = 21.0f;
 
+    public static final int MONITOR_WIDTH = 2560;
+    public static final int MONITOR_HEIGHT = 1600;
 
 }

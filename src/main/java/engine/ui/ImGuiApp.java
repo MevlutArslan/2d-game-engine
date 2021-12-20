@@ -30,7 +30,6 @@ public class ImGuiApp {
 
     private static ImGuiApp instance = null;
 
-
     private ImGuiContext context;
 
     public void init() {
