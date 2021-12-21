@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public abstract class Scene {
 
@@ -60,11 +61,12 @@ public abstract class Scene {
             entities.add(entity);
             entity.start();
             this.renderer.add(entity);
-            System.out.println("here");
         }
     }
 
     public abstract void update(float deltaTime);
+
+    public abstract void render();
 
     public Camera getCamera(){
         return this.camera;
@@ -134,5 +136,14 @@ public abstract class Scene {
             this.levelIsLoaded = true;
         }
 
+    }
+
+    public void selectEntity(Entity entity){
+        this.selectedEntity = entity;
+    }
+
+    public Entity getEntityById(long id){
+        Optional<Entity> entity = entities.stream().filter(ent -> ent.getEntityId() == id).findAny();
+        return entity.orElse(null);
     }
 }

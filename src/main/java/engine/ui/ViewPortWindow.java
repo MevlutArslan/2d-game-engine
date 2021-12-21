@@ -9,6 +9,8 @@ import org.joml.Vector2f;
 
 public class ViewPortWindow{
 
+    private static float leftX, rightX, topY, bottomY;
+
     public static void imgui(){
         ImGui.begin("ViewPort", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
@@ -28,6 +30,11 @@ public class ViewPortWindow{
 //        bottomLeft.x = topLeft.x - ImGui.getScrollX();;
 //        bottomLeft.y -= topLeft.y - windowSize.y - ImGui.getScrollY();
 
+        leftX = topLeft.x;
+        bottomY = topLeft.y;
+        rightX = topLeft.x + windowSize.x;
+        topY = topLeft.y + windowSize.y;
+
         int textureId = Window.getFramebuffer().getTextureId();
         ImGui.image(textureId, windowSize.x, windowSize.y, 0, 1, 1, 0);
 
@@ -35,6 +42,11 @@ public class ViewPortWindow{
         MouseListener.setViewPortSize(new Vector2f(windowSize.x, windowSize.y));
 
         ImGui.end();
+    }
+
+    public static boolean getWantCaptureMouse() {
+        return MouseListener.getX() >= leftX && MouseListener.getX() <= rightX &&
+                MouseListener.getY() >= bottomY && MouseListener.getY() <= topY;
     }
 
     private static ImVec2 getWindowCenterPosition(ImVec2 aspectSize){

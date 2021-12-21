@@ -173,7 +173,8 @@ public class Window {
                 int x = (int)MouseListener.getScreenX();
                 int y = (int)MouseListener.getScreenY();
 
-                System.out.println(pickingTexture.readPixel(x, y));
+                currentScene.selectEntity(currentScene.getEntityById(pickingTexture.readPixel(x,y)));
+                System.out.println(currentScene.getEntityById(pickingTexture.readPixel(x,y)));
             }
 
             disableMousePicking();

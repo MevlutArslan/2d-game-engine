@@ -96,7 +96,10 @@ public class LevelEditorScene extends Scene {
         for (Entity entity : this.entities) {
             entity.update(deltaTime);
         }
+    }
 
+    @Override
+    public void render(){
         this.renderer.render();
     }
 
@@ -124,7 +127,6 @@ public class LevelEditorScene extends Scene {
             Vector2f[] texCoords = sprite.getTextureCoords();
 
             if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
-                // TODO : Implement Drag & Drop
                 Entity entity = EntityGenerator.generate(sprite, spriteWidth, spriteHeight);
                 mouseControl.pickUpEntity(entity);
             }

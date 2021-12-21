@@ -75,7 +75,7 @@ public class PickingTexture {
         glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
-        return (int)pixels[0];
+        return (int)(pixels[0] - 1);
     }
 
 

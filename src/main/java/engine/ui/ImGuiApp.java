@@ -38,6 +38,28 @@ public class ImGuiApp {
 
         io.setIniFilename("imgui.ini");
         io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
+
+
+        glfwSetMouseButtonCallback(window, (w, button, action, mods) -> {
+            final boolean[] mouseDown = new boolean[5];
+
+            mouseDown[0] = button == GLFW_MOUSE_BUTTON_1 && action != GLFW_RELEASE;
+            mouseDown[1] = button == GLFW_MOUSE_BUTTON_2 && action != GLFW_RELEASE;
+            mouseDown[2] = button == GLFW_MOUSE_BUTTON_3 && action != GLFW_RELEASE;
+            mouseDown[3] = button == GLFW_MOUSE_BUTTON_4 && action != GLFW_RELEASE;
+            mouseDown[4] = button == GLFW_MOUSE_BUTTON_5 && action != GLFW_RELEASE;
+
+            io.setMouseDown(mouseDown);
+
+            if (!io.getWantCaptureMouse() && mouseDown[1]) {
+                ImGui.setWindowFocus(null);
+            }
+
+            if (!io.getWantCaptureMouse() || ViewPortWindow.getWantCaptureMouse()) {
+                MouseListener.mouseButtonCallback(w, button, action, mods);
+            }
+        });
+
         // Setup Platform/Renderer bindings
         imGuiImplGlfw.init(window, true);
         imGuiImplGl3.init("#version 330");
@@ -63,7 +85,6 @@ public class ImGuiApp {
         enableDocking();
         ViewPortWindow.imgui();
         currentScene.imguiScene();
-
         ImGui.end();
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());

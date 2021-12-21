@@ -12,6 +12,8 @@ public class Renderer {
     private final int MAX_BATCH_SIZE = 1000;
     private List<RenderBatch> batches;
 
+    private static Shader currentShader = null;
+
     public Renderer(){
         this.batches = new ArrayList<>();
     }
@@ -47,8 +49,17 @@ public class Renderer {
     }
 
     public void render(){
+        currentShader.bind();
         for(RenderBatch renderBatch : batches){
             renderBatch.render();
         }
+    }
+
+    public static Shader getCurrentShader(){
+        return currentShader;
+    }
+
+    public static void bindShader(Shader shader){
+        currentShader = shader;
     }
 }

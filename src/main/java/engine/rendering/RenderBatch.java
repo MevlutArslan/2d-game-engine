@@ -23,14 +23,16 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private final int COLOR_SIZE = 4;
     private final int TEXTURE_COORDS_SIZE = 2;
     private final int TEXTURE_ID_SIZE = 1;
+    private final int ENTITY_ID_SIZE = 1;
 
     // offsets are in bytes
     private final int POSITION_OFFSET = 0;
     private final int COLOR_OFFSET = POSITION_OFFSET + POSITION_SIZE * Float.BYTES;
     private final int TEXTURE_COORDS_OFFSET = COLOR_OFFSET + COLOR_SIZE * Float.BYTES;
     private final int TEXTURE_ID_OFFSET = TEXTURE_COORDS_OFFSET + TEXTURE_COORDS_SIZE * Float.BYTES;
+    private final int ENTITY_ID_OFFSET = TEXTURE_ID_OFFSET + TEXTURE_ID_SIZE * Float.BYTES;
 
-    private final int VERTEX_SIZE = 9;
+    private final int VERTEX_SIZE = 10;
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
     private SpriteRenderer[] sprites;
@@ -42,7 +44,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private int vboId;
 
     private int maxBatchSize;
-    private Shader shader;
+
 
     private int zIndex;
 
@@ -55,12 +57,6 @@ public class RenderBatch implements Comparable<RenderBatch> {
     public RenderBatch(int maxBatchSize, int zIndex){
         this.zIndex = zIndex;
         this.maxBatchSize = maxBatchSize;
-        this.shader =
-                AssetPool.getShader(
-                new String[]{
-                "src/main/resources/basicShader.vertex",
-                "src/main/resources/basicShader.fragment"
-        });
 
         this.sprites = new SpriteRenderer[this.maxBatchSize];
 
@@ -103,6 +99,8 @@ public class RenderBatch implements Comparable<RenderBatch> {
         glVertexAttribPointer(3, TEXTURE_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE_BYTES, TEXTURE_ID_OFFSET);
         glEnableVertexAttribArray(3);
 
+        glVertexAttribPointer(4, ENTITY_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE_BYTES, ENTITY_ID_OFFSET);
+        glEnableVertexAttribArray(4);
 
     }
 
@@ -122,6 +120,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
             // I will buffer some data into vbo, the vertices starting from 0..
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
         }
+        Shader shader = Renderer.getCurrentShader();
         shader.bind();
         shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
 
@@ -206,6 +205,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
             // load textureId
             vertices[offset+8] = texId;
+
+            // load entity id
+            vertices[offset+9] = sprite.parent.getEntityId() + 1;
 
             offset += VERTEX_SIZE;
         }

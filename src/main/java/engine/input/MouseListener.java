@@ -80,6 +80,19 @@ public class MouseListener {
         return currentY;
     }
 
+    public static float getScreenX(){
+        float currentX = getX() - get().viewPortPos.x;
+        currentX = (currentX / get().viewPortSize.x) * 2560;
+        return currentX;
+    }
+
+    public static float getScreenY(){
+        float currentY =  getY() - get().viewPortPos.y;
+        currentY = 1600 -((currentY / get().viewPortSize.y) * 1600);
+        return currentY;
+    }
+
+
     public static void mouseCursorPositionCallback(long window, double xPos, double yPos) {
         get().lastX = get().xPos;
         get().lastY = get().yPos;
