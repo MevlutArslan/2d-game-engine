@@ -2,6 +2,7 @@ package engine.ui;
 
 import engine.Component;
 import engine.Window;
+import engine.camera.Camera;
 import engine.rendering.DebugDraw;
 import engine.utility.Constants;
 import org.joml.Vector2f;
@@ -15,20 +16,22 @@ public class Grid2d extends Component {
 
     @Override
     public void update(float deltaTime) {
-        Vector2f cameraPos = Window.getScene().getCamera().cameraPosition;
+        Camera camera = Window.getScene().getCamera();
+        Vector2f cameraPos = camera.cameraPosition;
         // I put it in a vector to stop the warnining IntelliJ gave
-        Vector2f projectionSize = new Vector2f(Constants.GRID_WIDTH * Constants.GRID_SIZE, Constants.GRID_HEIGHT * Constants.GRID_SIZE);
+        // Changed from a fresh vector to camera's projectionSize because of the adjustment we do when we zoom
+        Vector2f projectionSize = camera.getProjectionSize();
 
         // grid's starting point => (x,y) / grid's size
         // -1 is necessary because it starts from right side. -1 offsets it to the left side of the first box
         int firstX = ((int) (cameraPos.x / Constants.GRID_SIZE) - 1) * Constants.GRID_SIZE;
         int firstY = ((int) (cameraPos.y / Constants.GRID_SIZE) - 1) * Constants.GRID_SIZE;
 
-        int numVtLines = (int) (projectionSize.x / Constants.GRID_SIZE) + 2;
-        int numHzLines = (int) (projectionSize.y / Constants.GRID_SIZE) + 2;
+        int numVtLines = (int) (projectionSize.x * camera.getZoomLevel()/ Constants.GRID_SIZE) + 2;
+        int numHzLines = (int) (projectionSize.y * camera.getZoomLevel()/ Constants.GRID_SIZE) + 2;
 
-        int height = (int) (projectionSize.y + Constants.GRID_SIZE * 2);
-        int width = (int) (projectionSize.x + Constants.GRID_SIZE * 2);
+        int height = (int) ((projectionSize.y * camera.getZoomLevel()) + Constants.GRID_SIZE * 2);
+        int width = (int) ((projectionSize.x * camera.getZoomLevel()) + Constants.GRID_SIZE * 2);
 
         int maxLines = Math.max(numVtLines, numHzLines);
 

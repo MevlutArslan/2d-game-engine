@@ -39,6 +39,13 @@ public class ImGuiApp {
         io.setIniFilename("imgui.ini");
         io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
 
+        glfwSetScrollCallback(window, (w, xOffset, yOffset) -> {
+            io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
+            io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
+
+            MouseListener.mouseScrollCallback(window, xOffset, yOffset);
+        });
+
 
         glfwSetMouseButtonCallback(window, (w, button, action, mods) -> {
             final boolean[] mouseDown = new boolean[5];

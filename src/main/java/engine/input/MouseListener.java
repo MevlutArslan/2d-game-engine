@@ -58,7 +58,6 @@ public class MouseListener {
         vector.mul(viewProjection);
 
         currentX = vector.x;
-        System.out.println("Current X : " + currentX);
         return currentX;
     }
 
@@ -76,7 +75,6 @@ public class MouseListener {
 
         currentY = vector.y;
 
-        System.out.println("Current Y : " + currentY);
         return currentY;
     }
 

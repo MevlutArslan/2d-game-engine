@@ -40,4 +40,8 @@ public class MouseControl extends Component {
             }
         }
     }
+
+    public boolean hasSelectedEntity(){
+        return this.selectedEntity != null;
+    }
 }

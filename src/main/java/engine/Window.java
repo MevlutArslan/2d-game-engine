@@ -195,9 +195,9 @@ public class Window {
                 DebugDraw.draw();
                 currentScene.update(deltaTime);
 
+                Renderer.bindShader(defaultShader);
+                currentScene.render();
                 while (lag >= FIXED_TIME_STEP) {
-                    Renderer.bindShader(defaultShader);
-                    currentScene.render();
 
                     lag -= FIXED_TIME_STEP;
                 }
@@ -208,6 +208,8 @@ public class Window {
             imGuiApp.update(deltaTime, currentScene);
 
             glfwSwapBuffers(window); // swap the color buffers
+
+            MouseListener.endFrame();
         }
 
         currentScene.save();

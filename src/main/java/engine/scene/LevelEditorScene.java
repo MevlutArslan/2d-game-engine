@@ -5,6 +5,7 @@ import engine.Entity;
 import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.camera.Camera;
+import engine.camera.LevelEditorCameraController;
 import engine.input.KeyListener;
 import engine.input.MouseControl;
 import engine.input.MouseListener;
@@ -12,6 +13,7 @@ import engine.rendering.DebugDraw;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
+import engine.ui.ViewPortWindow;
 import engine.utility.AssetPool;
 import engine.utility.EntityGenerator;
 import imgui.ImGui;
@@ -24,11 +26,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class LevelEditorScene extends Scene {
 
-    private Entity entity_1;
+    private final Entity editorEntity = new Entity("Editor Entity");
     private SpriteSheet sprites;
-
-    private MouseControl mouseControl = new MouseControl();
-    private Grid2d grid = new Grid2d();
 
     public LevelEditorScene() {
 
@@ -37,6 +36,11 @@ public class LevelEditorScene extends Scene {
     @Override
     public void init() {
         this.camera = new Camera(new Vector2f(-250, 0));
+
+        editorEntity.addComponent(new MouseControl());
+        editorEntity.addComponent(new Grid2d());
+        editorEntity.addComponent(new LevelEditorCameraController());
+
         loadResources();
 
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
@@ -75,7 +79,8 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void update(float deltaTime) {
-        mouseControl.update(deltaTime);
+        camera.adjustProjection();
+        editorEntity.update(deltaTime);
 
         if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
             pos.y++;
@@ -89,17 +94,25 @@ public class LevelEditorScene extends Scene {
             angle--;
         }
 
-        DebugDraw.drawSquare(pos, new Vector2f(64, 32), angle, new Vector3f(0, 0, 1), 1);
-        DebugDraw.drawCircle(pos, 5f, new Vector3f(0,0,1),1);
+        DebugDraw.drawSquare(pos, new
 
-        grid.update(deltaTime);
-        for (Entity entity : this.entities) {
+                Vector2f(64, 32), angle, new
+
+                Vector3f(0, 0, 1), 1);
+        DebugDraw.drawCircle(pos, 5f, new
+
+                Vector3f(0, 0, 1), 1);
+
+
+        for (
+                Entity entity : this.entities) {
             entity.update(deltaTime);
         }
+
     }
 
     @Override
-    public void render(){
+    public void render() {
         this.renderer.render();
     }
 
@@ -128,7 +141,7 @@ public class LevelEditorScene extends Scene {
 
             if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
                 Entity entity = EntityGenerator.generate(sprite, spriteWidth, spriteHeight);
-                mouseControl.pickUpEntity(entity);
+                editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
             }
 
             float lastButtonX2 = ImGui.getItemRectMaxX();
