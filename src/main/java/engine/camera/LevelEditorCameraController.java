@@ -33,11 +33,9 @@ public class LevelEditorCameraController extends Component {
             return;
         }
         // need to move the camera to the opposing direction at an increasing speed over deltaTime
-        // need to change Left Mouse Button to something else, it triggers mousePicking.
         if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE) && dragThreshold > 0) {
             originalCameraPosition = new Vector2f(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
             dragThreshold -= deltaTime;
-
         } else if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE)) {
             Vector2f targetCameraPosition = new Vector2f();
             targetCameraPosition.x = MouseListener.getWorldCoordsX();
@@ -46,6 +44,19 @@ public class LevelEditorCameraController extends Component {
             Vector2f distanceBetween = new Vector2f(targetCameraPosition).sub(originalCameraPosition);
             camera.cameraPosition.sub(distanceBetween.mul(deltaTime).mul(cameraSensitivity));
             originalCameraPosition.lerp(targetCameraPosition, deltaTime);
+        }
+
+        if(KeyListener.isKeyPressed(GLFW_KEY_RIGHT)){
+            camera.cameraPosition.add(2*cameraSensitivity,0);
+        }
+        else if(KeyListener.isKeyPressed(GLFW_KEY_LEFT)){
+            camera.cameraPosition.sub(2*cameraSensitivity, 0);
+        }
+        if(KeyListener.isKeyPressed(GLFW_KEY_UP)){
+            camera.cameraPosition.add(0,2*cameraSensitivity);
+        }
+        else if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)){
+            camera.cameraPosition.sub(0,2*cameraSensitivity);
         }
 
         if (dragThreshold <= 0.0f && !MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE)) {
