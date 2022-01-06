@@ -3,6 +3,7 @@ package engine.ui;
 import engine.Window;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
+import engine.scene.LevelEditorScene;
 import engine.scene.Scene;
 import imgui.*;
 import imgui.callback.ImStrConsumer;

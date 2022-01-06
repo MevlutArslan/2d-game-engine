@@ -7,6 +7,8 @@ public class Transform {
     public Vector2f position;
     public Vector2f scale;
 
+    public float rotation = 0;
+
     public Transform(){
         this.position = new Vector2f();
         this.scale = new Vector2f();

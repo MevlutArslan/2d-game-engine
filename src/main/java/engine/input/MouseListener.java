@@ -18,9 +18,15 @@ public class MouseListener {
     private double yPos;
     private double lastX;
     private double lastY;
+    private double worldX;
+    private double worldY;
+    private double lastWorldX;
+    private double lastWorldY;
 
     private boolean mouseButtonPressed[] = new boolean[3];
     private boolean isDragging;
+
+    private int mouseButtonsDown = 0;
 
     private Vector2f viewPortPos = new Vector2f();
     private Vector2f viewPortSize = new Vector2f();
@@ -47,6 +53,10 @@ public class MouseListener {
 
     // https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
     public static float getWorldCoordsX() {
+        return (float) get().worldX;
+    }
+
+    private static void calcWorldCoordsX(){
         // subtracting the viewportPos.x from x gives us the start point for the viewport's accurate position
         float currentX = getX() - get().viewPortPos.x;
         currentX = (currentX / get().viewPortSize.x) * 2.0f - 1.0f;
@@ -57,13 +67,16 @@ public class MouseListener {
         Vector4f vector = new Vector4f(currentX, 0, 0, 1);
         vector.mul(viewProjection);
 
-        currentX = vector.x;
-        return currentX;
+        get().worldX = vector.x;
     }
 
     // I don't need to modify the above method as described by the answer on stack overflow as
     // I dont want to invert it and am working in 2D space not 3D
     public static float getWorldCoordsY() {
+        return (float) get().worldY;
+    }
+
+    private static void calcWorldCoordsY(){
         float currentY =  getY() - get().viewPortPos.y;
         currentY = -((currentY / get().viewPortSize.y) * 2.0f - 1.0f);
 
@@ -73,9 +86,7 @@ public class MouseListener {
         Vector4f vector = new Vector4f(0, currentY, 0, 1);
         vector.mul(viewProjection);
 
-        currentY = vector.y;
-
-        return currentY;
+        get().worldY = vector.y;
     }
 
     public static float getScreenX(){
@@ -92,13 +103,19 @@ public class MouseListener {
 
 
     public static void mouseCursorPositionCallback(long window, double xPos, double yPos) {
+        if(get().mouseButtonsDown > 0){
+            get().isDragging = true;
+        }
         get().lastX = get().xPos;
         get().lastY = get().yPos;
+        get().lastWorldX = get().worldX;
+        get().lastWorldY = get().worldY;
         get().xPos = xPos;
         get().yPos = yPos;
+        calcWorldCoordsX();
+        calcWorldCoordsY();
 
-        // if the mouse is moving and any of the mouse buttons are down than it is dragging.
-        get().isDragging = get().mouseButtonPressed[0] || get().mouseButtonPressed[1] || get().mouseButtonPressed[2];
+
     }
 
     /**
@@ -106,10 +123,12 @@ public class MouseListener {
      **/
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
         if (action == GLFW_PRESS) {
+            get().mouseButtonsDown++;
             if (button < get().mouseButtonPressed.length) {
                 get().mouseButtonPressed[button] = true;
             }
         } else if (action == GLFW_RELEASE) {
+            get().mouseButtonsDown--;
             if (button < get().mouseButtonPressed.length) {
                 get().mouseButtonPressed[button] = false;
                 get().isDragging = false;
@@ -128,6 +147,9 @@ public class MouseListener {
 
         get().lastX = get().xPos;
         get().lastY = get().yPos;
+
+        get().lastWorldX = get().worldX;
+        get().lastWorldY = get().worldY;
     }
 
     public static float getX() {
@@ -156,6 +178,14 @@ public class MouseListener {
 
     public static boolean isDragging() {
         return get().isDragging;
+    }
+
+    public static float getWorldDx(){
+        return (float) (get().lastWorldX - get().worldX);
+    }
+
+    public static float getWorldDy(){
+        return (float) (get().lastWorldY - get().worldY);
     }
 
     public static boolean mouseButtonDown(int buttonKey) {

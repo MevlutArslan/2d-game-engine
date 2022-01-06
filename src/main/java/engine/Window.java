@@ -1,5 +1,6 @@
 package engine;
 
+import components.NonPickable;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
 import engine.rendering.*;
@@ -49,6 +50,8 @@ public class Window {
 
     private Shader defaultShader;
     private Shader pickingShader;
+
+    private float debounce = 0.2f;
 
     // Methods
     private Window() {
@@ -169,12 +172,18 @@ public class Window {
             // Rendering the Mouse Picking Buffer
             drawMousePickingBuffer();
 
-            if(MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)){
+
+            if(MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && debounce < 0){
                 int x = (int)MouseListener.getScreenX();
                 int y = (int)MouseListener.getScreenY();
+                Entity pickedEntity = currentScene.getEntityById(pickingTexture.readPixel(x,y));
+                if(pickedEntity != null && pickedEntity.getComponent(NonPickable.class) == null){
+                    currentScene.selectEntity(pickedEntity);
+                }else if (pickedEntity != null && MouseListener.isDragging()){
+                    currentScene.selectEntity(null);
+                }
 
-                currentScene.selectEntity(currentScene.getEntityById(pickingTexture.readPixel(x,y)));
-                System.out.println(currentScene.getEntityById(pickingTexture.readPixel(x,y)));
+                this.debounce = 0.2f;
             }
 
             disableMousePicking();
@@ -206,6 +215,8 @@ public class Window {
             frameBuffer.unbind();
 
             imGuiApp.update(deltaTime, currentScene);
+
+            debounce -= deltaTime;
 
             glfwSwapBuffers(window); // swap the color buffers
 

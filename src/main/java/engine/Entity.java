@@ -25,6 +25,8 @@ public class Entity {
     // to make sure we don't have duplicate components
     private long entityId = -1;
 
+    private boolean shouldSerialize = true;
+
     public Entity(String name){
         this.name = name;
         this.components = new ArrayList<>();
@@ -47,14 +49,14 @@ public class Entity {
     }
 
     public void start(){
-        for(Component component : components){
-            component.start();
+        for(int i = 0; i < components.size(); i++){
+            components.get(i).start();
         }
     }
 
     public void update(float deltaTime){
-        for(Component component : components){
-            component.update(deltaTime);
+        for(int i = 0; i < components.size(); i++){
+            components.get(i).update(deltaTime);
         }
     }
 
@@ -106,5 +108,13 @@ public class Entity {
 
     public List<Component> getAllComponents() {
         return this.components;
+    }
+
+    public void setNoSerialize(){
+        this.shouldSerialize = false;
+    }
+
+    public boolean getShouldSerialize() {
+        return this.shouldSerialize;
     }
 }

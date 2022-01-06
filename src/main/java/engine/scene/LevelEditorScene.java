@@ -1,19 +1,18 @@
 package engine.scene;
 
-import components.VariableConnectionTestClass;
 import engine.Entity;
-import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.camera.Camera;
 import engine.camera.LevelEditorCameraController;
 import engine.input.KeyListener;
 import engine.input.MouseControl;
-import engine.input.MouseListener;
 import engine.rendering.DebugDraw;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
-import engine.ui.ViewPortWindow;
+import engine.ui.gizmos.GizmoManager;
+import engine.ui.gizmos.ScaleGizmo;
+import engine.ui.gizmos.TranslateGizmo;
 import engine.utility.AssetPool;
 import engine.utility.EntityGenerator;
 import imgui.ImGui;
@@ -28,6 +27,7 @@ public class LevelEditorScene extends Scene {
 
     private final Entity editorEntity = new Entity("Editor Entity");
     private SpriteSheet sprites;
+    private SpriteSheet gizmos;
 
     public LevelEditorScene() {
 
@@ -37,13 +37,16 @@ public class LevelEditorScene extends Scene {
     public void init() {
         this.camera = new Camera(new Vector2f(-250, 0));
 
+        loadResources();
+        sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
+        gizmos = AssetPool.getSpriteSheet("src/main/resources/textures/gizmos.png");
+
         editorEntity.addComponent(new MouseControl());
         editorEntity.addComponent(new Grid2d());
         editorEntity.addComponent(new LevelEditorCameraController());
+        editorEntity.addComponent(new GizmoManager(gizmos));
+        editorEntity.start();
 
-        loadResources();
-
-        sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
         if (levelIsLoaded) {
             if (entities.size() > 0) {
                 selectedEntity = entities.get(0);
@@ -72,6 +75,11 @@ public class LevelEditorScene extends Scene {
                 }
             }
         }
+
+        AssetPool.addSpriteSheet("src/main/resources/textures/gizmos.png", new SpriteSheet(
+                AssetPool.getTexture("src/main/resources/textures/gizmos.png"),
+                24, 48, 3, 0)
+        );
     }
 
     int angle = 0;
@@ -82,18 +90,6 @@ public class LevelEditorScene extends Scene {
         camera.adjustProjection();
         editorEntity.update(deltaTime);
 
-        if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-            pos.y++;
-        } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-            pos.y--;
-        }
-        if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
-            angle++;
-        }
-        if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
-            angle--;
-        }
-
         DebugDraw.drawSquare(pos, new
 
                 Vector2f(64, 32), angle, new
@@ -102,7 +98,6 @@ public class LevelEditorScene extends Scene {
         DebugDraw.drawCircle(pos, 5f, new
 
                 Vector3f(0, 0, 1), 1);
-
 
         for (
                 Entity entity : this.entities) {
@@ -120,6 +115,9 @@ public class LevelEditorScene extends Scene {
     //https://github.com/ocornut/imgui/issues/1977
     @Override
     public void imgui() {
+        ImGui.begin("Level Editor properties");
+        editorEntity.imgui();
+        ImGui.end();
         ImGui.begin("Assets");
 
         ImVec2 buttonSize = new ImVec2();
@@ -149,7 +147,6 @@ public class LevelEditorScene extends Scene {
 
             if (i + 1 < numberOfButtons && nextButtonX2 < windowVisibleX2) {
                 ImGui.sameLine();
-
             }
 
             ImGui.popID();

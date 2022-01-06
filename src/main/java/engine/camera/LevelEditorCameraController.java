@@ -7,8 +7,7 @@ import engine.input.MouseListener;
 import engine.ui.ViewPortWindow;
 import org.joml.Vector2f;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class LevelEditorCameraController extends Component {
     // 60 frames per second is 16ms;

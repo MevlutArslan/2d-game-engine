@@ -17,4 +17,14 @@ public class EntityGenerator {
 
         return entity;
     }
+
+    public static Entity generate(Sprite sprite, float width, float height, int zIndex){
+        Entity entity = new Entity("",
+                new Transform(new Vector2f(), new Vector2f(width, height)), zIndex);
+        entity.addComponent(new VariableConnectionTestClass());
+        entity.addComponent(new SpriteRenderer());
+        entity.getComponent(SpriteRenderer.class).setSprite(sprite);
+
+        return entity;
+    }
 }

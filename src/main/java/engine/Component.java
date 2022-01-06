@@ -63,7 +63,7 @@ public abstract class Component {
 
                 // To Deal with private properties I want to modify I can make sure they have setters and modify them that way
                 // without opening them up to reflection
-                if(!modifier.equals("private") && !modifier.equals("private transient")){
+                if(!modifier.equals("private") && !modifier.equals("private transient") && !modifier.equals("private final")){
                     Object val = field.get(this);
                     String name = field.getName();
 

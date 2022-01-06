@@ -2,7 +2,7 @@ package engine.rendering;
 
 import components.rendering.SpriteRenderer;
 import engine.Window;
-import engine.utility.AssetPool;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -51,10 +51,10 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private List<Texture> textures;
 
     private int[] textureSlots = {
-            0,1,2,3,4,5,6,7
+            0, 1, 2, 3, 4, 5, 6, 7
     };
 
-    public RenderBatch(int maxBatchSize, int zIndex){
+    public RenderBatch(int maxBatchSize, int zIndex) {
         this.zIndex = zIndex;
         this.maxBatchSize = maxBatchSize;
 
@@ -69,7 +69,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     }
 
     // GPU STUFF IN HERE
-    public void start(){
+    public void start() {
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
 
@@ -105,17 +105,17 @@ public class RenderBatch implements Comparable<RenderBatch> {
     }
 
 
-    public void render(){
+    public void render() {
         boolean rebufferNeeded = false;
-        for(int i = 0; i < numberOfSprites; i++){
-            if(sprites[i].hasChanged()){
+        for (int i = 0; i < numberOfSprites; i++) {
+            if (sprites[i].hasChanged()) {
                 loadVertexPropertiesIndex(i);
                 sprites[i].setHasChangedToFalse();
                 rebufferNeeded = true;
 
             }
         }
-        if(rebufferNeeded){
+        if (rebufferNeeded) {
             glBindBuffer(GL_ARRAY_BUFFER, vboId);
             // I will buffer some data into vbo, the vertices starting from 0..
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
@@ -127,7 +127,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
         shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
 
         // bind textures
-        for(int i = 0; i < textures.size(); i++){
+        for (int i = 0; i < textures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i + 1);
             textures.get(i).bind();
         }
@@ -149,14 +149,14 @@ public class RenderBatch implements Comparable<RenderBatch> {
         glDisableVertexAttribArray(3);
         glBindVertexArray(0);
 
-        for(int i = 0; i < textures.size(); i++){
+        for (int i = 0; i < textures.size(); i++) {
             textures.get(i).unbind();
         }
 
         shader.unbind();
     }
 
-    private void loadVertexPropertiesIndex(int index){
+    private void loadVertexPropertiesIndex(int index) {
         SpriteRenderer sprite = this.sprites[index];
 
         int offset = index * 4 * VERTEX_SIZE;
@@ -165,76 +165,95 @@ public class RenderBatch implements Comparable<RenderBatch> {
         Vector2f[] texCoords = sprite.getTextureCoords();
 
         int texId = 0;
-        if(sprite.getTexture() != null){
-            for(int i = 0; i < textures.size(); i++){
-                if(textures.get(i).equals(sprite.getTexture())){
-                    texId = i+1;
+        if (sprite.getTexture() != null) {
+            for (int i = 0; i < textures.size(); i++) {
+                if (textures.get(i).equals(sprite.getTexture())) {
+                    texId = i + 1;
                     break;
                 }
             }
         }
 
+        boolean isRotated = sprite.parent.transform.rotation != 0.0f;
+        Matrix4f transformMatrix = new Matrix4f().identity();
+        if (isRotated) {
+            transformMatrix.translate(sprite.parent.transform.position.x, sprite.parent.transform.position.y, 0);
+            // rotate on z axis to get a 2d rotation
+            transformMatrix.rotate(
+                    (float) Math.toRadians(sprite.parent.transform.rotation), 0, 0, 1
+            );
+
+            transformMatrix.scale(
+                    sprite.parent.transform.scale.x, sprite.parent.transform.scale.y, 1
+            );
+        }
         float xAdd = 1.0f;
         float yAdd = 1.0f;
-        for(int i = 0; i < 4; i++){
-            if(i == 1){
+        for (int i = 0; i < 4; i++) {
+            if (i == 1) {
                 yAdd = 0.0f;
-            }
-            else if(i == 2){
+            } else if (i == 2) {
                 xAdd = 0.0f;
-            }
-            else if(i == 3){
+            } else if (i == 3) {
                 yAdd = 1.0f;
             }
 
+            Vector4f currentPos = new Vector4f(
+                    sprite.parent.transform.position.x +
+                    (xAdd * sprite.parent.transform.scale.x),
+                    sprite.parent.transform.position.y +
+                    (yAdd * sprite.parent.transform.scale.y),
+                    0, 1);
+
+            if(isRotated){
+                currentPos = new Vector4f(xAdd, yAdd, 0, 1 ).mul(transformMatrix);
+            }
             // load position
-            vertices[offset] = sprite.parent.transform.position.x +
-                               (xAdd * sprite.parent.transform.scale.x);
-            vertices[offset+1] = sprite.parent.transform.position.y +
-                               (yAdd * sprite.parent.transform.scale.y);
+            vertices[offset] = currentPos.x;
+            vertices[offset + 1] = currentPos.y;
 
             // load color
-            vertices[offset+2] = color.x;
-            vertices[offset+3] = color.y;
-            vertices[offset+4] = color.z;
-            vertices[offset+5] = color.w;
+            vertices[offset + 2] = color.x;
+            vertices[offset + 3] = color.y;
+            vertices[offset + 4] = color.z;
+            vertices[offset + 5] = color.w;
 
             // load texture
-            vertices[offset+6] = texCoords[i].x;
-            vertices[offset+7] = texCoords[i].y;
+            vertices[offset + 6] = texCoords[i].x;
+            vertices[offset + 7] = texCoords[i].y;
 
             // load textureId
-            vertices[offset+8] = texId;
+            vertices[offset + 8] = texId;
 
             // load entity id
-            vertices[offset+9] = sprite.parent.getEntityId() + 1;
+            vertices[offset + 9] = sprite.parent.getEntityId() + 1;
 
             offset += VERTEX_SIZE;
         }
     }
 
-    public void addSprite(SpriteRenderer sprite){
+    public void addSprite(SpriteRenderer sprite) {
         int index = this.numberOfSprites;
         this.sprites[index] = sprite;
-        this.numberOfSprites ++;
+        this.numberOfSprites++;
 
-        if(sprite.getTexture() != null){
-            if(!this.textures.contains(sprite.getTexture())){
+        if (sprite.getTexture() != null) {
+            if (!this.textures.contains(sprite.getTexture())) {
                 textures.add(sprite.getTexture());
             }
         }
 
         loadVertexPropertiesIndex(index);
 
-        if(numberOfSprites >= this.maxBatchSize){
+        if (numberOfSprites >= this.maxBatchSize) {
             this.hasRoom = false;
         }
     }
 
-    private int[] generateIndices(){
+    private int[] generateIndices() {
         // 6 indices per quad, 3 indices per triange
         int[] elements = new int[6 * maxBatchSize];
-        for(int i = 0; i < maxBatchSize; i++){
+        for (int i = 0; i < maxBatchSize; i++) {
             loadElementIndices(elements, i);
         }
 
@@ -242,13 +261,13 @@ public class RenderBatch implements Comparable<RenderBatch> {
     }
 
     // NO idea how this works...
-    private void loadElementIndices(int[] elements, int index){
+    private void loadElementIndices(int[] elements, int index) {
         int offsetArrayIndex = 6 * index;
         int offset = 4 * index;
 
         elements[offsetArrayIndex] = offset + 3;
-        elements[offsetArrayIndex+1] = offset + 2;
-        elements[offsetArrayIndex+2] = offset + 0;
+        elements[offsetArrayIndex + 1] = offset + 2;
+        elements[offsetArrayIndex + 2] = offset + 0;
 
         elements[offsetArrayIndex + 3] = offset + 0;
         elements[offsetArrayIndex + 4] = offset + 2;
@@ -256,20 +275,20 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
     }
 
-    public boolean hasTexture(Texture texture){
+    public boolean hasTexture(Texture texture) {
         return this.textures.contains(texture);
     }
 
-    public boolean hasTextureRoom(){
+    public boolean hasTextureRoom() {
         // 8 being the maximum number of textures we have on the gpu
         return this.textures.size() < 8;
     }
 
-    public boolean hasRoom(){
+    public boolean hasRoom() {
         return this.hasRoom;
     }
 
-    public int getzIndex(){
+    public int getzIndex() {
         return this.zIndex;
     }
 

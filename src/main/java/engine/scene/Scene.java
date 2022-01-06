@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class Scene {
@@ -77,6 +78,9 @@ public abstract class Scene {
             ImGui.begin("Inspect");
             selectedEntity.imgui();
             ImGui.end();
+        }else{
+            ImGui.begin("Inspect");
+            ImGui.end();
         }
 
         imgui();
@@ -90,7 +94,13 @@ public abstract class Scene {
 
         try{
             FileWriter fileWriter = new FileWriter("level.json");
-            fileWriter.write(gson.toJson(this.entities));
+            List<Entity> toSerialize = new ArrayList<>();
+            for(Entity entity : entities){
+                if(entity.getShouldSerialize()){
+                    toSerialize.add(entity);
+                }
+            }
+            fileWriter.write(gson.toJson(toSerialize));
             fileWriter.close();
         } catch (IOException exception) {
             exception.printStackTrace();
@@ -140,6 +150,10 @@ public abstract class Scene {
 
     public void selectEntity(Entity entity){
         this.selectedEntity = entity;
+    }
+
+    public Entity getSelectedEntity(){
+        return this.selectedEntity;
     }
 
     public Entity getEntityById(long id){
