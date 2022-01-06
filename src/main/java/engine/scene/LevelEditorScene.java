@@ -10,6 +10,7 @@ import engine.rendering.DebugDraw;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
+import engine.ui.gizmos.Gizmo;
 import engine.ui.gizmos.GizmoManager;
 import engine.ui.gizmos.ScaleGizmo;
 import engine.ui.gizmos.TranslateGizmo;
@@ -90,18 +91,9 @@ public class LevelEditorScene extends Scene {
         camera.adjustProjection();
         editorEntity.update(deltaTime);
 
-        DebugDraw.drawSquare(pos, new
 
-                Vector2f(64, 32), angle, new
-
-                Vector3f(0, 0, 1), 1);
-        DebugDraw.drawCircle(pos, 5f, new
-
-                Vector3f(0, 0, 1), 1);
-
-        for (
-                Entity entity : this.entities) {
-            entity.update(deltaTime);
+        for (int i = 0; i < entities.size(); i++) {
+            entities.get(i).update(deltaTime);
         }
 
     }

@@ -5,19 +5,22 @@ import engine.rendering.Sprite;
 
 public class TranslateGizmo extends Gizmo {
 
-    public TranslateGizmo(Sprite sprite) {
-        super(sprite);
+    public TranslateGizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite) {
+        super(sprite, omniDirectionalGizmoSprite);
     }
 
     @Override
-    public void update(float deltaTime){
-        if(selectedEntity != null){
-            if(horizontalGizmoActive && !verticalGizmoActive){
+    public void update(float deltaTime) {
+        if (selectedEntity != null) {
+            if (horizontalGizmoActive && !verticalGizmoActive && !omniDirectionalGizmoActive) {
                 selectedEntity.transform.position.x -= MouseListener.getWorldDx();
-            }else if(verticalGizmoActive){
+            } else if (verticalGizmoActive && !omniDirectionalGizmoActive) {
                 selectedEntity.transform.position.y -= MouseListener.getWorldDy();
+            } else if (omniDirectionalGizmoActive) {
+                selectedEntity.transform.position.set(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
             }
         }
+
 
         super.update(deltaTime);
     }

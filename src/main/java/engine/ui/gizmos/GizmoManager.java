@@ -16,8 +16,8 @@ public class GizmoManager extends Component {
         ROTATE_GIZMO
     }
 
-    SpriteSheet spriteSheet;
-    GizmoType activeGizmo = GizmoType.TRANSLATE_GIZMO;
+    private SpriteSheet spriteSheet;
+    private GizmoType activeGizmo = GizmoType.TRANSLATE_GIZMO;
 
     public GizmoManager(SpriteSheet spriteSheet) {
         this.spriteSheet = spriteSheet;
@@ -25,7 +25,7 @@ public class GizmoManager extends Component {
 
     @Override
     public void start() {
-        parent.addComponent(new TranslateGizmo(spriteSheet.getSprite(1)));
+        parent.addComponent(new TranslateGizmo(spriteSheet.getSprite(1), spriteSheet.getSprite(0)));
         parent.addComponent(new ScaleGizmo(spriteSheet.getSprite(2)));
     }
 
@@ -45,6 +45,5 @@ public class GizmoManager extends Component {
             this.activeGizmo = GizmoType.SCALE_GIZMO;
         }
 
-        System.out.println("Active gizmo is : " + this.activeGizmo.name());
     }
 }

@@ -13,8 +13,6 @@ public class Entity {
 
     private ArrayList<Component> components;
 
-    // TODO : Turn every zIndex into ENUMS instead of using Integers
-    // Like -> BACKGROUND_LAYER, PLAYABLE_LEVEL, EFFECTS...
     private int zIndex;
 
     // We need to seperate the entityCounter from the entityId
@@ -93,6 +91,7 @@ public class Entity {
     }
 
     public void imgui(){
+        this.transform.imgui();
         for(Component c : components){
             if(c.getClass().getDeclaredFields().length > 0){
                 if(ImGui.collapsingHeader(c.getClass().getSimpleName())){

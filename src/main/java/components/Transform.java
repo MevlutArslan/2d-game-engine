@@ -1,8 +1,9 @@
 package components;
 
+import engine.Component;
 import org.joml.Vector2f;
 
-public class Transform {
+public class Transform extends Component {
 
     public Vector2f position;
     public Vector2f scale;
@@ -40,5 +41,15 @@ public class Transform {
 
         Transform t = (Transform) o;
         return t.position.equals(this.position) && t.scale.equals(this.scale);
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void update(float deltaTime) {
+
     }
 }

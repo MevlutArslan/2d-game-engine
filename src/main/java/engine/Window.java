@@ -173,15 +173,17 @@ public class Window {
             drawMousePickingBuffer();
 
 
-            if(MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && debounce < 0){
-                int x = (int)MouseListener.getScreenX();
-                int y = (int)MouseListener.getScreenY();
-                Entity pickedEntity = currentScene.getEntityById(pickingTexture.readPixel(x,y));
-                if(pickedEntity != null && pickedEntity.getComponent(NonPickable.class) == null){
+            if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && debounce < 0) {
+                int x = (int) MouseListener.getScreenX();
+                int y = (int) MouseListener.getScreenY();
+                Entity pickedEntity = currentScene.getEntityById(pickingTexture.readPixel(x, y));
+                // TODO : Fix overlapping gizmo picks
+                if (pickedEntity != null && pickedEntity.getComponent(NonPickable.class) == null && !MouseListener.isDragging()) {
                     currentScene.selectEntity(pickedEntity);
-                }else if (pickedEntity != null && MouseListener.isDragging()){
+                } else if (pickedEntity == null && !MouseListener.isDragging()) {
                     currentScene.selectEntity(null);
                 }
+
 
                 this.debounce = 0.2f;
             }
@@ -226,7 +228,7 @@ public class Window {
         currentScene.save();
     }
 
-    public void drawMousePickingBuffer(){
+    public void drawMousePickingBuffer() {
         enableMousePicking();
 
         glViewport(0, 0, MONITOR_WIDTH, MONITOR_HEIGHT);
@@ -237,12 +239,12 @@ public class Window {
         currentScene.render();
     }
 
-    private void enableMousePicking(){
+    private void enableMousePicking() {
         glDisable(GL_BLEND);
         pickingTexture.enableWriting();
     }
 
-    private void disableMousePicking(){
+    private void disableMousePicking() {
         glEnable(GL_BLEND);
         pickingTexture.disableWriting();
     }
@@ -277,7 +279,7 @@ public class Window {
         return get().frameBuffer;
     }
 
-    private void configureWindowHints(){
+    private void configureWindowHints() {
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -288,7 +290,7 @@ public class Window {
 
     }
 
-    private void configureGlfwCallbacks(){
+    private void configureGlfwCallbacks() {
 
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
@@ -309,7 +311,7 @@ public class Window {
 
     }
 
-    private void loadShaders(){
+    private void loadShaders() {
         defaultShader = AssetPool.getShader(new String[]{
                 "src/main/resources/basicShader.vertex",
                 "src/main/resources/basicShader.fragment"
