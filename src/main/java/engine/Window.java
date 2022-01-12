@@ -8,6 +8,7 @@ import engine.scene.LevelEditorScene;
 import engine.scene.LevelScene;
 import engine.scene.Scene;
 import engine.ui.ImGuiApp;
+import engine.ui.editor.EditorMenu;
 import engine.utility.AssetPool;
 import engine.utility.Constants;
 import org.lwjgl.Version;
@@ -52,6 +53,8 @@ public class Window {
     private Shader pickingShader;
 
     private float debounce = 0.2f;
+
+
 
     // Methods
     private Window() {
@@ -147,6 +150,7 @@ public class Window {
         imGuiApp = ImGuiApp.get(window);
         frameBuffer = new FrameBuffer(MONITOR_WIDTH, MONITOR_HEIGHT);
         pickingTexture = new PickingTexture(MONITOR_WIDTH, MONITOR_HEIGHT);
+
         glViewport(0, 0, MONITOR_WIDTH, MONITOR_HEIGHT);
 
         loadShaders();
@@ -217,6 +221,7 @@ public class Window {
             frameBuffer.unbind();
 
             imGuiApp.update(deltaTime, currentScene);
+
 
             debounce -= deltaTime;
 

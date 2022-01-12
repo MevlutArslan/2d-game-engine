@@ -10,6 +10,9 @@ import engine.rendering.DebugDraw;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
+import engine.ui.editor.EditorMenu;
+import engine.ui.editor.menus.EditMenu;
+import engine.ui.editor.menus.FileMenu;
 import engine.ui.gizmos.Gizmo;
 import engine.ui.gizmos.GizmoManager;
 import engine.ui.gizmos.ScaleGizmo;
@@ -37,6 +40,9 @@ public class LevelEditorScene extends Scene {
     @Override
     public void init() {
         this.camera = new Camera(new Vector2f(-250, 0));
+//        editorMenu = new EditorMenu();
+//       editorMenu.addEditorMenu(new FileMenu());
+//        editorMenu.addEditorMenu(new EditMenu());
 
         loadResources();
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
@@ -48,12 +54,15 @@ public class LevelEditorScene extends Scene {
         editorEntity.addComponent(new GizmoManager(gizmos));
         editorEntity.start();
 
+
         if (levelIsLoaded) {
             if (entities.size() > 0) {
                 selectedEntity = entities.get(0);
             }
             return;
         }
+
+
     }
 
     public void loadResources() {
@@ -90,7 +99,6 @@ public class LevelEditorScene extends Scene {
     public void update(float deltaTime) {
         camera.adjustProjection();
         editorEntity.update(deltaTime);
-
 
         for (int i = 0; i < entities.size(); i++) {
             entities.get(i).update(deltaTime);

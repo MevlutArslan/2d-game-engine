@@ -5,6 +5,9 @@ import engine.input.KeyListener;
 import engine.input.MouseListener;
 import engine.scene.LevelEditorScene;
 import engine.scene.Scene;
+import engine.ui.editor.EditorMenu;
+import engine.ui.editor.menus.EditMenu;
+import engine.ui.editor.menus.FileMenu;
 import imgui.*;
 import imgui.callback.ImStrConsumer;
 import imgui.callback.ImStrSupplier;
@@ -30,8 +33,9 @@ public class ImGuiApp {
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
 
     private static ImGuiApp instance = null;
-
+    private EditorMenu editorMenu;
     private ImGuiContext context;
+
 
     public void init() {
         context = ImGui.createContext();
@@ -75,6 +79,9 @@ public class ImGuiApp {
 
     private ImGuiApp(long window) {
         this.window = window;
+        this.editorMenu = new EditorMenu();
+        this.editorMenu.addEditorMenu(new FileMenu());
+        this.editorMenu.addEditorMenu(new EditMenu());
 
         this.init();
     }
@@ -93,6 +100,10 @@ public class ImGuiApp {
         enableDocking();
         ViewPortWindow.imgui();
         currentScene.imguiScene();
+        if (currentScene.getClass() == LevelEditorScene.class) {
+            editorMenu.update(deltaTime);
+        }
+        ;
         ImGui.end();
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
