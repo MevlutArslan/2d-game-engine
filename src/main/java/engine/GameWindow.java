@@ -4,6 +4,9 @@ import components.NonPickable;
 import engine.camera.Camera;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
+import engine.observers.Event;
+import engine.observers.EventSystem;
+import engine.observers.Observer;
 import engine.rendering.*;
 import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.Scene;
@@ -26,7 +29,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 /**
  * Window setup according to https://www.lwjgl.org/guide
  **/
-public class GameWindow {
+public class GameWindow implements Observer {
     // Singleton
     private static GameWindow instance = null;
 
@@ -59,6 +62,8 @@ public class GameWindow {
         this.height = 720;
         this.width = 1200;
         this.title = "Game Engine";
+
+        EventSystem.addObserver(this);
     }
 
     public static GameWindow get() {
@@ -196,7 +201,7 @@ public class GameWindow {
 
             if (deltaTime >= 0) {
                 DebugDraw.draw();
-                currentScene.onUpdateEditor(deltaTime, new Camera(new Vector2f(-250,0)));
+                currentScene.onUpdateEditor(deltaTime, new Camera(new Vector2f(-250, 0)));
 
                 Renderer.bindShader(defaultShader);
                 currentScene.render();
@@ -313,6 +318,21 @@ public class GameWindow {
                 "src/main/resources/shaders/mousePickingShaders/mousePicking.vertex",
                 "src/main/resources/shaders/mousePickingShaders/mousePicking.fragment"
         });
+    }
+
+    @Override
+    public void onNotify(Entity entity, Event event) {
+//        System.out.println("NOTIFIED");
+        switch (event.type) {
+            case GAME_ENGINE_START_PLAY:
+                System.err.println("Starting play!");
+                break;
+            case GAME_ENGINE_STOP_PLAY:
+                System.err.println("Stopping play!");
+                break;
+            default:
+                break;
+        }
     }
 }
 

@@ -2,17 +2,36 @@ package engine.ui;
 
 import engine.GameWindow;
 import engine.input.MouseListener;
+import engine.observers.Event;
+import engine.observers.EventSystem;
+import engine.observers.EventType;
+import engine.observers.Observer;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 
-public class ViewPortWindow{
+public class ViewPortWindow {
 
     private static float leftX, rightX, topY, bottomY;
 
-    public static void imgui(){
-        ImGui.begin("ViewPort", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
+    private static boolean isPlaying = false;
+
+    public static void imgui() {
+        ImGui.begin("ViewPort", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.MenuBar);
+
+        ImGui.beginMenuBar();
+
+        if(ImGui.menuItem("Play", "", isPlaying, !isPlaying)){
+            isPlaying = true;
+            EventSystem.notify(null, new Event(EventType.GAME_ENGINE_START_PLAY));
+        }
+        if(ImGui.menuItem("Stop", "", !isPlaying, isPlaying)){
+            isPlaying = false;
+            EventSystem.notify(null, new Event(EventType.GAME_ENGINE_STOP_PLAY));
+        }
+
+        ImGui.endMenuBar();
 
         ImVec2 windowSize = getLargestViewportSize();
         ImVec2 windowPos = getWindowCenterPosition(windowSize);
@@ -49,7 +68,7 @@ public class ViewPortWindow{
                 MouseListener.getY() >= bottomY && MouseListener.getY() <= topY;
     }
 
-    private static ImVec2 getWindowCenterPosition(ImVec2 aspectSize){
+    private static ImVec2 getWindowCenterPosition(ImVec2 aspectSize) {
         ImVec2 windowSize = new ImVec2();
         ImGui.getContentRegionAvail(windowSize);
 
@@ -62,7 +81,7 @@ public class ViewPortWindow{
         return new ImVec2(viewportX + ImGui.getCursorPosX(), viewPortY + ImGui.getCursorPosY());
     }
 
-    private static ImVec2 getLargestViewportSize(){
+    private static ImVec2 getLargestViewportSize() {
         ImVec2 windowSize = new ImVec2();
         ImGui.getContentRegionAvail(windowSize);
 
@@ -70,11 +89,11 @@ public class ViewPortWindow{
         windowSize.y -= ImGui.getScrollY();
 
         float aspectWidth = windowSize.x;
-        float aspectHeight = aspectWidth / (16.0f/9.0f);
+        float aspectHeight = aspectWidth / (16.0f / 9.0f);
 
-        if(aspectHeight > windowSize.y){
+        if (aspectHeight > windowSize.y) {
             aspectHeight = windowSize.y;
-            aspectWidth = aspectHeight * (16.0f/9.0f);
+            aspectWidth = aspectHeight * (16.0f / 9.0f);
         }
 
         return new ImVec2(aspectWidth, aspectHeight);
