@@ -62,4 +62,15 @@ public class Renderer {
     public static void bindShader(Shader shader){
         currentShader = shader;
     }
+
+    public void destroyEntity(Entity entity){
+        if(entity.getComponent(SpriteRenderer.class)==null){
+            return;
+        }
+        for(RenderBatch batch : batches){
+            if(batch.destroyIfExists(entity)){
+                return;
+            }
+        }
+    }
 }

@@ -1,71 +1,39 @@
 package engine.scene;
 
-import engine.Entity;
 import components.rendering.SpriteRenderer;
-import engine.camera.Camera;
+import engine.Entity;
 import engine.camera.LevelEditorCameraController;
-import engine.input.KeyListener;
 import engine.input.MouseControl;
-import engine.rendering.DebugDraw;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
-import engine.ui.editor.EditorMenu;
-import engine.ui.editor.menus.EditMenu;
-import engine.ui.editor.menus.FileMenu;
-import engine.ui.gizmos.Gizmo;
 import engine.ui.gizmos.GizmoManager;
-import engine.ui.gizmos.ScaleGizmo;
-import engine.ui.gizmos.TranslateGizmo;
 import engine.utility.AssetPool;
 import engine.utility.EntityGenerator;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
 import imgui.ImVec2;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
-import static org.lwjgl.glfw.GLFW.*;
-
-public class LevelEditorScene extends Scene {
+public class LevelEditorSceneInitializer extends SceneInitializer{
 
     private final Entity editorEntity = new Entity("Editor Entity");
     private SpriteSheet sprites;
-    private SpriteSheet gizmos;
-
-    public LevelEditorScene() {
-
-    }
 
     @Override
-    public void init() {
-        this.camera = new Camera(new Vector2f(-250, 0));
-//        editorMenu = new EditorMenu();
-//       editorMenu.addEditorMenu(new FileMenu());
-//        editorMenu.addEditorMenu(new EditMenu());
-
-        loadResources();
+    public void init(Scene scene) {
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
-        gizmos = AssetPool.getSpriteSheet("src/main/resources/textures/gizmos.png");
+        SpriteSheet gizmos = AssetPool.getSpriteSheet("src/main/resources/textures/gizmos.png");
 
         editorEntity.addComponent(new MouseControl());
         editorEntity.addComponent(new Grid2d());
         editorEntity.addComponent(new LevelEditorCameraController());
         editorEntity.addComponent(new GizmoManager(gizmos));
-        editorEntity.start();
-
-
-        if (levelIsLoaded) {
-            if (entities.size() > 0) {
-                selectedEntity = entities.get(0);
-            }
-            return;
-        }
-
-
+        scene.addEntityToScene(editorEntity);
     }
 
-    public void loadResources() {
+    @Override
+    public void loadResources(Scene scene) {
         AssetPool.getShader(new String[]{
                         "src/main/resources/basicShader.vertex",
                         "src/main/resources/basicShader.fragment"
@@ -75,7 +43,7 @@ public class LevelEditorScene extends Scene {
                 new SpriteSheet(AssetPool.getTexture("src/main/resources/textures/spritesheet.png"),
                         16, 16, 26, 0));
 
-        for (Entity entity : entities) {
+        for (Entity entity : scene.getEntities()) {
             if (entity.getComponent(SpriteRenderer.class) != null) {
                 SpriteRenderer spriteRenderer = entity.getComponent(SpriteRenderer.class);
                 if (spriteRenderer.getTexture() != null) {
@@ -92,27 +60,6 @@ public class LevelEditorScene extends Scene {
         );
     }
 
-    int angle = 0;
-    Vector2f pos = new Vector2f(200, 200);
-
-    @Override
-    public void update(float deltaTime) {
-        camera.adjustProjection();
-        editorEntity.update(deltaTime);
-
-        for (int i = 0; i < entities.size(); i++) {
-            entities.get(i).update(deltaTime);
-        }
-
-    }
-
-    @Override
-    public void render() {
-        this.renderer.render();
-    }
-
-
-    //https://github.com/ocornut/imgui/issues/1977
     @Override
     public void imgui() {
         ImGui.begin("Level Editor properties");
@@ -154,5 +101,4 @@ public class LevelEditorScene extends Scene {
 
         ImGui.end();
     }
-
 }

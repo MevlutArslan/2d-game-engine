@@ -1,9 +1,11 @@
 
-import engine.Window;
+import engine.GameWindow;
+import engine.WelcomeWindow;
 
 public class Main {
 
     public static void main(String[] args){
-        Window.get().run();
+//        WelcomeWindow.get().run();
+        GameWindow.get().run();
     }
 }

@@ -1,6 +1,6 @@
 package engine.ui;
 
-import engine.Window;
+import engine.GameWindow;
 import engine.input.MouseListener;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -35,7 +35,7 @@ public class ViewPortWindow{
         rightX = topLeft.x + windowSize.x;
         topY = topLeft.y + windowSize.y;
 
-        int textureId = Window.getFramebuffer().getTextureId();
+        int textureId = GameWindow.getFramebuffer().getTextureId();
         ImGui.image(textureId, windowSize.x, windowSize.y, 0, 1, 1, 0);
 
         MouseListener.setViewPortPos(new Vector2f(topLeft.x, topLeft.y));

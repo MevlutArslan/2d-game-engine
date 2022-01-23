@@ -4,9 +4,9 @@ public interface IGameLogic {
 
     void init() throws Exception;
 
-    void input(Window window);
+    void input(GameWindow gameWindow);
 
     void update(float interval);
 
-    void render(Window window);
+    void render(GameWindow gameWindow);
 }

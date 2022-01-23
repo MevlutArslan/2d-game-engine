@@ -1,10 +1,9 @@
 package engine.rendering;
 
-import engine.Window;
+import engine.GameWindow;
 import engine.utility.AssetPool;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,8 +90,8 @@ public class DebugDraw {
         shader.compile();
         shader.bind();
 
-        shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
-        shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
+        shader.uploadMat4f("uProjection", GameWindow.getScene().getCamera().getProjectionMatrix());
+        shader.uploadMat4f("uView", GameWindow.getScene().getCamera().getViewMatrix());
 
         glBindVertexArray(vaoId);
         glEnableVertexAttribArray(0);

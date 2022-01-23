@@ -71,6 +71,10 @@ public class SpriteRenderer extends Component {
     public void setTexture(Texture texture){
         this.sprite.setTexture(texture);
     }
+
+    public void setHasChanged() {
+        this.hasChanged = true;
+    }
 //
 //    @Override
 //    public void imgui() {

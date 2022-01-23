@@ -1,10 +1,8 @@
 package engine.input;
 
-import components.rendering.SpriteRenderer;
 import engine.Component;
 import engine.Entity;
-import engine.Window;
-import engine.rendering.Sprite;
+import engine.GameWindow;
 import engine.utility.Constants;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
@@ -15,7 +13,7 @@ public class MouseControl extends Component {
 
     public void pickUpEntity(Entity entity){
         selectedEntity = entity;
-        Window.getScene().addEntityToScene(selectedEntity);
+        GameWindow.getScene().addEntityToScene(selectedEntity);
     }
 
     public void place(){

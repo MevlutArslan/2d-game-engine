@@ -1,7 +1,7 @@
 package engine.camera;
 
 import engine.Component;
-import engine.Window;
+import engine.GameWindow;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
 import engine.ui.ViewPortWindow;
@@ -21,7 +21,7 @@ public class LevelEditorCameraController extends Component {
 
     private Vector2f originalCameraPosition = new Vector2f();
 
-    private final Camera camera = Window.getScene().getCamera();
+    private final Camera camera = GameWindow.getScene().getCamera();
 
     @Override
     public void start() {

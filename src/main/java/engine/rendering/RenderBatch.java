@@ -1,7 +1,8 @@
 package engine.rendering;
 
 import components.rendering.SpriteRenderer;
-import engine.Window;
+import engine.Entity;
+import engine.GameWindow;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -122,9 +123,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
         }
         Shader shader = Renderer.getCurrentShader();
         shader.bind();
-        shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
+        shader.uploadMat4f("uProjection", GameWindow.getScene().getCamera().getProjectionMatrix());
 
-        shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
+        shader.uploadMat4f("uView", GameWindow.getScene().getCamera().getViewMatrix());
 
         // bind textures
         for (int i = 0; i < textures.size(); i++) {
@@ -295,5 +296,22 @@ public class RenderBatch implements Comparable<RenderBatch> {
     @Override
     public int compareTo(RenderBatch o) {
         return Integer.compare(this.zIndex, o.zIndex);
+    }
+
+    public boolean destroyIfExists(Entity entity) {
+        SpriteRenderer spriteRenderer = entity.getComponent(SpriteRenderer.class);
+        for(int i = 0; i < numberOfSprites; i++){
+            if(sprites[i] == spriteRenderer){
+                for(int j = i; j < numberOfSprites - 1; j++){
+                    sprites[j] = sprites[j+1];
+                    sprites[j].setHasChanged();
+                }
+
+                numberOfSprites--;
+                return true;
+            }
+        }
+
+        return false;
     }
 }

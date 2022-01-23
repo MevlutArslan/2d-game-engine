@@ -14,6 +14,7 @@ public class Entity {
     private ArrayList<Component> components;
 
     private int zIndex;
+    private boolean isDead = false;
 
     // We need to seperate the entityCounter from the entityId
     // as when serializing & deserializing it will overlap and restart the counter if we keep it
@@ -115,5 +116,16 @@ public class Entity {
 
     public boolean getShouldSerialize() {
         return this.shouldSerialize;
+    }
+
+    public void destroy(){
+        this.isDead = true;
+        for (int i=0; i < components.size(); i++) {
+            components.get(i).destroy();
+        }
+    }
+
+    public boolean isDead(){
+        return this.isDead;
     }
 }

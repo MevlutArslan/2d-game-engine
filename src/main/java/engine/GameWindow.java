@@ -1,16 +1,16 @@
 package engine;
 
 import components.NonPickable;
+import engine.camera.Camera;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
 import engine.rendering.*;
-import engine.scene.LevelEditorScene;
-import engine.scene.LevelScene;
+import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.Scene;
+import engine.scene.SceneInitializer;
 import engine.ui.ImGuiApp;
-import engine.ui.editor.EditorMenu;
 import engine.utility.AssetPool;
-import engine.utility.Constants;
+import org.joml.Vector2f;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
@@ -26,9 +26,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 /**
  * Window setup according to https://www.lwjgl.org/guide
  **/
-public class Window {
+public class GameWindow {
     // Singleton
-    private static Window instance = null;
+    private static GameWindow instance = null;
 
     private final double FIXED_TIME_STEP = 1.0 / 60.0;
 
@@ -54,42 +54,30 @@ public class Window {
 
     private float debounce = 0.2f;
 
-
-
     // Methods
-    private Window() {
+    private GameWindow() {
         this.height = 720;
         this.width = 1200;
         this.title = "Game Engine";
-
-        r = 1;
-        g = 1;
-        b = 1;
     }
 
-    public static Window get() {
-        if (Window.instance == null) {
-            Window.instance = new Window();
+    public static GameWindow get() {
+        if (GameWindow.instance == null) {
+            GameWindow.instance = new GameWindow();
         }
-        return Window.instance;
+        return GameWindow.instance;
     }
 
-    public static void changeScene(int newScene) {
-        switch (newScene) {
-            case 0 -> {
-                currentScene = new LevelEditorScene();
-                currentScene.load();
-                currentScene.init();
-                currentScene.start();
-            }
-            case 1 -> {
-                currentScene = new LevelScene();
-                currentScene.load();
-                currentScene.init();
-                currentScene.start();
-            }
-            default -> System.err.println("Unknown Scene");
+    public static void changeScene(SceneInitializer sceneInitializer) {
+        if (currentScene != null) {
+            currentScene.destroy();
         }
+
+//        getImguiLayer().getPropertiesWindow().setActiveGameObject(null);
+        currentScene = new Scene(sceneInitializer);
+        currentScene.load();
+        currentScene.init();
+        currentScene.start();
     }
 
     public static Scene getScene() {
@@ -155,7 +143,7 @@ public class Window {
 
         loadShaders();
 
-        Window.changeScene(0);
+        GameWindow.changeScene(new LevelEditorSceneInitializer());
     }
 
     public void update() {
@@ -208,7 +196,7 @@ public class Window {
 
             if (deltaTime >= 0) {
                 DebugDraw.draw();
-                currentScene.update(deltaTime);
+                currentScene.onUpdateEditor(deltaTime, new Camera(new Vector2f(-250,0)));
 
                 Renderer.bindShader(defaultShader);
                 currentScene.render();
@@ -230,7 +218,6 @@ public class Window {
             MouseListener.endFrame();
         }
 
-        currentScene.save();
     }
 
     public void drawMousePickingBuffer() {
@@ -310,8 +297,8 @@ public class Window {
 
 //        glfwSetWindowCloseCallback(window, handleWindowClose(window));
         glfwSetWindowSizeCallback(window, (window, newWidth, newHeight) -> {
-            Window.setWidth(newWidth);
-            Window.setHeight(newHeight);
+            GameWindow.setWidth(newWidth);
+            GameWindow.setHeight(newHeight);
         });
 
     }

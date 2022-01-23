@@ -1,27 +1,17 @@
 package engine.ui;
 
-import engine.Window;
-import engine.input.KeyListener;
 import engine.input.MouseListener;
-import engine.scene.LevelEditorScene;
 import engine.scene.Scene;
 import engine.ui.editor.EditorMenu;
 import engine.ui.editor.menus.EditMenu;
 import engine.ui.editor.menus.FileMenu;
 import imgui.*;
-import imgui.callback.ImStrConsumer;
-import imgui.callback.ImStrSupplier;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
 import imgui.type.ImBoolean;
-import org.lwjgl.glfw.Callbacks;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL32;
 
-
-import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -35,7 +25,6 @@ public class ImGuiApp {
     private static ImGuiApp instance = null;
     private EditorMenu editorMenu;
     private ImGuiContext context;
-
 
     public void init() {
         context = ImGui.createContext();
@@ -99,11 +88,10 @@ public class ImGuiApp {
         ImGui.newFrame();
         enableDocking();
         ViewPortWindow.imgui();
-        currentScene.imguiScene();
-        if (currentScene.getClass() == LevelEditorScene.class) {
+        currentScene.imgui();
+//        if (currentScene.getClass() == LevelEditorScene.class) {
             editorMenu.update(deltaTime);
-        }
-        ;
+//        }
         ImGui.end();
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());

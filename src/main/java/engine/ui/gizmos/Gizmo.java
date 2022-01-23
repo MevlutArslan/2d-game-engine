@@ -4,14 +4,12 @@ import components.NonPickable;
 import components.rendering.SpriteRenderer;
 import engine.Component;
 import engine.Entity;
-import engine.Window;
+import engine.GameWindow;
 import engine.input.MouseListener;
-import engine.rendering.DebugDraw;
 import engine.rendering.Sprite;
 import engine.utility.Constants;
 import engine.utility.EntityGenerator;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
@@ -67,8 +65,8 @@ public class Gizmo extends Component {
         this.horizontalGizmoSprite = this.horizontalGizmoEntity.getComponent(SpriteRenderer.class);
         this.verticalGizmoSprite = this.verticalGizmoEntity.getComponent(SpriteRenderer.class);
 
-        Window.getScene().addEntityToScene(horizontalGizmoEntity);
-        Window.getScene().addEntityToScene(verticalGizmoEntity);
+        GameWindow.getScene().addEntityToScene(horizontalGizmoEntity);
+        GameWindow.getScene().addEntityToScene(verticalGizmoEntity);
     }
 
     public Gizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite) {
@@ -84,9 +82,9 @@ public class Gizmo extends Component {
         this.verticalGizmoSprite = this.verticalGizmoEntity.getComponent(SpriteRenderer.class);
         this.omniDirectionalGizmoSprite = this.omniDirectionalGizmoEntity.getComponent(SpriteRenderer.class);
 
-        Window.getScene().addEntityToScene(horizontalGizmoEntity);
-        Window.getScene().addEntityToScene(verticalGizmoEntity);
-        Window.getScene().addEntityToScene(omniDirectionalGizmoEntity);
+        GameWindow.getScene().addEntityToScene(horizontalGizmoEntity);
+        GameWindow.getScene().addEntityToScene(verticalGizmoEntity);
+        GameWindow.getScene().addEntityToScene(omniDirectionalGizmoEntity);
     }
 
     @Override
@@ -106,7 +104,7 @@ public class Gizmo extends Component {
         if (!isUsing) {
             return;
         }
-        this.selectedEntity = Window.getScene().getSelectedEntity();
+        this.selectedEntity = GameWindow.getScene().getSelectedEntity();
         if (this.selectedEntity != null) {
             this.setActive();
         } else {

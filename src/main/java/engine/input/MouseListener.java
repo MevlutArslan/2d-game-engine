@@ -1,6 +1,6 @@
 package engine.input;
 
-import engine.Window;
+import engine.GameWindow;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -62,7 +62,7 @@ public class MouseListener {
         currentX = (currentX / get().viewPortSize.x) * 2.0f - 1.0f;
 
         Matrix4f viewProjection = new Matrix4f();
-        Window.getScene().getCamera().getInverseViewMatrix().mul(Window.getScene().getCamera().getInverseProjectionMatrix(),viewProjection);
+        GameWindow.getScene().getCamera().getInverseViewMatrix().mul(GameWindow.getScene().getCamera().getInverseProjectionMatrix(),viewProjection);
 
         Vector4f vector = new Vector4f(currentX, 0, 0, 1);
         vector.mul(viewProjection);
@@ -81,7 +81,7 @@ public class MouseListener {
         currentY = -((currentY / get().viewPortSize.y) * 2.0f - 1.0f);
 
         Matrix4f viewProjection = new Matrix4f();
-        Window.getScene().getCamera().getInverseViewMatrix().mul(Window.getScene().getCamera().getInverseProjectionMatrix(), viewProjection);
+        GameWindow.getScene().getCamera().getInverseViewMatrix().mul(GameWindow.getScene().getCamera().getInverseProjectionMatrix(), viewProjection);
 
         Vector4f vector = new Vector4f(0, currentY, 0, 1);
         vector.mul(viewProjection);

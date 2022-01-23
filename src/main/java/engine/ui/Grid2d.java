@@ -1,7 +1,7 @@
 package engine.ui;
 
 import engine.Component;
-import engine.Window;
+import engine.GameWindow;
 import engine.camera.Camera;
 import engine.rendering.DebugDraw;
 import engine.utility.Constants;
@@ -16,7 +16,7 @@ public class Grid2d extends Component {
 
     @Override
     public void update(float deltaTime) {
-        Camera camera = Window.getScene().getCamera();
+        Camera camera = GameWindow.getScene().getCamera();
         Vector2f cameraPos = camera.cameraPosition;
         // I put it in a vector to stop the warnining IntelliJ gave
         // Changed from a fresh vector to camera's projectionSize because of the adjustment we do when we zoom
