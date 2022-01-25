@@ -19,6 +19,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import org.lwjgl.opengl.GL;
 
+import java.awt.*;
+
 import static engine.utility.Constants.MONITOR_HEIGHT;
 import static engine.utility.Constants.MONITOR_WIDTH;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -57,6 +59,8 @@ public class GameWindow implements Observer {
 
     private float debounce = 0.2f;
 
+    private boolean isEditorMode = true;
+
     // Methods
     private GameWindow() {
         this.height = 720;
@@ -81,12 +85,13 @@ public class GameWindow implements Observer {
 //        getImguiLayer().getPropertiesWindow().setActiveGameObject(null);
         currentScene = new Scene(sceneInitializer);
         currentScene.load();
+        currentScene.selectEntity(null);
         currentScene.init();
         currentScene.start();
     }
 
     public static Scene getScene() {
-        return get().currentScene;
+        return GameWindow.currentScene;
     }
 
     public void run() {
@@ -201,7 +206,12 @@ public class GameWindow implements Observer {
 
             if (deltaTime >= 0) {
                 DebugDraw.draw();
-                currentScene.onUpdateEditor(deltaTime, new Camera(new Vector2f(-250, 0)));
+                if(isEditorMode){
+                    currentScene.onUpdateEditor(deltaTime);
+                }else{
+                    currentScene.update(deltaTime);
+                }
+
 
                 Renderer.bindShader(defaultShader);
                 currentScene.render();
@@ -325,10 +335,21 @@ public class GameWindow implements Observer {
 //        System.out.println("NOTIFIED");
         switch (event.type) {
             case GAME_ENGINE_START_PLAY:
-                System.err.println("Starting play!");
+                this.isEditorMode = false;
+                currentScene.save();
+                // reset the scene
+                GameWindow.changeScene(new LevelEditorSceneInitializer());
                 break;
             case GAME_ENGINE_STOP_PLAY:
-                System.err.println("Stopping play!");
+                this.isEditorMode = true;
+                // reset to the last saved state
+                GameWindow.changeScene(new LevelEditorSceneInitializer());
+                break;
+            case SAVE_LEVEL:
+                currentScene.save();
+                break;
+            case LOAD_LEVEL:
+                GameWindow.changeScene(new LevelEditorSceneInitializer());
                 break;
             default:
                 break;

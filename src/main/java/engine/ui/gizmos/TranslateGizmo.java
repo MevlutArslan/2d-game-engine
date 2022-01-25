@@ -10,7 +10,7 @@ public class TranslateGizmo extends Gizmo {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void onUpdateEditor(float deltaTime) {
         if (selectedEntity != null) {
             if (horizontalGizmoActive && !verticalGizmoActive && !omniDirectionalGizmoActive) {
                 selectedEntity.transform.position.x -= MouseListener.getWorldDx();
@@ -22,6 +22,6 @@ public class TranslateGizmo extends Gizmo {
         }
 
 
-        super.update(deltaTime);
+        super.onUpdateEditor(deltaTime);
     }
 }

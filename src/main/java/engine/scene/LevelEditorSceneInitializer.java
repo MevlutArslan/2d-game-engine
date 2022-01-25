@@ -1,9 +1,14 @@
 package engine.scene;
 
+import components.NonPickable;
 import components.rendering.SpriteRenderer;
 import engine.Entity;
+import engine.GameWindow;
 import engine.camera.LevelEditorCameraController;
 import engine.input.MouseControl;
+import engine.physics.components.Box2dCollider;
+import engine.physics.components.CircleCollider;
+import engine.physics.components.RigidBody2d;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
@@ -17,7 +22,7 @@ import org.joml.Vector2f;
 
 public class LevelEditorSceneInitializer extends SceneInitializer{
 
-    private final Entity editorEntity = new Entity("Editor Entity");
+    private Entity editorEntity = new Entity("Editor Entity");
     private SpriteSheet sprites;
 
     @Override
@@ -25,10 +30,13 @@ public class LevelEditorSceneInitializer extends SceneInitializer{
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
         SpriteSheet gizmos = AssetPool.getSpriteSheet("src/main/resources/textures/gizmos.png");
 
+        editorEntity.setNoSerialize();
         editorEntity.addComponent(new MouseControl());
         editorEntity.addComponent(new Grid2d());
         editorEntity.addComponent(new LevelEditorCameraController());
         editorEntity.addComponent(new GizmoManager(gizmos));
+        editorEntity.addComponent(new NonPickable());
+
         scene.addEntityToScene(editorEntity);
     }
 
@@ -100,5 +108,39 @@ public class LevelEditorSceneInitializer extends SceneInitializer{
         }
 
         ImGui.end();
+
+        Entity selected =  GameWindow.getScene().getSelectedEntity();
+        // TODO move to it's own class and expose Physics variables
+
+        if (selected != null) {
+            ImGui.begin("Properties");
+
+            if (ImGui.beginPopupContextWindow("ComponentAdder")) {
+                if (ImGui.menuItem("Add Rigidbody")) {
+                    if (selected.getComponent(RigidBody2d.class) == null) {
+                        selected.addComponent(new RigidBody2d());
+                    }
+                }
+
+                if (ImGui.menuItem("Add Box Collider")) {
+                    if (selected.getComponent(Box2dCollider.class) == null &&
+                            selected.getComponent(CircleCollider.class) == null) {
+                        selected.addComponent(new Box2dCollider());
+                    }
+                }
+
+                if (ImGui.menuItem("Add Circle Collider")) {
+                    if (selected.getComponent(CircleCollider.class) == null &&
+                            selected.getComponent(Box2dCollider.class) == null) {
+                        selected.addComponent(new CircleCollider());
+                    }
+                }
+
+                ImGui.endPopup();
+            }
+
+            selected.imgui();
+            ImGui.end();
+        }
     }
 }

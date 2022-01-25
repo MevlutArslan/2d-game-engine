@@ -28,13 +28,13 @@ public class Physics2d {
     private int positionIteration = 3;
 
 
-    public void add(Entity entity){
+    public void add(Entity entity) {
         RigidBody2d rigidBody = entity.getComponent(RigidBody2d.class);
-        if (rigidBody != null && rigidBody.getRawBody() == null){
+        if (rigidBody != null && rigidBody.getRawBody() == null) {
             Transform transform = entity.transform;
 
             BodyDef bodyDef = new BodyDef();
-            bodyDef.angle = (float)Math.toRadians(transform.rotation);
+            bodyDef.angle = (float) Math.toRadians(transform.rotation);
             bodyDef.position.set(transform.position.x, transform.position.y);
             // angular friction
             bodyDef.angularDamping = rigidBody.getAngularDamping();
@@ -43,7 +43,7 @@ public class Physics2d {
             bodyDef.fixedRotation = rigidBody.isFixedRotation();
             bodyDef.bullet = rigidBody.isContinuousCollision();
 
-            switch (rigidBody.getBodyType()){
+            switch (rigidBody.getBodyType()) {
                 case DYNAMIC -> bodyDef.type = BodyType.DYNAMIC;
                 case STATIC -> bodyDef.type = BodyType.STATIC;
                 case KINEMATIC -> bodyDef.type = BodyType.KINEMATIC;
@@ -53,10 +53,10 @@ public class Physics2d {
             CircleCollider circleCollider;
             Box2dCollider boxCollider;
 
-            if((circleCollider = entity.getComponent(CircleCollider.class)) != null){
+            if ((circleCollider = entity.getComponent(CircleCollider.class)) != null) {
                 shape.setRadius(circleCollider.getRadius());
                 // TODO
-            } else if((boxCollider = entity.getComponent(Box2dCollider.class)) != null){
+            } else if ((boxCollider = entity.getComponent(Box2dCollider.class)) != null) {
                 Vector2f halfSize = new Vector2f(boxCollider.getHalfSize().mul(0.5f));
                 Vector2f offset = boxCollider.getOffset();
                 Vector2f origin = new Vector2f(boxCollider.getOrigin());
@@ -74,12 +74,25 @@ public class Physics2d {
         }
     }
 
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
         physicsTime += deltaTime;
 
-        if(physicsTime >= 0.0f ){
+        if (physicsTime >= 0.0f) {
             physicsTime -= physicsTimeStep;
             world.step(physicsTime, velocityIterations, positionIteration);
         }
+    }
+
+    public void destroyEntity(Entity entity) {
+        RigidBody2d rigidBody;
+        if ((rigidBody = entity.getComponent(RigidBody2d.class)) != null) {
+            if(rigidBody.getRawBody() != null){
+                world.destroyBody(rigidBody.getRawBody());
+                rigidBody.setRawBody(null);
+            }
+        }
+    }
+
+    public void onUpdateEditor(float deltaTime) {
     }
 }

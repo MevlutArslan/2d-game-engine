@@ -59,6 +59,12 @@ public class Entity {
         }
     }
 
+    public void onUpdateEditor(float deltaTime) {
+        for(int i = 0; i < components.size(); i++){
+            components.get(i).onUpdateEditor(deltaTime);
+        }
+    }
+
     public <T extends Component>T getComponent(Class<T> componentClass){
         for(Component component : components){
             if(componentClass.isAssignableFrom(component.getClass())){
@@ -128,4 +134,6 @@ public class Entity {
     public boolean isDead(){
         return this.isDead;
     }
+
+
 }

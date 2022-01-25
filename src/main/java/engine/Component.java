@@ -19,13 +19,21 @@ public abstract class Component {
     // Same reason as in the Entity class
     private long componentId = -1;
 
-    public abstract void start();
+    public void start(){
+
+    }
 
     public static void init(long maxComponentCount) {
         componentCounter = maxComponentCount;
     }
 
-    public abstract void update(float deltaTime);
+    public void update(float deltaTime){
+
+    }
+
+    public void onUpdateEditor(float deltaTime) {
+
+    }
 
     public void generateComponentId(){
         if(componentId == -1){
@@ -122,5 +130,6 @@ public abstract class Component {
     public void destroy() {
 
     }
+
 
 }

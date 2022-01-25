@@ -100,7 +100,14 @@ public class Gizmo extends Component {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime){
+        if(isUsing){
+            setInactive();
+        }
+    }
+
+    @Override
+    public void onUpdateEditor(float deltaTime) {
         if (!isUsing) {
             return;
         }

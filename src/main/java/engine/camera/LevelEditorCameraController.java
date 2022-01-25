@@ -28,7 +28,7 @@ public class LevelEditorCameraController extends Component {
 
     }
 
-    public void update(float deltaTime){
+    public void onUpdateEditor(float deltaTime){
         if(!ViewPortWindow.getWantCaptureMouse()){
             return;
         }

@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import engine.Component;
 import engine.Entity;
 import engine.camera.Camera;
+import engine.physics.Physics2d;
 import engine.rendering.Renderer;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
@@ -25,6 +26,7 @@ public class Scene {
     private ArrayList<Entity> entities;
     private Renderer renderer;
     private boolean isRunning;
+    private Physics2d physics2d;
 
     private Entity selectedEntity = null;
 
@@ -36,6 +38,7 @@ public class Scene {
         this.renderer = new Renderer();
         this.entities = new ArrayList<>();
         this.isRunning = false;
+        this.physics2d = new Physics2d();
     }
 
     public void init() {
@@ -50,6 +53,7 @@ public class Scene {
             Entity entity = entities.get(i);
             entity.start();
             this.renderer.add(entity);
+            this.physics2d.add(entity);
         }
         isRunning = true;
     }
@@ -62,6 +66,7 @@ public class Scene {
             entities.add(entity);
             entity.start();
             this.renderer.add(entity);
+            this.physics2d.add(entity);
         }
     }
 
@@ -82,17 +87,37 @@ public class Scene {
 
     }
 
-    public void onUpdateEditor(float deltaTime, Camera camera) {
+    public void onUpdateEditor(float deltaTime) {
         camera.adjustProjection();
+
         for (int i = 0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
-            entity.update(deltaTime);
+            entity.onUpdateEditor(deltaTime);
 
             if(entity.isDead()){
                 entities.remove(i);
                 // TODO implement destroy entity methods for renderer and physics2d
-//                this.renderer.destroyEntity(entity);
-//                this.physics2d.destroyEntity(entity);
+                this.renderer.destroyEntity(entity);
+                this.physics2d.destroyEntity(entity);
+                i--;
+            }
+        }
+    }
+
+    public void update(float deltaTime){
+        camera.adjustProjection();
+        this.physics2d.update(deltaTime);
+
+        for (int i = 0; i < entities.size(); i++) {
+            Entity entity = entities.get(i);
+            entity.update(deltaTime);
+//            physics2d.onUpdateEditor(deltaTime);
+
+            if(entity.isDead()){
+                entities.remove(i);
+                // TODO implement destroy entity methods for renderer and physics2d
+                this.renderer.destroyEntity(entity);
+                this.physics2d.destroyEntity(entity);
                 i--;
             }
         }

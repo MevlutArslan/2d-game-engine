@@ -26,7 +26,7 @@ public class MouseControl extends Component {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void onUpdateEditor(float deltaTime) {
         if(selectedEntity != null){
             selectedEntity.transform.position.x = MouseListener.getWorldCoordsX() - 16;
             selectedEntity.transform.position.y = MouseListener.getWorldCoordsY() - 16;

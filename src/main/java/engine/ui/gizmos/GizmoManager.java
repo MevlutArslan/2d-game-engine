@@ -30,7 +30,7 @@ public class GizmoManager extends Component {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void onUpdateEditor(float deltaTime) {
         if (activeGizmo == GizmoType.TRANSLATE_GIZMO) {
             parent.getComponent(TranslateGizmo.class).setUsing();
             parent.getComponent(ScaleGizmo.class).setNotUsing();

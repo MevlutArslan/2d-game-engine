@@ -9,7 +9,7 @@ public class ScaleGizmo extends Gizmo{
     }
 
     @Override
-    public void update(float deltaTime){
+    public void onUpdateEditor(float deltaTime){
         if(selectedEntity != null){
             if(horizontalGizmoActive && !verticalGizmoActive){
                 selectedEntity.transform.scale.x -= MouseListener.getWorldDx();
@@ -18,6 +18,6 @@ public class ScaleGizmo extends Gizmo{
             }
         }
 
-        super.update(deltaTime);
+        super.onUpdateEditor(deltaTime);
     }
 }

@@ -36,6 +36,14 @@ public class SpriteRenderer extends Component {
         }
     }
 
+    @Override
+    public void onUpdateEditor(float deltaTime){
+        if(!this.lastTransform.equals(parent.transform)){
+            this.parent.transform.copyTo(lastTransform);
+            hasChanged = true;
+        }
+    }
+
     public boolean hasChanged(){
         return this.hasChanged;
     }

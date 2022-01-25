@@ -15,7 +15,7 @@ public class Grid2d extends Component {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void onUpdateEditor(float deltaTime) {
         Camera camera = GameWindow.getScene().getCamera();
         Vector2f cameraPos = camera.cameraPosition;
         // I put it in a vector to stop the warnining IntelliJ gave
