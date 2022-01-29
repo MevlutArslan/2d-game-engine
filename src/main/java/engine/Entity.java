@@ -1,6 +1,7 @@
 package engine;
 
 import components.Transform;
+import engine.ui.editor.CustomImGuiController;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 
@@ -30,16 +31,14 @@ public class Entity {
     public Entity(String name){
         this.name = name;
         this.components = new ArrayList<>();
-        this.components.add(new Transform());
-        this.transform = this.getComponent(Transform.class);
+        this.transform = new Transform();
         this.zIndex = 0;
     }
 
     public Entity(String name, Transform transform, int zIndex){
         this.name = name;
         this.components = new ArrayList<>();
-        this.components.add(transform);
-        this.transform = this.getComponent(Transform.class);
+        this.transform = transform;
         this.zIndex = zIndex;
 
         // IF ANY PROBLEMS RELATED TO IDS CHECK HERE FIRST
@@ -82,9 +81,12 @@ public class Entity {
     }
 
     public <T extends Component> void removeComponent(Class<T> componentClass){
-        if(components.contains(componentClass)){
-            this.getComponent(componentClass).parent = null;
-            this.components.remove(componentClass);
+        for(int i = 0; i < components.size(); i++){
+            Component component = components.get(i);
+            if(componentClass.isAssignableFrom(component.getClass())){
+                this.components.remove(component);
+                return;
+            }
         }
     }
 
@@ -101,13 +103,11 @@ public class Entity {
     }
 
     public void imgui(){
-        for(Component c : components){
+        transform.imgui();
+        for(int i = 0; i < components.size(); i++){
+            Component c = components.get(i);
             if(c.getClass().getDeclaredFields().length > 0){
-                if(ImGui.collapsingHeader(c.getClass().getSimpleName(),
-                        ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Framed |
-                                ImGuiTreeNodeFlags.FramePadding | ImGuiTreeNodeFlags.SpanAvailWidth)){
-                    c.imgui();
-                }
+                CustomImGuiController.drawComponent(c, c.getClass().getSimpleName(), this, c.isAllowForRemoval());
             }
         }
     }

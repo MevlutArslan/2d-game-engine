@@ -25,6 +25,7 @@ public class SpriteRenderer extends Component implements IAllowForComponentRemov
 
     @Override
     public void start() {
+        this.allowForRemoval = false;
         this.lastTransform = parent.transform.copy();
     }
 

@@ -13,16 +13,19 @@ public class Transform extends Component {
     public Transform(){
         this.position = new Vector2f();
         this.scale = new Vector2f();
+        this.allowForRemoval = false;
     }
 
     public Transform(Vector2f position){
         this.position = position;
         this.scale = new Vector2f();
+        this.allowForRemoval = false;
     }
 
     public Transform(Vector2f position, Vector2f scale){
         this.position = position;
         this.scale = scale;
+        this.allowForRemoval = false;
     }
 
     public Transform copy(){

@@ -14,10 +14,11 @@ import org.joml.Vector4f;
 
 // https://github.com/TheCherno/Hazel/blob/master/Hazelnut/src/Panels/SceneHierarchyPanel.cpp
 public class CustomImGuiController {
-    private static float defaultColumnWidth = 100.0f;
+    private static float defaultColumnWidth = 120.0f;
 
     private static final float VERTICAL_SPACING = 5.0f;
     private static final float HORIZONTAL_SPACING = 0.001f;
+
     public static void drawVec3Control(String label, Vector3f values, float resetValue) {
         drawVec3Control(label, values, resetValue, defaultColumnWidth);
     }
@@ -110,6 +111,7 @@ public class CustomImGuiController {
         ImGui.columns(2);
         ImGui.setColumnWidth(0, columnWidth);
         ImGui.text(label);
+
         ImGui.nextColumn();
 
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
@@ -169,11 +171,11 @@ public class CustomImGuiController {
     }
 
     // TODO
-    public static void drawColorField(String label, Vector4f values, float resetValue){
+    public static void drawColorField(String label, Vector4f values, float resetValue) {
         drawColorField(label, values, resetValue, defaultColumnWidth);
     }
 
-    public static void drawColorField(String label, Vector4f values,float resetValue , float columnWidth){
+    public static void drawColorField(String label, Vector4f values, float resetValue, float columnWidth) {
         ImGuiIO io = ImGui.getIO();
         ImFont boldFont = Constants.boldFont;
 
@@ -187,7 +189,9 @@ public class CustomImGuiController {
 
         float lineHeight = ImGui.getFont().getFontSize() + ImGui.getStyle().getFramePaddingY() * 2.0f;
         ImVec2 buttonSize = new ImVec2(lineHeight + 3.0f, lineHeight);
-        float widthEach = (ImGui.calcItemWidth() - buttonSize.x * 2.0f) / 2.0f;
+        float widthEach = (ImGui.calcItemWidth() - buttonSize.x * 4.0f) / 2.0f;
+
+        ImGui.colorPicker4("", new float[]{values.x, values.y, values.z, values.w});
 
         ImGui.pushItemWidth(widthEach);
         ImGui.pushStyleColor(ImGuiCol.Button, 0.8f, 0.1f, 0.15f, 1.0f);
@@ -264,11 +268,11 @@ public class CustomImGuiController {
         ImGui.popID();
     }
 
-    public static int dragInt(String label, int value){
+    public static int dragInt(String label, int value) {
         return dragInt(label, value, defaultColumnWidth);
     }
 
-    public static int dragInt(String label, int value, float columnWidth){
+    public static int dragInt(String label, int value, float columnWidth) {
         ImGui.pushID(label);
 
         ImGui.columns(2);
@@ -285,11 +289,11 @@ public class CustomImGuiController {
         return val[0];
     }
 
-    public static float dragFloat(String label, float value){
+    public static float dragFloat(String label, float value) {
         return dragFloat(label, value, defaultColumnWidth);
     }
 
-    public static float dragFloat(String label, float value, float columnWidth){
+    public static float dragFloat(String label, float value, float columnWidth) {
         ImGui.pushID(label);
 
         ImGui.columns(2);
@@ -305,40 +309,41 @@ public class CustomImGuiController {
         return val[0];
     }
 
-//    private static <T extends Component> void drawComponent(Class<T> component, String name, Entity entity, IAllowForComponentRemoval allowForComponentRemoval){
-//        final int treeNodeFlags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Framed | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.AllowItemOverlap | ImGuiTreeNodeFlags.FramePadding;
-//        T comp;
-//        if((comp = entity.getComponent(component)) != null && comp instanceof IAllowForComponentRemoval){
-//            ImVec2 contentRegionAvailable = ImGui.getContentRegionAvail();
-//
-//            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 4,4);
-//            float lineHeight = ImGui.getFont().getFontSize() + ImGui.getStyle().getFramePaddingY() * 2.0f;
-//            ImGui.separator();
-//            boolean open = ImGui.treeNodeEx("", treeNodeFlags, name);
-//            ImGui.popStyleVar();
-//
-//            ImGui.sameLine(contentRegionAvailable.x - lineHeight *0.5f);
-//            if(ImGui.button("+", lineHeight, lineHeight)){
-//                ImGui.openPopup("Component Settings");
-//            }
-//
-//            boolean removeComponent = false;
-//
-//            if(ImGui.beginPopup("Component Settings")){
-//                if(ImGui.menuItem("Remove Component")){
-//                    removeComponent = true;
-//                }
-//
-//                ImGui.endPopup();
-//            }
-//
-//            if(open){
-//                ImGui.treePop();
-//            }
-//
-//            if(removeComponent){
-//                entity.removeComponent(component);
-//            }
-//        }
-//    }
+    public static void drawComponent(Component component, String name, Entity entity, boolean allowForRemoval) {
+
+        final int treeNodeFlags =  ImGuiTreeNodeFlags.Framed | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.AllowItemOverlap | ImGuiTreeNodeFlags.FramePadding;
+        ImVec2 contentRegionAvailable = ImGui.getContentRegionAvail();
+
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 4, 4);
+        float lineHeight = ImGui.getFont().getFontSize() + ImGui.getStyle().getFramePaddingY() * 2.0f;
+        ImGui.separator();
+        boolean open = ImGui.treeNodeEx(component.hashCode(), treeNodeFlags, name);
+        ImGui.popStyleVar();
+        ImGui.sameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+        if (ImGui.button("+", lineHeight, lineHeight)) {
+            ImGui.openPopup("Component Settings");
+        }
+
+
+        boolean removeComponent = false;
+
+        if (ImGui.beginPopup("Component Settings")) {
+            if (ImGui.menuItem("Remove Component", "", false, allowForRemoval)) {
+                removeComponent = true;
+            }
+
+
+            ImGui.endPopup();
+        }
+
+        if (open) {
+            component.imgui();
+            ImGui.treePop();
+        }
+
+        if (removeComponent) {
+            entity.removeComponent(component.getClass());
+        }
+
+    }
 }

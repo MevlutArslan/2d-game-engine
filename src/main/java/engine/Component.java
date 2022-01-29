@@ -13,13 +13,14 @@ import java.lang.reflect.Modifier;
 public abstract class Component {
 
     public transient Entity parent;
+    protected boolean allowForRemoval = true;
 
     // We are giving Components IDs for the sole purpose of loading them in properly
     private static long componentCounter = 0;
     // Same reason as in the Entity class
     private long componentId = -1;
 
-    public void start(){
+    public void start() {
 
     }
 
@@ -27,7 +28,7 @@ public abstract class Component {
         componentCounter = maxComponentCount;
     }
 
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
 
     }
 
@@ -35,13 +36,13 @@ public abstract class Component {
 
     }
 
-    public void generateComponentId(){
-        if(componentId == -1){
+    public void generateComponentId() {
+        if (componentId == -1) {
             this.componentId = componentCounter++;
         }
     }
 
-    public long getComponentId(){
+    public long getComponentId() {
         return this.componentId;
     }
 
@@ -66,12 +67,12 @@ public abstract class Component {
             for (Field field : fields) {
                 // We don't want to expose transient variables
                 boolean isTransient = Modifier.isTransient(field.getModifiers());
-                if(isTransient){
+                if (isTransient) {
                     continue;
                 }
 
                 boolean isPrivate = Modifier.isPrivate(field.getModifiers());
-                if(isPrivate){
+                if (isPrivate) {
                     field.setAccessible(true);
                 }
 
@@ -81,49 +82,53 @@ public abstract class Component {
 
                 // To Deal with private properties I want to modify I can make sure they have setters and modify them that way
                 // without opening them up to reflection
-                if(!modifier.equals("private final")){
+                if (!modifier.equals("private final")) {
                     Object val = field.get(this);
                     String name = field.getName();
                     // https://stackoverflow.com/questions/3904579/how-to-capitalize-the-first-letter-of-a-string-in-java
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
-                    if(type == int.class){
-                       int value = (int) val;
-                       // taken from https://github.com/codingminecraft/MarioYoutube/blob/69f043f765f32e494e758b9400f732d2f0c9b004/src/main/java/components/Component.java
-                       field.set(this, CustomImGuiController.dragInt(name, value));
-                   }
-                   else if(type == float.class){
-                       float value = (float) val;
-                       // taken from https://github.com/codingminecraft/MarioYoutube/blob/69f043f765f32e494e758b9400f732d2f0c9b004/src/main/java/components/Component.java
-                       field.set(this, CustomImGuiController.dragFloat(name, value));
-                    }
-                   else if(type == Vector2f.class){
-                       Vector2f value = (Vector2f) val;
-                       CustomImGuiController.drawVec2Control(name, value, 0);
-                   }
-                   else if(type == Vector3f.class){
-                       Vector3f value = (Vector3f) val;
-                       CustomImGuiController.drawVec3Control(name, value, 0);
-                   }
-                   else if(type == Vector4f.class){
-                       Vector4f value = (Vector4f) val;
+                    if (type == int.class) {
+                        int value = (int) val;
+                        // taken from https://github.com/codingminecraft/MarioYoutube/blob/69f043f765f32e494e758b9400f732d2f0c9b004/src/main/java/components/Component.java
+                        field.set(this, CustomImGuiController.dragInt(name, value));
+                    } else if (type == float.class) {
+                        float value = (float) val;
+                        // taken from https://github.com/codingminecraft/MarioYoutube/blob/69f043f765f32e494e758b9400f732d2f0c9b004/src/main/java/components/Component.java
+                        field.set(this, CustomImGuiController.dragFloat(name, value));
+                    } else if (type == Vector2f.class) {
+                        Vector2f value = (Vector2f) val;
+                        CustomImGuiController.drawVec2Control(name, value, 0);
+                    } else if (type == Vector3f.class) {
+                        Vector3f value = (Vector3f) val;
+                        CustomImGuiController.drawVec3Control(name, value, 0);
+                    } else if (type == Vector4f.class) {
+                        Vector4f value = (Vector4f) val;
 
-                       // TODO : seperate between Vec4 and Color by making a subcomponent that is ComponentHasColorField
-                       float[] color = {value.x, value.y, value.z, value.w};
-                       if(ImGui.colorEdit4(name, color)){
-                           value.set(color[0], color[1], color[2], color[3]);
-                           if(this.getClass() == SpriteRenderer.class){
-                               ((SpriteRenderer) this).setHasChanged();
-                           }
-                       }
-                   }
+                        // TODO : seperate between Vec4 and Color by making a subcomponent that is ComponentHasColorField
+                        float[] color = {value.x, value.y, value.z, value.w};
+//                       if(ImGui.colorEdit4(name, color)){
+//                           value.set(color[0], color[1], color[2], color[3]);
+//                           if(this.getClass() == SpriteRenderer.class){
+//                               ((SpriteRenderer) this).setHasChanged();
+//                           }
+//                       }
+                        if (ImGui.colorPicker4("", color)) {
+                            value.set(color[0], color[1], color[2], color[3]);
+                            if (this.getClass() == SpriteRenderer.class) {
+                                ((SpriteRenderer) this).setHasChanged();
+                            }
+                        }
+                    }
                 }
             }
 
 
-        } catch (IllegalAccessException e) {
+        } catch (
+                IllegalAccessException e) {
             e.printStackTrace();
         }
+
     }
 
     public void destroy() {
@@ -131,4 +136,11 @@ public abstract class Component {
     }
 
 
+    public boolean isAllowForRemoval() {
+        return allowForRemoval;
+    }
+
+    public void setAllowForRemoval(boolean allowForRemoval) {
+        this.allowForRemoval = allowForRemoval;
+    }
 }

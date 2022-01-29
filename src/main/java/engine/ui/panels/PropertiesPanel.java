@@ -43,7 +43,13 @@ public class PropertiesPanel {
         if (selectedEntity != null) {
             ImGui.begin("Properties");
 
-            if (ImGui.beginPopupContextWindow("ComponentAdder")) {
+            selectedEntity.imgui();
+
+            if(ImGui.button("Add Component")){
+                ImGui.openPopup("AddComponent");
+            }
+
+            if (ImGui.beginPopup("AddComponent")) {
                 if (ImGui.menuItem("Add Rigidbody")) {
                     if (selectedEntity.getComponent(RigidBody2d.class) == null) {
                         selectedEntity.addComponent(new RigidBody2d());
@@ -67,7 +73,6 @@ public class PropertiesPanel {
                 ImGui.endPopup();
             }
 
-            selectedEntity.imgui();
             ImGui.end();
         }
     }
