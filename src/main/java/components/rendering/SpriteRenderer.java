@@ -4,6 +4,7 @@ import engine.Component;
 import components.Transform;
 import engine.rendering.Sprite;
 import engine.rendering.Texture;
+import engine.utility.IAllowForComponentRemoval;
 import imgui.ImGui;
 import imgui.type.ImFloat;
 import org.joml.Vector2f;
@@ -11,7 +12,7 @@ import org.joml.Vector4f;
 
 import java.util.List;
 
-public class SpriteRenderer extends Component {
+public class SpriteRenderer extends Component implements IAllowForComponentRemoval {
 
     private Vector4f color = new Vector4f(1,1,1,1);
 
@@ -82,6 +83,11 @@ public class SpriteRenderer extends Component {
 
     public void setHasChanged() {
         this.hasChanged = true;
+    }
+
+    @Override
+    public void run(Component c) {
+
     }
 //
 //    @Override

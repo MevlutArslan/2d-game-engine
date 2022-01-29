@@ -1,7 +1,7 @@
 package platformer;
 
+import engine.GameWindow;
 import engine.IGameLogic;
-import engine.Window;
 
 public class PlatformerGame implements IGameLogic {
 
@@ -11,7 +11,7 @@ public class PlatformerGame implements IGameLogic {
     }
 
     @Override
-    public void input(Window window) {
+    public void input(GameWindow gameWindow) {
 
     }
 
@@ -21,7 +21,7 @@ public class PlatformerGame implements IGameLogic {
     }
 
     @Override
-    public void render(Window window) {
+    public void render(GameWindow gameWindow) {
 
     }
 }

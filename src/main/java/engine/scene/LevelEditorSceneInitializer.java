@@ -20,7 +20,7 @@ import imgui.ImGuiStyle;
 import imgui.ImVec2;
 import org.joml.Vector2f;
 
-public class LevelEditorSceneInitializer extends SceneInitializer{
+public class LevelEditorSceneInitializer extends SceneInitializer {
 
     private Entity editorEntity = new Entity("Editor Entity");
     private SpriteSheet sprites;
@@ -70,9 +70,6 @@ public class LevelEditorSceneInitializer extends SceneInitializer{
 
     @Override
     public void imgui() {
-        ImGui.begin("Level Editor properties");
-        editorEntity.imgui();
-        ImGui.end();
         ImGui.begin("Assets");
 
         ImVec2 buttonSize = new ImVec2();
@@ -109,38 +106,5 @@ public class LevelEditorSceneInitializer extends SceneInitializer{
 
         ImGui.end();
 
-        Entity selected =  GameWindow.getScene().getSelectedEntity();
-        // TODO move to it's own class and expose Physics variables
-
-        if (selected != null) {
-            ImGui.begin("Properties");
-
-            if (ImGui.beginPopupContextWindow("ComponentAdder")) {
-                if (ImGui.menuItem("Add Rigidbody")) {
-                    if (selected.getComponent(RigidBody2d.class) == null) {
-                        selected.addComponent(new RigidBody2d());
-                    }
-                }
-
-                if (ImGui.menuItem("Add Box Collider")) {
-                    if (selected.getComponent(Box2dCollider.class) == null &&
-                            selected.getComponent(CircleCollider.class) == null) {
-                        selected.addComponent(new Box2dCollider());
-                    }
-                }
-
-                if (ImGui.menuItem("Add Circle Collider")) {
-                    if (selected.getComponent(CircleCollider.class) == null &&
-                            selected.getComponent(Box2dCollider.class) == null) {
-                        selected.addComponent(new CircleCollider());
-                    }
-                }
-
-                ImGui.endPopup();
-            }
-
-            selected.imgui();
-            ImGui.end();
-        }
     }
 }

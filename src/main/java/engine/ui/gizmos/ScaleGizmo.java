@@ -2,10 +2,11 @@ package engine.ui.gizmos;
 
 import engine.input.MouseListener;
 import engine.rendering.Sprite;
+import engine.ui.panels.PropertiesPanel;
 
 public class ScaleGizmo extends Gizmo{
-    public ScaleGizmo(Sprite sprite) {
-        super(sprite);
+    public ScaleGizmo(Sprite sprite, PropertiesPanel propertiesPanel) {
+        super(sprite, propertiesPanel);
     }
 
     @Override

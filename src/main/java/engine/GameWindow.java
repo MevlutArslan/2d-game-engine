@@ -94,6 +94,10 @@ public class GameWindow implements Observer {
         return GameWindow.currentScene;
     }
 
+    public static ImGuiApp getImGuiApp() {
+        return get().imGuiApp;
+    }
+
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -145,9 +149,10 @@ public class GameWindow implements Observer {
          */
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        imGuiApp = ImGuiApp.get(window);
+
         frameBuffer = new FrameBuffer(MONITOR_WIDTH, MONITOR_HEIGHT);
         pickingTexture = new PickingTexture(MONITOR_WIDTH, MONITOR_HEIGHT);
+        imGuiApp = new ImGuiApp(window, pickingTexture);
 
         glViewport(0, 0, MONITOR_WIDTH, MONITOR_HEIGHT);
 
@@ -174,21 +179,7 @@ public class GameWindow implements Observer {
             // Rendering the Mouse Picking Buffer
             drawMousePickingBuffer();
 
-
-            if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && debounce < 0) {
-                int x = (int) MouseListener.getScreenX();
-                int y = (int) MouseListener.getScreenY();
-                Entity pickedEntity = currentScene.getEntityById(pickingTexture.readPixel(x, y));
-                // TODO : Fix overlapping gizmo picks
-                if (pickedEntity != null && pickedEntity.getComponent(NonPickable.class) == null && !MouseListener.isDragging()) {
-                    currentScene.selectEntity(pickedEntity);
-                } else if (pickedEntity == null && !MouseListener.isDragging()) {
-                    currentScene.selectEntity(null);
-                }
-
-
-                this.debounce = 0.2f;
-            }
+            currentScene.render();
 
             disableMousePicking();
 
@@ -243,7 +234,6 @@ public class GameWindow implements Observer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Renderer.bindShader(pickingShader);
-        currentScene.render();
     }
 
     private void enableMousePicking() {

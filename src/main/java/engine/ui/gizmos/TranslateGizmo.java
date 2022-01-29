@@ -2,11 +2,12 @@ package engine.ui.gizmos;
 
 import engine.input.MouseListener;
 import engine.rendering.Sprite;
+import engine.ui.panels.PropertiesPanel;
 
 public class TranslateGizmo extends Gizmo {
 
-    public TranslateGizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite) {
-        super(sprite, omniDirectionalGizmoSprite);
+    public TranslateGizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite, PropertiesPanel propertiesPanel) {
+        super(sprite, omniDirectionalGizmoSprite, propertiesPanel);
     }
 
     @Override

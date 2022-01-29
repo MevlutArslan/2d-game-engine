@@ -7,6 +7,7 @@ import engine.Entity;
 import engine.GameWindow;
 import engine.input.MouseListener;
 import engine.rendering.Sprite;
+import engine.ui.panels.PropertiesPanel;
 import engine.utility.Constants;
 import engine.utility.EntityGenerator;
 import org.joml.Vector2f;
@@ -52,13 +53,16 @@ public class Gizmo extends Component {
     protected boolean horizontalGizmoActive = false;
     protected boolean omniDirectionalGizmoActive = false;
 
+    private PropertiesPanel propertiesPanel;
+
 
     private boolean isUsing = false;
 
-    public Gizmo(Sprite sprite) {
+    public Gizmo(Sprite sprite, PropertiesPanel propertiesPanel) {
         this.horizontalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
         this.verticalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
 
+        this.propertiesPanel = propertiesPanel;
         this.horizontalGizmoEntity.addComponent(new NonPickable());
         this.verticalGizmoEntity.addComponent(new NonPickable());
 
@@ -69,10 +73,12 @@ public class Gizmo extends Component {
         GameWindow.getScene().addEntityToScene(verticalGizmoEntity);
     }
 
-    public Gizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite) {
+    public Gizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite, PropertiesPanel propertiesPanel) {
         this.horizontalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
         this.verticalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
         this.omniDirectionalGizmoEntity = EntityGenerator.generate(omniDirectionalGizmoSprite, omniDirectionalGizmoWidth, omniDirectionalGizmoHeight, Constants.LEVEL_EDITOR_UI_LAYER);
+
+        this.propertiesPanel = propertiesPanel;
 
         this.horizontalGizmoEntity.addComponent(new NonPickable());
         this.verticalGizmoEntity.addComponent(new NonPickable());
@@ -111,7 +117,7 @@ public class Gizmo extends Component {
         if (!isUsing) {
             return;
         }
-        this.selectedEntity = GameWindow.getScene().getSelectedEntity();
+        this.selectedEntity = this.propertiesPanel.getSelectedEntity();
         if (this.selectedEntity != null) {
             this.setActive();
         } else {

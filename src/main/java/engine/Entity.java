@@ -2,6 +2,7 @@ package engine;
 
 import components.Transform;
 import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +10,12 @@ import java.util.List;
 public class Entity {
 
     private String name;
-    public Transform transform;
 
     private ArrayList<Component> components;
 
     private int zIndex;
     private boolean isDead = false;
+    public Transform transform;
 
     // We need to seperate the entityCounter from the entityId
     // as when serializing & deserializing it will overlap and restart the counter if we keep it
@@ -29,14 +30,16 @@ public class Entity {
     public Entity(String name){
         this.name = name;
         this.components = new ArrayList<>();
-        this.transform = new Transform();
+        this.components.add(new Transform());
+        this.transform = this.getComponent(Transform.class);
         this.zIndex = 0;
     }
 
     public Entity(String name, Transform transform, int zIndex){
         this.name = name;
         this.components = new ArrayList<>();
-        this.transform = transform;
+        this.components.add(transform);
+        this.transform = this.getComponent(Transform.class);
         this.zIndex = zIndex;
 
         // IF ANY PROBLEMS RELATED TO IDS CHECK HERE FIRST
@@ -98,10 +101,11 @@ public class Entity {
     }
 
     public void imgui(){
-        this.transform.imgui();
         for(Component c : components){
             if(c.getClass().getDeclaredFields().length > 0){
-                if(ImGui.collapsingHeader(c.getClass().getSimpleName())){
+                if(ImGui.collapsingHeader(c.getClass().getSimpleName(),
+                        ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Framed |
+                                ImGuiTreeNodeFlags.FramePadding | ImGuiTreeNodeFlags.SpanAvailWidth)){
                     c.imgui();
                 }
             }

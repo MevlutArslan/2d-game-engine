@@ -1,5 +1,8 @@
 package engine.utility;
 
+import imgui.ImFont;
+import imgui.ImGui;
+
 public class Constants {
     public static final int GRID_SIZE = 32;
 
@@ -14,5 +17,7 @@ public class Constants {
     public static final int LEVEL_EDITOR_UI_LAYER = 2;
     public static final int UI_LAYER = 3;
 
+    public static ImFont boldFont = ImGui.getIO().getFonts().addFontFromFileTTF("src/main/resources/fonts/roboto/Roboto-Bold.ttf", 18.0f);
+    public static ImFont defaultFont = ImGui.getIO().getFonts().addFontFromFileTTF("src/main/resources/fonts/roboto/Roboto-Regular.ttf", 18.0f);
 
 }

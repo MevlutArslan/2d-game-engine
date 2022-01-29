@@ -1,6 +1,7 @@
 package engine.ui.gizmos;
 
 import engine.Component;
+import engine.GameWindow;
 import engine.input.KeyListener;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
@@ -25,8 +26,8 @@ public class GizmoManager extends Component {
 
     @Override
     public void start() {
-        parent.addComponent(new TranslateGizmo(spriteSheet.getSprite(1), spriteSheet.getSprite(0)));
-        parent.addComponent(new ScaleGizmo(spriteSheet.getSprite(2)));
+        parent.addComponent(new TranslateGizmo(spriteSheet.getSprite(1), spriteSheet.getSprite(0), GameWindow.getImGuiApp().getPropertiesPanel()));
+        parent.addComponent(new ScaleGizmo(spriteSheet.getSprite(2), GameWindow.getImGuiApp().getPropertiesPanel()));
     }
 
     @Override
