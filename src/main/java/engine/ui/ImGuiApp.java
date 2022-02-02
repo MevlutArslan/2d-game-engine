@@ -6,6 +6,7 @@ import engine.scene.Scene;
 import engine.ui.editor.EditorMenu;
 import engine.ui.editor.menus.EditMenu;
 import engine.ui.editor.menus.FileMenu;
+import engine.ui.panels.ContentBrowserPanel;
 import engine.ui.panels.PropertiesPanel;
 import engine.utility.Constants;
 import imgui.*;
@@ -29,6 +30,8 @@ public class ImGuiApp {
     private ImGuiContext context;
 
     private PropertiesPanel propertiesPanel;
+
+    private ContentBrowserPanel contentBrowser;
 
 
     public void init() {
@@ -77,6 +80,7 @@ public class ImGuiApp {
     public ImGuiApp(long window, PickingTexture pickingTexture) {
         this.window = window;
         this.propertiesPanel = new PropertiesPanel(pickingTexture);
+        this.contentBrowser = new ContentBrowserPanel("src/main/resources");
 
         this.editorMenu = new EditorMenu();
         this.editorMenu.addEditorMenu(new FileMenu());
@@ -92,8 +96,12 @@ public class ImGuiApp {
         enableDocking();
         ViewPortWindow.imgui();
         currentScene.imgui();
+
         propertiesPanel.update(deltaTime, currentScene);
         propertiesPanel.imgui();
+
+        contentBrowser.update(deltaTime);
+        contentBrowser.imgui();
         editorMenu.update(deltaTime);
         ImGui.end();
         ImGui.render();
