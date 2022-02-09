@@ -6,11 +6,8 @@ import engine.utility.AssetPool;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseButton;
-import imgui.internal.flag.ImGuiItemFlags;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 // https://www.youtube.com/watch?v=aBuPmOGC7hU&list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT&index=104&t=1035s
@@ -45,35 +42,37 @@ public class ContentBrowserPanel extends Component {
 
         float cellSize = thumbnailSize + padding;
         float panelWidth = ImGui.getContentRegionAvailX();
-        int columnCount = (int)(panelWidth/cellSize);
-        if(columnCount < 1){
+        int columnCount = (int) (panelWidth / cellSize);
+        if (columnCount < 1) {
             columnCount = 1;
         }
 
         ImGui.columns(columnCount);
-
+        int i = 0;
         for (File file : Objects.requireNonNull(currentDirectory.listFiles())) {
+            ImGui.pushID(i++);
 
-            ImGui.pushID(currentDirectory.getPath());
             Texture icon = file.isDirectory() ? directoryIcon : fileIcon;
-            ImGui.pushStyleColor(ImGuiCol.Button, 0,0,0,0);
-            ImGui.imageButton(icon.getTextureId(), thumbnailSize, thumbnailSize, 0,1,1,0);
+            ImGui.pushStyleColor(ImGuiCol.Button, 0, 0, 0, 0);
+            ImGui.imageButton(icon.getTextureId(), thumbnailSize, thumbnailSize, 0, 1, 1, 0);
 
-            if (ImGui.beginDragDropSource())
-            {
-				String itemPath = file.getPath();
-                ImGui.setDragDropPayload("CONTENT_BROWSER_ITEM", itemPath);
-                ImGui.endDragDropSource();
+            if (file.getPath().endsWith(".scene")) {
+                if (ImGui.beginDragDropSource()) {
+                    String itemPath = file.getPath();
+                    ImGui.setDragDropPayload("SCENE_ITEM", itemPath);
+                    ImGui.endDragDropSource();
+                }
             }
 
             ImGui.popStyleColor();
-            if(ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)){
-                if(file.isDirectory()){
+            if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
+                if (file.isDirectory()) {
                     currentDirectory = new File(file.getPath());
                 }
             }
             ImGui.textWrapped(file.getName());
             ImGui.nextColumn();
+
             ImGui.popID();
         }
         ImGui.columns(1);

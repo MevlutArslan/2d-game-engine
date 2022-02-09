@@ -5,9 +5,12 @@ import engine.input.MouseListener;
 import engine.observers.Event;
 import engine.observers.EventSystem;
 import engine.observers.EventType;
-import engine.observers.Observer;
+import engine.scene.LevelEditorSceneInitializer;
+import engine.scene.Scene;
+import engine.utility.Constants;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiDragDropFlags;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 
@@ -22,11 +25,11 @@ public class ViewPortWindow {
 
         ImGui.beginMenuBar();
 
-        if(ImGui.menuItem("Play", "", isPlaying, !isPlaying)){
+        if (ImGui.menuItem("Play", "", isPlaying, !isPlaying)) {
             isPlaying = true;
             EventSystem.notify(null, new Event(EventType.GAME_ENGINE_START_PLAY));
         }
-        if(ImGui.menuItem("Stop", "", !isPlaying, isPlaying)){
+        if (ImGui.menuItem("Stop", "", !isPlaying, isPlaying)) {
             isPlaying = false;
             EventSystem.notify(null, new Event(EventType.GAME_ENGINE_STOP_PLAY));
         }
@@ -59,6 +62,27 @@ public class ViewPortWindow {
 
         MouseListener.setViewPortPos(new Vector2f(topLeft.x, topLeft.y));
         MouseListener.setViewPortSize(new Vector2f(windowSize.x, windowSize.y));
+
+        if (ImGui.beginDragDropTarget()) {
+            int targetFlags = 0;
+
+            String path = ImGui.acceptDragDropPayload("SCENE_ITEM");
+            if (path != null) {
+                if (isScene(path)) {
+                    // TODO refactor this to be reusable across the engine
+                    Scene scene = new Scene(new LevelEditorSceneInitializer());
+                    scene.load(path);
+                    GameWindow.setScene(scene);
+                    GameWindow.getScene().selectEntity(null);
+                    GameWindow.getScene().init();
+                    GameWindow.getScene().start();
+                }
+
+
+            }
+            ImGui.endDragDropTarget();
+        }
+
 
         ImGui.end();
     }
@@ -99,4 +123,7 @@ public class ViewPortWindow {
         return new ImVec2(aspectWidth, aspectHeight);
     }
 
+    private static boolean isScene(String path) {
+        return path.endsWith("." + Constants.sceneFileType);
+    }
 }
