@@ -1,7 +1,5 @@
 package engine;
 
-import components.NonPickable;
-import engine.camera.Camera;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
 import engine.observers.Event;
@@ -13,13 +11,12 @@ import engine.scene.Scene;
 import engine.scene.SceneInitializer;
 import engine.ui.ImGuiApp;
 import engine.utility.AssetPool;
-import org.joml.Vector2f;
+import engine.utility.Constants;
+import engine.utility.file_utility.FileDialogManager;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
 import org.lwjgl.opengl.GL;
-
-import java.awt.*;
 
 import static engine.utility.Constants.MONITOR_HEIGHT;
 import static engine.utility.Constants.MONITOR_WIDTH;
@@ -77,6 +74,7 @@ public class GameWindow implements Observer {
         return GameWindow.instance;
     }
 
+    // TODO absolutely uselss method, restructure it
     public static void changeScene(SceneInitializer sceneInitializer) {
         if (currentScene != null) {
             currentScene.destroy();
@@ -84,15 +82,13 @@ public class GameWindow implements Observer {
 
 //        getImguiLayer().getPropertiesWindow().setActiveGameObject(null);
         currentScene = new Scene(sceneInitializer);
+        // TODO : Change load to loadDefault or use the Overriden method with defaultLevelSrc from project's settings
         currentScene.load();
-        currentScene.selectEntity(null);
+        currentScene.selectEntity(currentScene.getEntities().get(0));
         currentScene.init();
         currentScene.start();
     }
 
-    public static Scene getScene() {
-        return GameWindow.currentScene;
-    }
 
     public static ImGuiApp getImGuiApp() {
         return get().imGuiApp;
@@ -216,7 +212,6 @@ public class GameWindow implements Observer {
 
             imGuiApp.update(deltaTime, currentScene);
 
-
             debounce -= deltaTime;
 
             glfwSwapBuffers(window); // swap the color buffers
@@ -256,25 +251,6 @@ public class GameWindow implements Observer {
         return null;
     }
 
-    public static int getHeight() {
-        return get().height;
-    }
-
-    public static int getWidth() {
-        return get().width;
-    }
-
-    private static void setWidth(int newWidth) {
-        get().width = newWidth;
-    }
-
-    private static void setHeight(int newHeight) {
-        get().height = newHeight;
-    }
-
-    public static FrameBuffer getFramebuffer() {
-        return get().frameBuffer;
-    }
 
     private void configureWindowHints() {
         // Configure GLFW
@@ -336,14 +312,45 @@ public class GameWindow implements Observer {
                 GameWindow.changeScene(new LevelEditorSceneInitializer());
                 break;
             case SAVE_LEVEL:
-                currentScene.save();
+                FileDialogManager.saveFile();
                 break;
             case LOAD_LEVEL:
-                GameWindow.changeScene(new LevelEditorSceneInitializer());
+                String path = FileDialogManager.openFile(Constants.sceneFileType);
+                Scene scene = new Scene(new LevelEditorSceneInitializer());
+                scene.load(path);
+                currentScene = scene;
+                currentScene.selectEntity(currentScene.getEntities().get(0));
+                currentScene.init();
+                currentScene.start();
                 break;
             default:
                 break;
         }
     }
+
+    public static Scene getScene() {
+        return GameWindow.currentScene;
+    }
+
+    public static int getHeight() {
+        return get().height;
+    }
+
+    public static int getWidth() {
+        return get().width;
+    }
+
+    private static void setWidth(int newWidth) {
+        get().width = newWidth;
+    }
+
+    private static void setHeight(int newHeight) {
+        get().height = newHeight;
+    }
+
+    public static FrameBuffer getFramebuffer() {
+        return get().frameBuffer;
+    }
+
 }
 

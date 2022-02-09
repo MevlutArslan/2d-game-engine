@@ -1,10 +1,9 @@
 package engine.utility.file_utility;
 
+import engine.GameWindow;
+import engine.scene.Scene;
+import engine.utility.Constants;
 import org.lwjgl.PointerBuffer;
-
-import java.awt.*;
-import java.io.*;
-import java.util.Locale;
 
 import static org.lwjgl.system.MemoryUtil.memAllocPointer;
 import static org.lwjgl.system.MemoryUtil.memFree;
@@ -38,4 +37,17 @@ public class FileDialogManager {
         return selectedFilePath;
     }
 
+    public static void saveFile(){
+        PointerBuffer savePath = memAllocPointer(1);
+
+        try{
+            if(NFD_SaveDialog(Constants.sceneFileType, "", savePath) == NFD_OKAY){
+                String path = savePath.getStringUTF8(0);
+                GameWindow.getScene().saveAs(path);
+                nNFD_Free(savePath.get(0));
+            }
+        }finally {
+            memFree(savePath);
+        }
+    }
 }

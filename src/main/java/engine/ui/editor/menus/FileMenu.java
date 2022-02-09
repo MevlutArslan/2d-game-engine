@@ -1,10 +1,11 @@
 package engine.ui.editor.menus;
 
-import engine.GameWindow;
 import engine.observers.Event;
 import engine.observers.EventSystem;
 import engine.observers.EventType;
 import engine.ui.editor.EditorComponent;
+import engine.utility.Constants;
+import engine.utility.file_utility.FileDialogManager;
 import imgui.ImGui;
 
 public class FileMenu extends EditorComponent {
@@ -20,7 +21,7 @@ public class FileMenu extends EditorComponent {
                 EventSystem.notify(null, new Event(EventType.SAVE_LEVEL));
             }
             if (ImGui.menuItem("Open", "Ctrl+O")) {
-                // Load
+                EventSystem.notify(null, new Event(EventType.LOAD_LEVEL));
             }
             ImGui.endMenu();
         }
