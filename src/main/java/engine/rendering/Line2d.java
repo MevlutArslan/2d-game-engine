@@ -2,7 +2,6 @@ package engine.rendering;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 // https://www.youtube.com/watch?v=j6lZ8UdjpjA&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=25
 public class Line2d {

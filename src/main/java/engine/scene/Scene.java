@@ -2,6 +2,7 @@ package engine.scene;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import components.Transform;
 import engine.Component;
 import engine.Entity;
 import engine.camera.Camera;
@@ -21,19 +22,16 @@ import java.util.Optional;
 
 // A lot of things of the Scene system are taken from The Cherno, GamesWithGabe and the 'Game Engine Architecture' book.
 public class Scene {
-    private String sceneName;
+
     private Camera camera;
     private ArrayList<Entity> entities;
     private Renderer renderer;
     private boolean isRunning;
     private Physics2d physics2d;
 
-    private Entity selectedEntity = null;
-
     private SceneInitializer sceneInitializer;
 
     public Scene(SceneInitializer sceneInitializer) {
-        this.sceneName = "defaultScene";
         this.sceneInitializer = sceneInitializer;
         this.renderer = new Renderer();
         this.entities = new ArrayList<>();
@@ -74,17 +72,8 @@ public class Scene {
         this.renderer.render();
     }
 
-    public Camera getCamera() {
-        return this.camera;
-    }
-
-
     public void imgui() {
         this.sceneInitializer.imgui();
-    }
-
-    public void onUpdateRuntime(float deltaTime) {
-
     }
 
     public void onUpdateEditor(float deltaTime) {
@@ -96,7 +85,6 @@ public class Scene {
 
             if(entity.isDead()){
                 entities.remove(i);
-                // TODO implement destroy entity methods for renderer and physics2d
                 this.renderer.destroyEntity(entity);
                 this.physics2d.destroyEntity(entity);
                 i--;
@@ -111,11 +99,9 @@ public class Scene {
         for (int i = 0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
             entity.update(deltaTime);
-//            physics2d.onUpdateEditor(deltaTime);
 
             if(entity.isDead()){
                 entities.remove(i);
-                // TODO implement destroy entity methods for renderer and physics2d
                 this.renderer.destroyEntity(entity);
                 this.physics2d.destroyEntity(entity);
                 i--;
@@ -130,7 +116,30 @@ public class Scene {
                 registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
                 create();
         try {
+            // TODO connect to project setting's asset directory
             FileWriter fileWriter = new FileWriter("level.json");
+            List<Entity> toSerialize = new ArrayList<>();
+            for (Entity entity : entities) {
+                if (entity.getShouldSerialize()) {
+                    toSerialize.add(entity);
+                }
+            }
+            fileWriter.write(gson.toJson(toSerialize));
+            fileWriter.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void saveAs(String fileName) {
+        Gson gson = new GsonBuilder().
+                setPrettyPrinting().
+                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
+                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
+                create();
+        try {
+            // TODO connect to project setting's asset directory
+            FileWriter fileWriter = new FileWriter(fileName);
             List<Entity> toSerialize = new ArrayList<>();
             for (Entity entity : entities) {
                 if (entity.getShouldSerialize()) {
@@ -190,12 +199,50 @@ public class Scene {
 
     }
 
-    public void selectEntity(Entity entity) {
-        this.selectedEntity = entity;
-    }
+    public void load(String sceneSource) {
+        Gson gson = new GsonBuilder().
+                setPrettyPrinting().
+                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
+                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
+                create();
+        String loadedText = "";
 
-    public Entity getSelectedEntity() {
-        return this.selectedEntity;
+        try {
+            loadedText = new String(Files.readAllBytes(Paths.get(sceneSource)));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        if (!loadedText.equals("")) {
+            long maxEntityCount = -1;
+            long maxComponentCount = -1;
+
+            Entity[] entities = gson.fromJson(loadedText, Entity[].class);
+            // IF FACING ANY PROBLEMS RELATED TO LOADING ENTITIES LOOK HERE
+            // Switching from a for-each loop to a regular for loop might be better
+            // need to read more about the difference
+            for (Entity entity : entities) {
+                addEntityToScene(entity);
+
+                for (Component component : entity.getAllComponents()) {
+                    if (component.getComponentId() > maxComponentCount) {
+                        maxComponentCount = component.getComponentId();
+                    }
+                }
+
+                if (entity.getEntityId() > maxEntityCount) {
+                    maxEntityCount = entity.getEntityId();
+                }
+            }
+
+            // https://www.youtube.com/watch?v=bRha19j-gB8&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=24
+            maxEntityCount++;
+            maxComponentCount++;
+
+            Entity.init(maxEntityCount);
+            Component.init(maxComponentCount);
+        }
+
     }
 
     public Entity getEntityById(long id) {
@@ -213,11 +260,18 @@ public class Scene {
         return this.entities;
     }
 
-    public String getSceneName() {
-        return sceneName;
+    public SceneInitializer getSceneInitializer(){
+        return this.sceneInitializer;
     }
 
-    public void setSceneName(String sceneName) {
-        this.sceneName = sceneName;
+    public Entity createEntity(String name){
+        Entity entity = new Entity(name);
+        entity.addComponent(new Transform());
+        entity.transform = entity.getComponent(Transform.class);
+        return entity;
+    }
+
+    public Camera getCamera() {
+        return this.camera;
     }
 }

@@ -27,7 +27,6 @@ public class Physics2d {
     private int velocityIterations = 8;
     private int positionIteration = 3;
 
-
     public void add(Entity entity) {
         RigidBody2d rigidBody = entity.getComponent(RigidBody2d.class);
         if (rigidBody != null && rigidBody.getRawBody() == null) {
@@ -57,7 +56,7 @@ public class Physics2d {
                 shape.setRadius(circleCollider.getRadius());
                 // TODO
             } else if ((boxCollider = entity.getComponent(Box2dCollider.class)) != null) {
-                Vector2f halfSize = new Vector2f(boxCollider.getHalfSize().mul(0.5f));
+                Vector2f halfSize = new Vector2f(boxCollider.getHalfSize()).mul(0.5f);
                 Vector2f offset = boxCollider.getOffset();
                 Vector2f origin = new Vector2f(boxCollider.getOrigin());
                 shape.setAsBox(halfSize.x, halfSize.y, new Vec2(origin.x, origin.y), 0);
@@ -79,6 +78,7 @@ public class Physics2d {
 
         if (physicsTime >= 0.0f) {
             physicsTime -= physicsTimeStep;
+            // TODO figure out the reason for index out of bound exception
             world.step(physicsTime, velocityIterations, positionIteration);
         }
     }

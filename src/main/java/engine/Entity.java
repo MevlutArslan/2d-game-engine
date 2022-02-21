@@ -1,9 +1,14 @@
 package engine;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import components.Transform;
+import components.rendering.SpriteRenderer;
 import engine.ui.editor.CustomImGuiController;
-import imgui.ImGui;
-import imgui.flag.ImGuiTreeNodeFlags;
+import engine.utility.AssetPool;
+import engine.utility.Constants;
+import engine.utility.gson_adapter.ComponentGsonAdapter;
+import engine.utility.gson_adapter.EntityGsonAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +16,10 @@ import java.util.List;
 public class Entity {
 
     private String name;
-
     private ArrayList<Component> components;
 
-    private int zIndex;
     private boolean isDead = false;
-    public Transform transform;
+    public transient Transform transform;
 
     // We need to seperate the entityCounter from the entityId
     // as when serializing & deserializing it will overlap and restart the counter if we keep it
@@ -31,17 +34,7 @@ public class Entity {
     public Entity(String name){
         this.name = name;
         this.components = new ArrayList<>();
-        this.transform = new Transform();
-        this.zIndex = 0;
-    }
 
-    public Entity(String name, Transform transform, int zIndex){
-        this.name = name;
-        this.components = new ArrayList<>();
-        this.transform = transform;
-        this.zIndex = zIndex;
-
-        // IF ANY PROBLEMS RELATED TO IDS CHECK HERE FIRST
         this.entityId = entityCounter++;
     }
 
@@ -99,11 +92,10 @@ public class Entity {
     }
 
     public int getzIndex(){
-        return this.zIndex;
+        return this.transform.zIndex;
     }
 
     public void imgui(){
-        transform.imgui();
         for(int i = 0; i < components.size(); i++){
             Component c = components.get(i);
             if(c.getClass().getDeclaredFields().length > 0){
@@ -139,5 +131,25 @@ public class Entity {
         return this.isDead;
     }
 
+    public void generateUid(){
+        this.entityId = entityCounter++;
+    }
 
+    public Entity copy() {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Component.class, new ComponentGsonAdapter())
+                .registerTypeAdapter(Entity.class, new EntityGsonAdapter()).create();
+        String entityAsJson = gson.toJson(this);
+        Entity entity = gson.fromJson(entityAsJson, Entity.class);
+        entity.generateUid();
+        for(Component c : entity.getAllComponents()){
+            c.generateComponentId();
+        }
+
+        SpriteRenderer spriteRenderer = entity.getComponent(SpriteRenderer.class);
+        if (spriteRenderer != null && spriteRenderer.getTexture() != null){
+            spriteRenderer.setTexture(AssetPool.getTexture(spriteRenderer.getTexture().getFilepath()));
+        }
+
+        return entity;
+    }
 }

@@ -3,7 +3,6 @@ package engine.ui.editor;
 import engine.Component;
 import engine.Entity;
 import engine.utility.Constants;
-import engine.utility.IAllowForComponentRemoval;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;

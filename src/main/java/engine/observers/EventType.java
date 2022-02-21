@@ -5,6 +5,7 @@ public enum EventType {
     GAME_ENGINE_START_PLAY,
     GAME_ENGINE_STOP_PLAY,
     SAVE_LEVEL,
+    SAVE_AS_LEVEL,
     LOAD_LEVEL,
     USER_EVENT
 }

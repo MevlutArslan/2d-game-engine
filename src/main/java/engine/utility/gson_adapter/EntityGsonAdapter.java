@@ -13,16 +13,14 @@ public class EntityGsonAdapter implements JsonDeserializer<Entity> {
     public Entity deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         String name = jsonObject.get("name").getAsString();
-        Transform transform = jsonDeserializationContext.deserialize(jsonObject.get("transform"), Transform.class);
         JsonArray components = jsonObject.getAsJsonArray("components");
-//        long entityId = jsonObject.get("entityId").getAsLong();
-        int zIndex = jsonDeserializationContext.deserialize(jsonObject.get("zIndex"), int.class);
 
-        Entity entity = new Entity(name, transform, zIndex);
+        Entity entity = new Entity(name);
         for(JsonElement element : components){
             Component component = jsonDeserializationContext.deserialize(element, Component.class);
             entity.addComponent(component);
         }
+        entity.transform = entity.getComponent(Transform.class);
         return entity;
     }
 }

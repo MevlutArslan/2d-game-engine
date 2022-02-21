@@ -4,10 +4,10 @@ import imgui.ImFont;
 import imgui.ImGui;
 
 public class Constants {
-    public static final int GRID_SIZE = 32;
+    public static final float GRID_SIZE = 0.25f;
 
-    public static final float GRID_WIDTH = 40.0f;
-    public static final float GRID_HEIGHT = 21.0f;
+    public static final float GRID_WIDTH = 0.25f;
+    public static final float GRID_HEIGHT = 0.25f;
 
     public static final int MONITOR_WIDTH = 2560;
     public static final int MONITOR_HEIGHT = 1600;
@@ -20,4 +20,5 @@ public class Constants {
     public static ImFont boldFont = ImGui.getIO().getFonts().addFontFromFileTTF("src/main/resources/fonts/roboto/Roboto-Bold.ttf", 18.0f);
     public static ImFont defaultFont = ImGui.getIO().getFonts().addFontFromFileTTF("src/main/resources/fonts/roboto/Roboto-Regular.ttf", 18.0f);
 
+    public static final String sceneFileType = "scene";
 }

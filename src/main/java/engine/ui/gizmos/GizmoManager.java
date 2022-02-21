@@ -3,7 +3,6 @@ package engine.ui.gizmos;
 import engine.Component;
 import engine.GameWindow;
 import engine.input.KeyListener;
-import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;

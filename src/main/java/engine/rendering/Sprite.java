@@ -1,8 +1,6 @@
 package engine.rendering;
 
-import components.Transform;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 
 public class Sprite {
 

@@ -25,10 +25,10 @@ public class Renderer {
         }
     }
 
-    public void add(SpriteRenderer spr){
+    private void add(SpriteRenderer spr){
         boolean added = false;
         for(RenderBatch batch : batches){
-            if(batch.hasRoom() && batch.getzIndex() == spr.parent.getzIndex()){
+            if(batch.hasRoom() && batch.getzIndex() == spr.parent.transform.zIndex){
                 Texture tex = spr.getTexture();
                 if(tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
                     batch.addSprite(spr);
@@ -39,7 +39,7 @@ public class Renderer {
         }
 
         if(!added){
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE,spr.parent.getzIndex());
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, spr.parent.transform.zIndex, this);
             newBatch.start();
 
             batches.add(newBatch);
@@ -50,7 +50,8 @@ public class Renderer {
 
     public void render(){
         currentShader.bind();
-        for(RenderBatch renderBatch : batches){
+        for(int i = 0; i < batches.size(); i++){
+            RenderBatch renderBatch = batches.get(i);
             renderBatch.render();
         }
     }

@@ -1,7 +1,5 @@
 package engine.rendering;
 
-import java.util.Arrays;
-
 import static org.lwjgl.opengl.GL30.*;
 
 // https://learnopengl.com/Advanced-OpenGL/Framebuffers

@@ -55,10 +55,12 @@ public class RenderBatch implements Comparable<RenderBatch> {
             0, 1, 2, 3, 4, 5, 6, 7
     };
 
-    public RenderBatch(int maxBatchSize, int zIndex) {
+    private Renderer renderer;
+
+    public RenderBatch(int maxBatchSize, int zIndex, Renderer renderer) {
+        this.renderer = renderer;
         this.zIndex = zIndex;
         this.maxBatchSize = maxBatchSize;
-
         this.sprites = new SpriteRenderer[this.maxBatchSize];
 
         // 4 vertices per tile/quad
@@ -102,18 +104,28 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
         glVertexAttribPointer(4, ENTITY_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE_BYTES, ENTITY_ID_OFFSET);
         glEnableVertexAttribArray(4);
-
     }
 
 
     public void render() {
         boolean rebufferNeeded = false;
         for (int i = 0; i < numberOfSprites; i++) {
-            if (sprites[i].hasChanged()) {
-                loadVertexPropertiesIndex(i);
-                sprites[i].setHasChangedToFalse();
-                rebufferNeeded = true;
+            SpriteRenderer spr = sprites[i];
+            if (spr.hasChanged()) {
+                if (!hasTexture(spr.getTexture())) {
+                    this.renderer.destroyEntity(spr.parent);
+                    this.renderer.add(spr.parent);
+                } else {
+                    loadVertexPropertiesIndex(i);
+                    spr.setHasChangedToFalse();
+                    rebufferNeeded = true;
+                }
+            }
 
+            if (spr.parent.getzIndex() != this.zIndex) {
+                destroyIfExists(spr.parent);
+                renderer.add(spr.parent);
+                i--;
             }
         }
         if (rebufferNeeded) {
@@ -188,26 +200,28 @@ public class RenderBatch implements Comparable<RenderBatch> {
                     sprite.parent.transform.scale.x, sprite.parent.transform.scale.y, 1
             );
         }
-        float xAdd = 1.0f;
-        float yAdd = 1.0f;
+
+        // sets the origin of the entity to be center instead of bottom left
+        float xAdd = 0.5f;
+        float yAdd = 0.5f;
         for (int i = 0; i < 4; i++) {
             if (i == 1) {
-                yAdd = 0.0f;
+                yAdd = -0.5f;
             } else if (i == 2) {
-                xAdd = 0.0f;
+                xAdd = -0.5f;
             } else if (i == 3) {
-                yAdd = 1.0f;
+                yAdd = 0.5f;
             }
 
             Vector4f currentPos = new Vector4f(
                     sprite.parent.transform.position.x +
-                    (xAdd * sprite.parent.transform.scale.x),
+                            (xAdd * sprite.parent.transform.scale.x),
                     sprite.parent.transform.position.y +
-                    (yAdd * sprite.parent.transform.scale.y),
+                            (yAdd * sprite.parent.transform.scale.y),
                     0, 1);
 
-            if(isRotated){
-                currentPos = new Vector4f(xAdd, yAdd, 0, 1 ).mul(transformMatrix);
+            if (isRotated) {
+                currentPos = new Vector4f(xAdd, yAdd, 0, 1).mul(transformMatrix);
             }
             // load position
             vertices[offset] = currentPos.x;
@@ -261,7 +275,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
         return elements;
     }
 
-    // NO idea how this works...
+    // draws 2 triangles that form a square/rectangle
     private void loadElementIndices(int[] elements, int index) {
         int offsetArrayIndex = 6 * index;
         int offset = 4 * index;
@@ -300,10 +314,10 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
     public boolean destroyIfExists(Entity entity) {
         SpriteRenderer spriteRenderer = entity.getComponent(SpriteRenderer.class);
-        for(int i = 0; i < numberOfSprites; i++){
-            if(sprites[i] == spriteRenderer){
-                for(int j = i; j < numberOfSprites - 1; j++){
-                    sprites[j] = sprites[j+1];
+        for (int i = 0; i < numberOfSprites; i++) {
+            if (sprites[i] == spriteRenderer) {
+                for (int j = i; j < numberOfSprites - 1; j++) {
+                    sprites[j] = sprites[j + 1];
                     sprites[j].setHasChanged();
                 }
 

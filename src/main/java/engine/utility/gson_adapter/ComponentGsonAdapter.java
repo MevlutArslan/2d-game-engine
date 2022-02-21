@@ -10,6 +10,7 @@ public class ComponentGsonAdapter implements JsonSerializer<Component> ,JsonDese
     @Override
     public JsonElement serialize(Component src, Type typeOfSrc, JsonSerializationContext jsonSerializationContext){
         JsonObject result = new JsonObject();
+        // TODO make this general, including the package details can create problems while loading scene from someone else's projects.
         result.add("type", new JsonPrimitive(src.getClass().getCanonicalName()));
         result.add("properties", jsonSerializationContext.serialize(src, src.getClass()));
 

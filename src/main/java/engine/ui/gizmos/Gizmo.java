@@ -1,10 +1,12 @@
 package engine.ui.gizmos;
 
 import components.NonPickable;
+import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.Component;
 import engine.Entity;
 import engine.GameWindow;
+import engine.input.KeyListener;
 import engine.input.MouseListener;
 import engine.rendering.Sprite;
 import engine.ui.panels.PropertiesPanel;
@@ -13,7 +15,7 @@ import engine.utility.EntityGenerator;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Gizmo extends Component {
 
@@ -36,16 +38,16 @@ public class Gizmo extends Component {
     private final Vector4f horizontalGizmoColorOnHover = new Vector4f(0, 1, 0, 1f);
     private final Vector4f omniDirectionalGizmoColorOnHover = new Vector4f(0, 0, 1, 1f);
 
-    private final Vector2f verticalGizmoPositionOffset = new Vector2f(20, 55);
-    private final Vector2f horizontalGizmoPositionOffset = new Vector2f(64, 2);
-    private final Vector2f omniDirectionalGizmoPositionOffset = new Vector2f(18, 2);
+    private final Vector2f verticalGizmoPositionOffset = new Vector2f(-7f / 80f, 21f / 80f);
+    private final Vector2f horizontalGizmoPositionOffset = new Vector2f(24f / 80f, -6f / 80f);
+    private final Vector2f omniDirectionalGizmoPositionOffset = new Vector2f(18/80f, 2/80f);
 
     // in world units
-    private final int gizmoHeight = 48;
-    private final int gizmoWidth = 16;
+    private final float gizmoHeight = 48 / 80f;
+    private final float gizmoWidth = 16 / 80f;
 
-    private final int omniDirectionalGizmoHeight = 32;
-    private final int omniDirectionalGizmoWidth = 16;
+    private final float omniDirectionalGizmoHeight = 32 / 80f;
+    private final float omniDirectionalGizmoWidth = 16 / 80f;
 
     protected Entity selectedEntity = null;
 
@@ -59,8 +61,8 @@ public class Gizmo extends Component {
     private boolean isUsing = false;
 
     public Gizmo(Sprite sprite, PropertiesPanel propertiesPanel) {
-        this.horizontalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
-        this.verticalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
+        this.horizontalGizmoEntity = EntityGenerator.generate(sprite, gizmoWidth, gizmoHeight, Constants.LEVEL_EDITOR_UI_LAYER);
+        this.verticalGizmoEntity = EntityGenerator.generate(sprite, gizmoWidth, gizmoHeight, Constants.LEVEL_EDITOR_UI_LAYER);
 
         this.propertiesPanel = propertiesPanel;
         this.horizontalGizmoEntity.addComponent(new NonPickable());
@@ -74,8 +76,8 @@ public class Gizmo extends Component {
     }
 
     public Gizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite, PropertiesPanel propertiesPanel) {
-        this.horizontalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
-        this.verticalGizmoEntity = EntityGenerator.generate(sprite, 16, 48, Constants.LEVEL_EDITOR_UI_LAYER);
+        this.horizontalGizmoEntity = EntityGenerator.generate(sprite, gizmoWidth, gizmoHeight, Constants.LEVEL_EDITOR_UI_LAYER);
+        this.verticalGizmoEntity = EntityGenerator.generate(sprite, gizmoWidth, gizmoHeight, Constants.LEVEL_EDITOR_UI_LAYER);
         this.omniDirectionalGizmoEntity = EntityGenerator.generate(omniDirectionalGizmoSprite, omniDirectionalGizmoWidth, omniDirectionalGizmoHeight, Constants.LEVEL_EDITOR_UI_LAYER);
 
         this.propertiesPanel = propertiesPanel;
@@ -95,11 +97,12 @@ public class Gizmo extends Component {
 
     @Override
     public void start() {
-        this.horizontalGizmoEntity.transform.rotation = this.parent.transform.rotation + 90;
-        this.verticalGizmoEntity.transform.rotation = this.parent.transform.rotation + 180;
+        this.horizontalGizmoEntity.transform.rotation = 90;
+        this.verticalGizmoEntity.transform.rotation = 180;
 
         this.horizontalGizmoEntity.setNoSerialize();
         this.verticalGizmoEntity.setNoSerialize();
+
         if (omniDirectionalGizmoEntity != null) {
             this.omniDirectionalGizmoEntity.setNoSerialize();
         }
@@ -120,6 +123,13 @@ public class Gizmo extends Component {
         this.selectedEntity = this.propertiesPanel.getSelectedEntity();
         if (this.selectedEntity != null) {
             this.setActive();
+
+            if(KeyListener.keyBeginPress(GLFW_KEY_BACKSPACE)){
+                selectedEntity.destroy();
+                this.setInactive();
+                propertiesPanel.setSelectedEntity(null);
+            }
+
         } else {
             this.setInactive();
             return;
@@ -138,10 +148,6 @@ public class Gizmo extends Component {
             horizontalGizmoActive = false;
             omniDirectionalGizmoActive = false;
             verticalGizmoActive = true;
-        } else if ((omniDirectionalGizmoInFocus || omniDirectionalGizmoActive) && MouseListener.isDragging() && MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            verticalGizmoActive = false;
-            horizontalGizmoActive = false;
-            omniDirectionalGizmoActive = true;
         } else {
             horizontalGizmoActive = false;
             verticalGizmoActive = false;
@@ -161,17 +167,15 @@ public class Gizmo extends Component {
             this.horizontalGizmoEntity.transform.position.add(this.horizontalGizmoPositionOffset);
             this.verticalGizmoEntity.transform.position.add(this.verticalGizmoPositionOffset);
 
-//            DebugDraw.drawSquare( this.horizontalGizmoEntity.transform.position, this.horizontalGizmoEntity.transform.scale, (int)this.horizontalGizmoEntity.transform.rotation, new Vector3f(1,0,0),1);
-//            DebugDraw.drawSquare(this.verticalGizmoEntity.transform.position, this.verticalGizmoEntity.transform.scale, 0, new Vector3f(0,1,0),1);
         }
     }
 
     private boolean checkHorizontalGizmoHoverState() {
         Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
-        if (mousePos.x <= horizontalGizmoEntity.transform.position.x &&
-                mousePos.x >= horizontalGizmoEntity.transform.position.x - gizmoHeight &&
-                mousePos.y >= horizontalGizmoEntity.transform.position.y &&
-                mousePos.y <= horizontalGizmoEntity.transform.position.y + gizmoWidth - 3) {
+        if (mousePos.x <= horizontalGizmoEntity.transform.position.x + (gizmoHeight / 2.0f) &&
+                mousePos.x >= horizontalGizmoEntity.transform.position.x - (gizmoWidth / 2.0f) &&
+                mousePos.y >= horizontalGizmoEntity.transform.position.y - (gizmoHeight / 2.0f) &&// bug here dont know why 3 works
+                mousePos.y <= horizontalGizmoEntity.transform.position.y + (gizmoWidth / 2.0f)) {
             horizontalGizmoSprite.setColor(horizontalGizmoColorOnHover);
             return true;
         } else {
@@ -182,11 +186,10 @@ public class Gizmo extends Component {
 
     private boolean checkVerticalGizmoHoverState() {
         Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
-        if (mousePos.x <= verticalGizmoEntity.transform.position.x &&
-                mousePos.x >= verticalGizmoEntity.transform.position.x - gizmoWidth &&
-                mousePos.y <= verticalGizmoEntity.transform.position.y &&
-                mousePos.y >= verticalGizmoEntity.transform.position.y - gizmoHeight) {
-            System.out.println("HOVERING VERTICAL GIZMO!");
+        if (mousePos.x <= verticalGizmoEntity.transform.position.x + (gizmoWidth / 2.0f)&&
+                mousePos.x >= verticalGizmoEntity.transform.position.x - (gizmoWidth / 2.0f) &&
+                mousePos.y <= verticalGizmoEntity.transform.position.y + (gizmoHeight / 2.0f) &&
+                mousePos.y >= verticalGizmoEntity.transform.position.y - (gizmoHeight / 2.0f)) {
             verticalGizmoSprite.setColor(verticalGizmoColorOnHover);
             return true;
         } else {
@@ -195,6 +198,7 @@ public class Gizmo extends Component {
         }
     }
 
+    // TODO Sizing to Box2D standards broke it, needs fixing
     private boolean checkOmniDirectionalGizmoHoverState() {
         if (omniDirectionalGizmoEntity == null) return false;
 

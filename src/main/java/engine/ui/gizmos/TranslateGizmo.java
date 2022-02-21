@@ -21,8 +21,6 @@ public class TranslateGizmo extends Gizmo {
                 selectedEntity.transform.position.set(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
             }
         }
-
-
         super.onUpdateEditor(deltaTime);
     }
 }

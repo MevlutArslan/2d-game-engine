@@ -26,7 +26,7 @@ public class FileDialogManager {
         PointerBuffer outPath = memAllocPointer(1);
 
         try {
-            if (NFD_OpenDialog(filter, "", outPath) == NFD_OKAY) {
+            if (checkResult(NFD_OpenDialog(filter, "", outPath))) {
                 selectedFilePath = outPath.getStringUTF8(0);
                 nNFD_Free(outPath.get(0));
             }
@@ -41,7 +41,7 @@ public class FileDialogManager {
         PointerBuffer savePath = memAllocPointer(1);
 
         try{
-            if(NFD_SaveDialog(Constants.sceneFileType, "", savePath) == NFD_OKAY){
+            if(checkResult(NFD_SaveDialog(Constants.sceneFileType, "", savePath))){
                 String path = savePath.getStringUTF8(0);
                 GameWindow.getScene().saveAs(path);
                 nNFD_Free(savePath.get(0));
@@ -49,5 +49,10 @@ public class FileDialogManager {
         }finally {
             memFree(savePath);
         }
+    }
+
+    private static boolean checkResult(int executionCode){
+//      NFD_OKAY ,NFD_CANCEL, NFD_ERROR
+        return executionCode == NFD_OKAY;
     }
 }

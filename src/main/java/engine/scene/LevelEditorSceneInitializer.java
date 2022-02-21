@@ -3,12 +3,8 @@ package engine.scene;
 import components.NonPickable;
 import components.rendering.SpriteRenderer;
 import engine.Entity;
-import engine.GameWindow;
 import engine.camera.LevelEditorCameraController;
 import engine.input.MouseControl;
-import engine.physics.components.Box2dCollider;
-import engine.physics.components.CircleCollider;
-import engine.physics.components.RigidBody2d;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
@@ -22,13 +18,14 @@ import org.joml.Vector2f;
 
 public class LevelEditorSceneInitializer extends SceneInitializer {
 
-    private Entity editorEntity = new Entity("Editor Entity");
+    private Entity editorEntity;
     private SpriteSheet sprites;
 
     @Override
     public void init(Scene scene) {
         sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
         SpriteSheet gizmos = AssetPool.getSpriteSheet("src/main/resources/textures/gizmos.png");
+        editorEntity = scene.createEntity("Level editor stuff");
 
         editorEntity.setNoSerialize();
         editorEntity.addComponent(new MouseControl());
@@ -90,7 +87,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
             Vector2f[] texCoords = sprite.getTextureCoords();
 
             if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
-                Entity entity = EntityGenerator.generate(sprite, spriteWidth, spriteHeight);
+                Entity entity = EntityGenerator.generateSpriteObject(sprite, 0.25f, 0.25f);
                 editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
             }
 

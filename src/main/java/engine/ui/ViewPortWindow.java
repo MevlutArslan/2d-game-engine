@@ -10,7 +10,6 @@ import engine.scene.Scene;
 import engine.utility.Constants;
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.flag.ImGuiDragDropFlags;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 
@@ -73,7 +72,6 @@ public class ViewPortWindow {
                     Scene scene = new Scene(new LevelEditorSceneInitializer());
                     scene.load(path);
                     GameWindow.setScene(scene);
-                    GameWindow.getScene().selectEntity(null);
                     GameWindow.getScene().init();
                     GameWindow.getScene().start();
                 }

@@ -4,25 +4,31 @@ import components.Transform;
 import components.VariableConnectionTestClass;
 import components.rendering.SpriteRenderer;
 import engine.Entity;
+import engine.GameWindow;
 import engine.rendering.Sprite;
 import org.joml.Vector2f;
 
 public class EntityGenerator {
-    public static Entity generate(Sprite sprite, float width, float height){
-        Entity entity = new Entity("",
-                new Transform(new Vector2f(), new Vector2f(width, height)), 0);
-        entity.addComponent(new SpriteRenderer());
-        entity.getComponent(SpriteRenderer.class).setSprite(sprite);
+    public static Entity generateSpriteObject(Sprite sprite, float width, float height){
+        Entity entity = GameWindow.getScene().createEntity("Generated_Entity");
+        entity.transform.scale.x = width;
+        entity.transform.scale.y = height;
+        SpriteRenderer spriteRenderer = new SpriteRenderer();
+        spriteRenderer.setSprite(sprite);
+        entity.addComponent(spriteRenderer);
 
         return entity;
     }
 
     public static Entity generate(Sprite sprite, float width, float height, int zIndex){
-        Entity entity = new Entity("",
-                new Transform(new Vector2f(), new Vector2f(width, height)), zIndex);
-        entity.addComponent(new VariableConnectionTestClass());
-        entity.addComponent(new SpriteRenderer());
-        entity.getComponent(SpriteRenderer.class).setSprite(sprite);
+        Entity entity = GameWindow.getScene().createEntity("Generated_Entity");
+        entity.transform.scale.x = width;
+        entity.transform.scale.y = height;
+        entity.transform.zIndex = zIndex;
+        SpriteRenderer spriteRenderer = new SpriteRenderer();
+        spriteRenderer.setSprite(sprite);
+
+        entity.addComponent(spriteRenderer);
 
         return entity;
     }

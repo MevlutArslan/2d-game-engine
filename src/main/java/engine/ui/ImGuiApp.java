@@ -130,7 +130,7 @@ public class ImGuiApp {
                 ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
 
 //        float minWindowSizeX = ImGui.getStyle().getWindowMinSizeX();
-        ImGui.getStyle().setWindowMinSize(370, ImGui.getStyle().getWindowMinSizeY());
+        ImGui.getStyle().setWindowMinSize(370, 200);
         ImGui.begin("Docking", new ImBoolean(true), window_flags);
 
         // Assertion failed: (SizeOfStyleVarStack >= g.StyleVarStack.Size && "PushStyleVar/PopStyleVar Mismatch!")

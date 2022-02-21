@@ -51,18 +51,20 @@ public class MouseListener {
         return MouseListener.mouseListener;
     }
 
-    // https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
+
     public static float getWorldCoordsX() {
         return (float) get().worldX;
     }
 
+    // https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
     private static void calcWorldCoordsX(){
         // subtracting the viewportPos.x from x gives us the start point for the viewport's accurate position
         float currentX = getX() - get().viewPortPos.x;
         currentX = (currentX / get().viewPortSize.x) * 2.0f - 1.0f;
 
         Matrix4f viewProjection = new Matrix4f();
-        GameWindow.getScene().getCamera().getInverseViewMatrix().mul(GameWindow.getScene().getCamera().getInverseProjectionMatrix(),viewProjection);
+        GameWindow.getScene().getCamera().getInverseViewMatrix()
+                .mul(GameWindow.getScene().getCamera().getInverseProjectionMatrix(),viewProjection);
 
         Vector4f vector = new Vector4f(currentX, 0, 0, 1);
         vector.mul(viewProjection);

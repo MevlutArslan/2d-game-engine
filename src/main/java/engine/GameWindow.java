@@ -44,17 +44,12 @@ public class GameWindow implements Observer {
     // Scene Manager related
     private static Scene currentScene = null;
 
-    // testing things
-    public int r, g, b;
-
     private ImGuiApp imGuiApp;
     private FrameBuffer frameBuffer;
     private PickingTexture pickingTexture;
 
     private Shader defaultShader;
     private Shader pickingShader;
-
-    private float debounce = 0.2f;
 
     private boolean isEditorMode = true;
 
@@ -84,7 +79,6 @@ public class GameWindow implements Observer {
         currentScene = new Scene(sceneInitializer);
         // TODO : Change load to loadDefault or use the Overriden method with defaultLevelSrc from project's settings
         currentScene.load();
-        currentScene.selectEntity(currentScene.getEntities().get(0));
         currentScene.init();
         currentScene.start();
     }
@@ -92,6 +86,10 @@ public class GameWindow implements Observer {
 
     public static ImGuiApp getImGuiApp() {
         return get().imGuiApp;
+    }
+
+    public static void setScene(Scene scene) {
+        currentScene = scene;
     }
 
     public void run() {
@@ -168,6 +166,12 @@ public class GameWindow implements Observer {
         while (!glfwWindowShouldClose(window)) {
             System.out.println("FPS : " + (1.0f / deltaTime));
 
+            endTime = (float) glfwGetTime();
+            deltaTime = endTime - beginTime;
+            beginTime = endTime;
+            lag += deltaTime;
+
+
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
@@ -186,33 +190,27 @@ public class GameWindow implements Observer {
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            endTime = (float) glfwGetTime();
-            deltaTime = endTime - beginTime;
-            beginTime = endTime;
-            lag += deltaTime;
+
 
             if (deltaTime >= 0) {
+                // TODO FIX TWITCHING BUG
+//                while (lag >= FIXED_TIME_STEP) {
+                    if(isEditorMode){
+                        currentScene.onUpdateEditor(deltaTime);
+                    }else{
+                        currentScene.update(deltaTime);
+                    }
+                    lag -= FIXED_TIME_STEP;
+//                }
                 DebugDraw.draw();
-                if(isEditorMode){
-                    currentScene.onUpdateEditor(deltaTime);
-                }else{
-                    currentScene.update(deltaTime);
-                }
-
-
                 Renderer.bindShader(defaultShader);
                 currentScene.render();
-                while (lag >= FIXED_TIME_STEP) {
 
-                    lag -= FIXED_TIME_STEP;
-                }
             }
 
             frameBuffer.unbind();
 
             imGuiApp.update(deltaTime, currentScene);
-
-            debounce -= deltaTime;
 
             glfwSwapBuffers(window); // swap the color buffers
 
@@ -298,7 +296,6 @@ public class GameWindow implements Observer {
 
     @Override
     public void onNotify(Entity entity, Event event) {
-//        System.out.println("NOTIFIED");
         switch (event.type) {
             case GAME_ENGINE_START_PLAY:
                 this.isEditorMode = false;
@@ -311,15 +308,18 @@ public class GameWindow implements Observer {
                 // reset to the last saved state
                 GameWindow.changeScene(new LevelEditorSceneInitializer());
                 break;
-            case SAVE_LEVEL:
+            case SAVE_AS_LEVEL:
                 FileDialogManager.saveFile();
                 break;
+            case SAVE_LEVEL:
+                // save to currently loaded level, find a way to store it
+                break;
             case LOAD_LEVEL:
+                // TODO refactor this it conflicts with other load events because of the path
                 String path = FileDialogManager.openFile(Constants.sceneFileType);
                 Scene scene = new Scene(new LevelEditorSceneInitializer());
                 scene.load(path);
                 currentScene = scene;
-                currentScene.selectEntity(currentScene.getEntities().get(0));
                 currentScene.init();
                 currentScene.start();
                 break;
@@ -333,11 +333,11 @@ public class GameWindow implements Observer {
     }
 
     public static int getHeight() {
-        return get().height;
+        return MONITOR_HEIGHT;
     }
 
     public static int getWidth() {
-        return get().width;
+        return MONITOR_WIDTH;
     }
 
     private static void setWidth(int newWidth) {

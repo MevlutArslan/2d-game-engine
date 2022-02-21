@@ -1,8 +1,5 @@
 package engine.ui.editor;
 
-import engine.Component;
-import engine.ui.editor.menus.EditMenu;
-import engine.ui.editor.menus.FileMenu;
 import imgui.ImGui;
 
 import java.util.ArrayList;

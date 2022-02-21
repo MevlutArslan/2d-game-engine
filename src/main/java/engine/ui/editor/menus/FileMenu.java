@@ -17,10 +17,10 @@ public class FileMenu extends EditorComponent {
     @Override
     public void update(float deltaTime) {
         if(ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("Save", "Ctrl+S")) {
-                EventSystem.notify(null, new Event(EventType.SAVE_LEVEL));
+            if (ImGui.menuItem("Save As", "Ctrl+S")) {
+                EventSystem.notify(null, new Event(EventType.SAVE_AS_LEVEL));
             }
-            if (ImGui.menuItem("Open", "Ctrl+O")) {
+            if (ImGui.menuItem("Open...", "Ctrl+O")) {
                 EventSystem.notify(null, new Event(EventType.LOAD_LEVEL));
             }
             ImGui.endMenu();

@@ -16,36 +16,20 @@ public class PropertiesPanel {
     private Entity selectedEntity = null;
     private PickingTexture pickingTexture;
 
-    private float debounce = 0.2f;
-
-    public PropertiesPanel(PickingTexture pickingTexture){
+    public PropertiesPanel(PickingTexture pickingTexture) {
         this.pickingTexture = pickingTexture;
     }
 
-    public void update(float deltaTime, Scene currentScene){
-        debounce -= deltaTime;
+    public void update(float deltaTime, Scene currentScene) {
 
-        if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && debounce < 0) {
-            int x = (int) MouseListener.getScreenX();
-            int y = (int) MouseListener.getScreenY();
-            Entity pickedEntity = currentScene.getEntityById(pickingTexture.readPixel(x, y));
-            // TODO : Fix overlapping gizmo picks
-            if (pickedEntity != null && pickedEntity.getComponent(NonPickable.class) == null && !MouseListener.isDragging()) {
-                selectedEntity = pickedEntity;
-            } else if (pickedEntity == null && !MouseListener.isDragging()) {
-                selectedEntity = null;
-            }
-            this.debounce = 0.2f;
-        }
     }
 
-    public void imgui(){
+    public void imgui() {
+        ImGui.begin("Properties");
         if (selectedEntity != null) {
-            ImGui.begin("Properties");
-
             selectedEntity.imgui();
 
-            if(ImGui.button("Add Component")){
+            if (ImGui.button("Add Component")) {
                 ImGui.openPopup("AddComponent");
             }
 
@@ -72,12 +56,19 @@ public class PropertiesPanel {
 
                 ImGui.endPopup();
             }
-
-            ImGui.end();
         }
+        ImGui.end();
     }
 
     public Entity getSelectedEntity() {
         return this.selectedEntity;
+    }
+
+    public void setSelectedEntity(Entity selectedEntity) {
+        this.selectedEntity = selectedEntity;
+    }
+
+    public PickingTexture getPickingTexture() {
+        return this.pickingTexture;
     }
 }

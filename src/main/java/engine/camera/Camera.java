@@ -1,6 +1,5 @@
 package engine.camera;
 
-import engine.utility.Constants;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -10,7 +9,9 @@ public class Camera {
     private Matrix4f projectionMatrix, viewMatrix, inverseProjectionMatrix, inverseViewMatrix;
     public Vector2f cameraPosition;
 
-    private Vector2f projectionSize = new Vector2f(Constants.GRID_SIZE * Constants.GRID_WIDTH, Constants.GRID_SIZE * Constants.GRID_HEIGHT);
+    private float projectionWidth = 6;
+    private float projectionHeight = 3;
+    private Vector2f projectionSize = new Vector2f(projectionWidth, projectionHeight);
 
     private float zoomLevel = 1.0f;
 
@@ -23,9 +24,10 @@ public class Camera {
         adjustProjection();
     }
 
-
     public void adjustProjection() {
         this.projectionMatrix.identity();
+
+        // first 4 parameters specify the boundaries of the projection
         this.projectionMatrix.ortho(0, projectionSize.x  * zoomLevel,
                 0.0f, projectionSize.y * zoomLevel,
                 0.0f, 50.0f);

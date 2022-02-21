@@ -47,16 +47,16 @@ public class LevelEditorCameraController extends Component {
         }
 
         if(KeyListener.isKeyPressed(GLFW_KEY_RIGHT)){
-            camera.cameraPosition.add(2*cameraSensitivity,0);
+            camera.cameraPosition.add(cameraSensitivity,0);
         }
         else if(KeyListener.isKeyPressed(GLFW_KEY_LEFT)){
-            camera.cameraPosition.sub(2*cameraSensitivity, 0);
+            camera.cameraPosition.sub(cameraSensitivity, 0);
         }
         if(KeyListener.isKeyPressed(GLFW_KEY_UP)){
-            camera.cameraPosition.add(0,2*cameraSensitivity);
+            camera.cameraPosition.add(0,cameraSensitivity);
         }
         else if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)){
-            camera.cameraPosition.sub(0,2*cameraSensitivity);
+            camera.cameraPosition.sub(0,cameraSensitivity);
         }
 
         if (dragThreshold <= 0.0f && !MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE)) {
