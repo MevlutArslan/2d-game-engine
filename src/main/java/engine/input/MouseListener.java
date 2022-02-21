@@ -2,9 +2,12 @@ package engine.input;
 
 import engine.GameWindow;
 import engine.camera.Camera;
+import engine.ui.ViewPortWindow;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+
+import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -39,9 +42,20 @@ public class MouseListener {
         this.yPos = 0.0;
         this.lastX = 0.0;
         this.lastY = 0.0;
-
         this.scrollY = 0.0;
+        this.scrollX = 0.0;
+    }
 
+    public static void clear(){
+        get().xPos = 0.0;
+        get().yPos = 0.0;
+        get().lastX = 0.0;
+        get().lastY = 0.0;
+        get().scrollY = 0.0;
+        get().scrollX = 0.0;
+        get().mouseButtonsDown = 0;
+        get().isDragging = false;
+        Arrays.fill(get().mouseButtonPressed, false);
     }
 
     public static MouseListener get() {
@@ -79,6 +93,40 @@ public class MouseListener {
         return getWorldCoordinates().y;
     }
 
+    public static Vector2f screenToWorld(Vector2f screenCoords){
+        // WorldCoords =  ScreenCoords * InverseView * InverseProjection
+        Vector2f normalizedScreenCoords = new Vector2f(
+                screenCoords.x / GameWindow.getWidth(),
+                screenCoords.y / GameWindow.getHeight()
+        );
+        // normalized device coords between -1,1
+        normalizedScreenCoords.mul(2.0f).sub(new Vector2f(1.0f, 1.0f));
+        Camera camera = GameWindow.getScene().getCamera();
+
+        Vector4f temp = new Vector4f(normalizedScreenCoords.x, normalizedScreenCoords.y, 0, 1);
+        Matrix4f inverseView = new Matrix4f(camera.getInverseViewMatrix());
+        Matrix4f inverseProjection = new Matrix4f(camera.getInverseProjectionMatrix());
+
+        temp.mul(inverseView.mul(inverseProjection));
+
+        return new Vector2f(temp.x, temp.y);
+    }
+
+    public static Vector2f worldToScreen(Vector2f worldCoords){
+        Camera camera = GameWindow.getScene().getCamera();
+        Vector4f normalizedDeviceCoordsPos = new Vector4f(worldCoords.x, worldCoords.y, 0, 1);
+        Matrix4f view = new Matrix4f(camera.getViewMatrix());
+        Matrix4f projection = new Matrix4f(camera.getProjectionMatrix());
+        normalizedDeviceCoordsPos.mul(projection.mul(view));
+
+        Vector2f windowSpace = new Vector2f(normalizedDeviceCoordsPos.x,
+                normalizedDeviceCoordsPos.y).mul(1.0f / normalizedDeviceCoordsPos.w);
+        windowSpace.add(new Vector2f(1.0f, 1.0f).mul(0.5f));
+        windowSpace.mul(new Vector2f(GameWindow.getWidth(), GameWindow.getHeight()));
+
+        return windowSpace;
+    }
+
     public static Vector2f getScreenCoordinates(){
         float currentX = getX() - get().viewPortPos.x;
         float currentY =  getY() - get().viewPortPos.y;
@@ -97,8 +145,10 @@ public class MouseListener {
         return getScreenCoordinates().y;
     }
 
-
     public static void mouseCursorPositionCallback(long window, double xPos, double yPos) {
+        if(!ViewPortWindow.getWantCaptureMouse()){
+            clear();
+        }
         if(get().mouseButtonsDown > 0){
             get().isDragging = true;
         }
@@ -136,12 +186,6 @@ public class MouseListener {
     public static void endFrame() {
         get().scrollX = 0;
         get().scrollY = 0;
-
-        get().lastX = get().xPos;
-        get().lastY = get().yPos;
-
-        get().lastWorldX = get().worldX;
-        get().lastWorldY = get().worldY;
     }
 
     public static float getX() {

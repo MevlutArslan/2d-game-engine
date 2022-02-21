@@ -22,4 +22,8 @@ public class CircleCollider extends Component {
     public void setRadius(float radius) {
         this.radius = radius;
     }
+
+    public Vector2f getOffset(){
+        return this.offset;
+    }
 }

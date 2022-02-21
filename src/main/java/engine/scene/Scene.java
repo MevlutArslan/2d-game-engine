@@ -282,4 +282,8 @@ public class Scene {
     public Camera getCamera() {
         return this.camera;
     }
+
+    public Physics2d getPhysics(){
+        return this.physics2d;
+    }
 }

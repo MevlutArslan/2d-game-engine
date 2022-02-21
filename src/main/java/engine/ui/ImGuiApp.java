@@ -76,6 +76,8 @@ public class ImGuiApp {
         glfwSetScrollCallback(window, (w, xOffset, yOffset) -> {
             if(!io.getWantCaptureMouse() || ViewPortWindow.getWantCaptureMouse()){
                 MouseListener.mouseScrollCallback(w, xOffset, yOffset);
+            }else{
+                MouseListener.clear();
             }
         });
 

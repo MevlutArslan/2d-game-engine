@@ -5,6 +5,7 @@ import engine.input.MouseListener;
 import engine.observers.Event;
 import engine.observers.EventSystem;
 import engine.observers.Observer;
+import engine.physics.Physics2d;
 import engine.rendering.*;
 import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.Scene;
@@ -229,19 +230,20 @@ public class GameWindow implements Observer {
                     }
                     lag -= FIXED_TIME_STEP;
 //                }
-                DebugDraw.draw();
+
                 Renderer.bindShader(defaultShader);
                 currentScene.render();
-
+                DebugDraw.draw();
             }
 
             frameBuffer.unbind();
 
             imGuiApp.update(deltaTime, currentScene);
 
-            glfwSwapBuffers(window); // swap the color buffers
-
+            KeyListener.endFrame();
             MouseListener.endFrame();
+
+            glfwSwapBuffers(window); // swap the color buffers
         }
 
     }
@@ -379,5 +381,8 @@ public class GameWindow implements Observer {
         return get().frameBuffer;
     }
 
+    public static Physics2d getPhysics(){
+        return currentScene.getPhysics();
+    }
 }
 

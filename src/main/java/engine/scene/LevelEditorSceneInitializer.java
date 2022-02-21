@@ -4,6 +4,7 @@ import components.NonPickable;
 import components.rendering.SpriteRenderer;
 import engine.Entity;
 import engine.camera.LevelEditorCameraController;
+import engine.input.EngineKeyShortcuts;
 import engine.input.MouseControl;
 import engine.input.MouseListener;
 import engine.rendering.Sprite;
@@ -36,6 +37,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
         editorEntity.addComponent(new LevelEditorCameraController());
         editorEntity.addComponent(new GizmoManager(gizmos));
         editorEntity.addComponent(new NonPickable());
+        editorEntity.addComponent(new EngineKeyShortcuts());
 
         scene.addEntityToScene(editorEntity);
     }

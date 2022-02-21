@@ -123,13 +123,6 @@ public class Gizmo extends Component {
         this.selectedEntity = this.propertiesPanel.getSelectedEntity();
         if (this.selectedEntity != null) {
             this.setActive();
-
-            if(KeyListener.keyBeginPress(GLFW_KEY_BACKSPACE)){
-                selectedEntity.destroy();
-                this.setInactive();
-                propertiesPanel.setSelectedEntity(null);
-            }
-
         } else {
             this.setInactive();
             return;

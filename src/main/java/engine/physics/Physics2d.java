@@ -4,14 +4,16 @@ import components.Transform;
 import engine.Entity;
 import engine.physics.components.Box2dCollider;
 import engine.physics.components.CircleCollider;
+import engine.physics.components.RaycastInfo;
 import engine.physics.components.RigidBody2d;
+import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.RaycastResult;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.*;
 import org.joml.Vector2f;
+
+import java.awt.*;
 
 // https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_hello.html
 // https://www.youtube.com/watch?v=ltsq2GXjsuw
@@ -41,6 +43,9 @@ public class Physics2d {
             bodyDef.linearDamping = rigidBody.getLinearDamping();
             bodyDef.fixedRotation = rigidBody.isFixedRotation();
             bodyDef.bullet = rigidBody.isContinuousCollision();
+            bodyDef.gravityScale = rigidBody.getGravityScale();
+            bodyDef.angularVelocity = rigidBody.getAngularVelocity();
+            bodyDef.userData = rigidBody.parent;
 
             switch (rigidBody.getBodyType()) {
                 case DYNAMIC -> bodyDef.type = BodyType.DYNAMIC;
@@ -48,29 +53,27 @@ public class Physics2d {
                 case KINEMATIC -> bodyDef.type = BodyType.KINEMATIC;
             }
 
-            PolygonShape shape = new PolygonShape();
+            Body body = this.world.createBody(bodyDef);
+            body.m_mass = rigidBody.getMass();
+            rigidBody.setRawBody(body);
             CircleCollider circleCollider;
             Box2dCollider boxCollider;
 
             if ((circleCollider = entity.getComponent(CircleCollider.class)) != null) {
-                shape.setRadius(circleCollider.getRadius());
+                addCircleCollider(rigidBody, circleCollider);
                 // TODO
-            } else if ((boxCollider = entity.getComponent(Box2dCollider.class)) != null) {
-                Vector2f halfSize = new Vector2f(boxCollider.getHalfSize()).mul(0.5f);
-                Vector2f offset = boxCollider.getOffset();
-                Vector2f origin = new Vector2f(boxCollider.getOrigin());
-                shape.setAsBox(halfSize.x, halfSize.y, new Vec2(origin.x, origin.y), 0);
-
-                Vec2 pos = bodyDef.position;
-                float xPos = pos.x + offset.x;
-                float yPos = pos.y + offset.y;
-                bodyDef.position.set(xPos, yPos);
             }
-
-            Body body = this.world.createBody(bodyDef);
-            rigidBody.setRawBody(body);
-            body.createFixture(shape, rigidBody.getMass());
+             if ((boxCollider = entity.getComponent(Box2dCollider.class)) != null) {
+                addBox2DCollider(rigidBody, boxCollider);
+            }
         }
+    }
+
+    public RaycastInfo raycast(Entity requestingEntity, Vector2f point1, Vector2f point2){
+        RaycastInfo callback = new RaycastInfo(requestingEntity);
+        world.raycast(callback, new Vec2(point1.x, point1.y), new Vec2(point2.x, point2.y));
+
+        return callback;
     }
 
     public void update(float deltaTime) {
@@ -81,6 +84,78 @@ public class Physics2d {
             // TODO figure out the reason for index out of bound exception
             world.step(physicsTime, velocityIterations, positionIteration);
         }
+    }
+
+    public void resetCircleCollider(RigidBody2d rigidBody2d, CircleCollider circleCollider){
+        Body body = rigidBody2d.getRawBody();
+        if(body == null){
+            return;
+        }
+
+        int size = fixtureListSize(body);
+        for(int i = 0; i < size; i++){
+            body.destroyFixture(body.getFixtureList());
+        }
+
+        addCircleCollider(rigidBody2d, circleCollider);
+        body.resetMassData();
+    }
+
+    private void addCircleCollider(RigidBody2d rigidBody2d, CircleCollider circleCollider){
+        Body body = rigidBody2d.getRawBody();
+        if(body == null){
+            return;
+        }
+        CircleShape shape = new CircleShape();
+        shape.setRadius(circleCollider.getRadius());
+        // m_p is offset for circles
+        shape.m_p.set(circleCollider.getOffset().x, circleCollider.getOffset().y);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = rigidBody2d.getFriction();
+        fixtureDef.userData = circleCollider.parent;
+        fixtureDef.isSensor = rigidBody2d.getIsSensor();
+        body.createFixture(fixtureDef);
+
+    }
+
+    public void resetBox2DCollider(RigidBody2d rigidBody2d, Box2dCollider boxCollider){
+        Body body = rigidBody2d.getRawBody();
+        if(body == null){
+            return;
+        }
+
+        int size = fixtureListSize(body);
+        for(int i = 0; i < size; i++){
+            body.destroyFixture(body.getFixtureList());
+        }
+
+        addBox2DCollider(rigidBody2d, boxCollider);
+        body.resetMassData();
+    }
+
+    private void addBox2DCollider(RigidBody2d rigidBody2d, Box2dCollider boxCollider){
+        Body body = rigidBody2d.getRawBody();
+        if(body == null){
+            return;
+        }
+        PolygonShape shape = new PolygonShape();
+
+        Vector2f halfSize = new Vector2f(boxCollider.getHalfSize()).mul(0.5f);
+        Vector2f offset = boxCollider.getOffset();
+        Vector2f origin = new Vector2f(boxCollider.getOrigin());
+        shape.setAsBox(halfSize.x, halfSize.y, new Vec2(offset.x, offset.y), 0);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = rigidBody2d.getFriction();
+        fixtureDef.userData = boxCollider.parent;
+        fixtureDef.isSensor = rigidBody2d.getIsSensor();
+        body.createFixture(fixtureDef);
+
     }
 
     public void destroyEntity(Entity entity) {
@@ -94,5 +169,42 @@ public class Physics2d {
     }
 
     public void onUpdateEditor(float deltaTime) {
+    }
+
+    private int fixtureListSize(Body body){
+        int size = 0;
+        Fixture fixture = body.getFixtureList();
+        while(fixture != null){
+            size++;
+            fixture = fixture.m_next;
+        }
+
+        return size;
+    }
+
+    public void setIsSensor(RigidBody2d rigidBody2d){
+        Body body = rigidBody2d.getRawBody();
+        if(body == null){
+            return;
+        }
+
+        Fixture fixture = body.getFixtureList();
+        while(fixture != null){
+            fixture.m_isSensor = true;
+            fixture = fixture.m_next;
+        }
+    }
+
+    public void setNotSensor(RigidBody2d rigidBody2d){
+        Body body = rigidBody2d.getRawBody();
+        if(body == null){
+            return;
+        }
+
+        Fixture fixture = body.getFixtureList();
+        while(fixture != null){
+            fixture.m_isSensor = false;
+            fixture = fixture.m_next;
+        }
     }
 }

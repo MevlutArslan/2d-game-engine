@@ -1,6 +1,8 @@
 package engine.physics.components;
 
 import engine.Component;
+import engine.GameWindow;
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyType;
 import org.joml.Vector2f;
@@ -21,17 +23,22 @@ public class RigidBody2d extends Component {
     private boolean continuousCollision = true;
     private transient Body rawBody = null;
 
+    private float friction = 0.1f;
+    private float angularVelocity = 0.0f;
+    private float gravityScale = 1.0f;
+    // Similar to Triggers in Unreal Engine.
+    private boolean isSensor = false;
 
     @Override
     public void start() {
 
     }
 
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
         // make sure the entity's transform is matching the physics simulation
-        if(rawBody != null){
+        if (rawBody != null) {
             this.parent.transform.position.set(rawBody.getPosition().x, rawBody.getPosition().y);
-            this.parent.transform.rotation = (float)Math.toDegrees(rawBody.getAngle());
+            this.parent.transform.rotation = (float) Math.toDegrees(rawBody.getAngle());
         }
     }
 
@@ -40,7 +47,50 @@ public class RigidBody2d extends Component {
     }
 
     public void setVelocity(Vector2f velocity) {
-        this.velocity = velocity;
+        this.velocity.set(velocity);
+        if (rawBody != null) {
+            this.rawBody.setLinearVelocity(new Vec2(velocity.x, velocity.y));
+        }
+    }
+
+    public void setAngularVelocity(float angularVelocity) {
+        this.angularVelocity = angularVelocity;
+        if (rawBody != null) {
+            this.rawBody.setAngularVelocity(angularVelocity);
+        }
+    }
+
+    public float getGravityScale(){
+        return this.gravityScale;
+    }
+
+    public void setGravityScale(float gravityScale) {
+        this.gravityScale = gravityScale;
+        if (rawBody != null) {
+            this.rawBody.setGravityScale(gravityScale);
+        }
+    }
+
+    public void setFriction(float friction){
+        this.friction = friction;
+    }
+
+    public float getFriction(){
+        return this.friction;
+    }
+
+    public void setIsSensor() {
+        this.isSensor = true;
+        if (rawBody != null) {
+            GameWindow.getPhysics().setIsSensor(this);
+        }
+    }
+
+    public void setIsNotSensor() {
+        this.isSensor = false;
+        if (rawBody != null) {
+            GameWindow.getPhysics().setNotSensor(this);
+        }
     }
 
     public float getAngularDamping() {
@@ -107,5 +157,23 @@ public class RigidBody2d extends Component {
         this.rawBody = rawBody;
     }
 
+    public void addVelocity(Vector2f forceToAdd) {
+        if (rawBody != null) {
+            rawBody.applyForceToCenter(new Vec2(velocity.x, velocity.y));
+        }
+    }
 
+    public void addImpulse(Vector2f impulse) {
+        if (rawBody != null) {
+            rawBody.applyLinearImpulse(new Vec2(velocity.x, velocity.y), rawBody.getWorldCenter());
+        }
+    }
+
+    public float getAngularVelocity(){
+        return this.angularVelocity;
+    }
+
+    public boolean getIsSensor() {
+        return this.isSensor;
+    }
 }

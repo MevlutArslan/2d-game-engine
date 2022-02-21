@@ -4,6 +4,7 @@ import components.rendering.SpriteRenderer;
 import engine.ui.editor.CustomImGuiController;
 import imgui.ImGui;
 import imgui.type.ImInt;
+import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -173,4 +174,19 @@ public abstract class Component {
         this.allowForRemoval = allowForRemoval;
     }
 
+    public void beginCollision(Entity collidingEntity, Contact contact, Vector2f contactNormal) {
+
+    }
+
+    public void endCollision(Entity collidingEntity, Contact contact, Vector2f contactNormal) {
+
+    }
+
+    public void preSolve(Entity collidingEntity, Contact contact, Vector2f contactNormal) {
+
+    }
+
+    public void postSolve(Entity collidingEntity, Contact contact, Vector2f contactNormal) {
+
+    }
 }
