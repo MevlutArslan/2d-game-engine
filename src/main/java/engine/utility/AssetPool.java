@@ -1,5 +1,6 @@
 package engine.utility;
 
+import engine.Sound;
 import engine.rendering.Shader;
 import engine.rendering.SpriteSheet;
 import engine.rendering.Texture;
@@ -14,6 +15,8 @@ public class AssetPool {
     private static HashMap<String, Texture> textures = new HashMap<>();
 
     private static HashMap<String, SpriteSheet> spriteSheets = new HashMap<>();
+
+    private static HashMap<String, Sound> sounds = new HashMap<>();
 
     public static Shader getShader(String[] resourcePath){
         File file = new File(resourcePath[0]);
@@ -59,5 +62,27 @@ public class AssetPool {
             System.err.println("You tried to access a spritesheet that does not exist! : \n" + resourceName);
         }
         return AssetPool.spriteSheets.getOrDefault(file.getAbsolutePath(), null);
+    }
+
+    public static Sound getSound(String resourceName) {
+        File file = new File(resourceName);
+        if (sounds.containsKey(file.getAbsolutePath())) {
+            return sounds.get(file.getAbsolutePath());
+        } else {
+            System.err.println("Sound file not added!");
+        }
+
+        return null;
+    }
+
+    public static Sound addSound(String resourceName, boolean loops){
+        File file = new File(resourceName);
+        if (sounds.containsKey(file.getAbsolutePath())) {
+            return sounds.get(file.getAbsolutePath());
+        } else {
+            Sound sound = new Sound(file.getAbsolutePath(), loops);
+            AssetPool.sounds.put(file.getAbsolutePath(), sound);
+            return sound;
+        }
     }
 }

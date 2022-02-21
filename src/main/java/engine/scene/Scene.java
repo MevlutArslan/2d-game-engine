@@ -6,8 +6,10 @@ import components.Transform;
 import engine.Component;
 import engine.Entity;
 import engine.camera.Camera;
+import engine.input.KeyListener;
 import engine.physics.Physics2d;
 import engine.rendering.Renderer;
+import engine.utility.AssetPool;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
 import org.joml.Vector2f;
@@ -19,6 +21,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 
 // A lot of things of the Scene system are taken from The Cherno, GamesWithGabe and the 'Game Engine Architecture' book.
 public class Scene {
@@ -106,6 +110,10 @@ public class Scene {
                 this.physics2d.destroyEntity(entity);
                 i--;
             }
+        }
+
+        if(KeyListener.isKeyPressed(GLFW_KEY_SPACE)){
+            AssetPool.getSound("src/main/resources/audio/mixkit-boxer-getting-hit-2055.ogg").play();
         }
     }
 

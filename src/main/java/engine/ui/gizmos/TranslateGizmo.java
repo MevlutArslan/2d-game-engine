@@ -14,11 +14,11 @@ public class TranslateGizmo extends Gizmo {
     public void onUpdateEditor(float deltaTime) {
         if (selectedEntity != null) {
             if (horizontalGizmoActive && !verticalGizmoActive && !omniDirectionalGizmoActive) {
-                selectedEntity.transform.position.x -= MouseListener.getWorldDx();
+                selectedEntity.transform.position.x -= MouseListener.getWorldCoordinateX();
             } else if (verticalGizmoActive && !omniDirectionalGizmoActive) {
-                selectedEntity.transform.position.y -= MouseListener.getWorldDy();
+                selectedEntity.transform.position.y -= MouseListener.getWorldCoordinateY();
             } else if (omniDirectionalGizmoActive) {
-                selectedEntity.transform.position.set(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
+                selectedEntity.transform.position.set(MouseListener.getWorldCoordinates());
             }
         }
         super.onUpdateEditor(deltaTime);

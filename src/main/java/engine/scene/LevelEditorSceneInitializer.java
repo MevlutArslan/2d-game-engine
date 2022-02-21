@@ -5,6 +5,7 @@ import components.rendering.SpriteRenderer;
 import engine.Entity;
 import engine.camera.LevelEditorCameraController;
 import engine.input.MouseControl;
+import engine.input.MouseListener;
 import engine.rendering.Sprite;
 import engine.rendering.SpriteSheet;
 import engine.ui.Grid2d;
@@ -20,10 +21,12 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
 
     private Entity editorEntity;
     private SpriteSheet sprites;
+    private SpriteSheet playerIdleSprites;
 
     @Override
     public void init(Scene scene) {
-        sprites = AssetPool.getSpriteSheet("src/main/resources/textures/spritesheet.png");
+        sprites = AssetPool.getSpriteSheet("src/main/resources/spritesheets/Tiles.png");
+        playerIdleSprites = AssetPool.getSpriteSheet("src/main/resources/spritesheets/Biker_idle.png");
         SpriteSheet gizmos = AssetPool.getSpriteSheet("src/main/resources/textures/gizmos.png");
         editorEntity = scene.createEntity("Level editor stuff");
 
@@ -47,6 +50,12 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
         AssetPool.addSpriteSheet("src/main/resources/textures/spritesheet.png",
                 new SpriteSheet(AssetPool.getTexture("src/main/resources/textures/spritesheet.png"),
                         16, 16, 26, 0));
+        AssetPool.addSpriteSheet("src/main/resources/spritesheets/Tiles.png", new SpriteSheet(
+                AssetPool.getTexture("src/main/resources/spritesheets/Tiles.png"), 32, 32, 81, 0
+        ));
+        AssetPool.addSpriteSheet("src/main/resources/spritesheets/Biker_idle.png", new SpriteSheet(
+                AssetPool.getTexture("src/main/resources/spritesheets/Biker_idle.png"), 24, 48, 4, 0
+        ));
 
         for (Entity entity : scene.getEntities()) {
             if (entity.getComponent(SpriteRenderer.class) != null) {
@@ -63,43 +72,79 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
                 AssetPool.getTexture("src/main/resources/textures/gizmos.png"),
                 24, 48, 3, 0)
         );
+
+        // load audio files
+        AssetPool.addSound("src/main/resources/audio/mixkit-boxer-getting-hit-2055.ogg", false);
     }
 
     @Override
     public void imgui() {
-        ImGui.begin("Assets");
+        ImGui.begin("Templates");
 
         ImVec2 buttonSize = new ImVec2();
         ImGuiStyle style = ImGui.getStyle();
 
-        int numberOfButtons = sprites.length();
+        int numberOfButtons = EntityGenerator.getNumberOfTemplatesAvailable();
         float windowVisibleX2 = ImGui.getWindowPosX() + ImGui.getWindowContentRegionMaxX();
 
-        for (int i = 0; i < numberOfButtons; i++) {
-            Sprite sprite = sprites.getSprite(i);
-            ImGui.pushID(i);
+//        for (int i = 0; i < numberOfButtons; i++) {
+        int id = 0;
+        Sprite sprite = sprites.getSprite(2);
+        ImGui.pushID(id++);
+        // I need the textureId, sprite's width, height, uv coordinates
+        int texId = sprite.getTexId();
+        float spriteHeight = sprite.getHeight();
+        float spriteWidth = sprite.getWidth();
+        Vector2f[] texCoords = sprite.getTextureCoords();
 
-            // I need the textureId, sprite's width, height, uv coordinates
-            int texId = sprite.getTexId();
-            // TODO : Properly set sprite height and width in spritesheet class
-            float spriteHeight = sprite.getHeight() * 2;
-            float spriteWidth = sprite.getWidth() * 2;
-            Vector2f[] texCoords = sprite.getTextureCoords();
-
-            if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
-                Entity entity = EntityGenerator.generateSpriteObject(sprite, 0.25f, 0.25f);
-                editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
-            }
-
-            float lastButtonX2 = ImGui.getItemRectMaxX();
-            float nextButtonX2 = lastButtonX2 + style.getItemSpacingX() + buttonSize.x;
-
-            if (i + 1 < numberOfButtons && nextButtonX2 < windowVisibleX2) {
-                ImGui.sameLine();
-            }
-
-            ImGui.popID();
+        if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            Entity entity = EntityGenerator.generateFloorEntity();
+            editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
         }
+
+        ImGui.popID();
+        ImGui.sameLine();
+
+        ImGui.pushID(id++);
+
+        sprite = sprites.getSprite(0);
+        texId = sprite.getTexId();
+        spriteHeight = sprite.getHeight();
+        spriteWidth = sprite.getWidth();
+        texCoords = sprite.getTextureCoords();
+
+        if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            Entity entity = EntityGenerator.generateEmptyBlock();
+            editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
+        }
+
+        ImGui.popID();
+        ImGui.sameLine();
+
+        ImGui.pushID(id++);
+
+        sprite = playerIdleSprites.getSprite(0);
+        texId = sprite.getTexId();
+        spriteHeight = sprite.getHeight();
+        spriteWidth = sprite.getWidth();
+        texCoords = sprite.getTextureCoords();
+
+        if (ImGui.imageButton(texId, spriteWidth, 32, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            Entity entity = EntityGenerator.generatePlayerEntity();
+            editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
+        }
+
+        ImGui.popID();
+        ImGui.sameLine();
+//            float lastButtonX2 = ImGui.getItemRectMaxX();
+//            float nextButtonX2 = lastButtonX2 + style.getItemSpacingX() + buttonSize.x;
+//
+//            if (i + 1 < numberOfButtons && nextButtonX2 < windowVisibleX2) {
+
+//            }
+
+
+//        }
 
         ImGui.end();
 

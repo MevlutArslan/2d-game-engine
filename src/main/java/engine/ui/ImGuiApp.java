@@ -18,6 +18,7 @@ import imgui.type.ImBoolean;
 
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 
 //https://blog.conan.io/2019/06/26/An-introduction-to-the-Dear-ImGui-library.html
 public class ImGuiApp {
@@ -69,6 +70,12 @@ public class ImGuiApp {
 
             if (!io.getWantCaptureMouse() || ViewPortWindow.getWantCaptureMouse()) {
                 MouseListener.mouseButtonCallback(w, button, action, mods);
+            }
+        });
+
+        glfwSetScrollCallback(window, (w, xOffset, yOffset) -> {
+            if(!io.getWantCaptureMouse() || ViewPortWindow.getWantCaptureMouse()){
+                MouseListener.mouseScrollCallback(w, xOffset, yOffset);
             }
         });
 

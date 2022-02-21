@@ -34,22 +34,14 @@ public class ViewPortWindow {
         }
 
         ImGui.endMenuBar();
+        ImGui.setCursorPos(ImGui.getCursorPosX(), ImGui.getCursorPosY());
 
         ImVec2 windowSize = getLargestViewportSize();
         ImVec2 windowPos = getWindowCenterPosition(windowSize);
-
         ImGui.setCursorPos(windowPos.x, windowPos.y);
 
         ImVec2 topLeft = new ImVec2();
         ImGui.getCursorScreenPos(topLeft);
-
-        topLeft.x -= ImGui.getScrollX();
-        topLeft.y -= ImGui.getScrollY();
-
-        // For making sure my 0,0 is topLeft
-//        ImVec2 bottomLeft = new ImVec2();
-//        bottomLeft.x = topLeft.x - ImGui.getScrollX();;
-//        bottomLeft.y -= topLeft.y - windowSize.y - ImGui.getScrollY();
 
         leftX = topLeft.x;
         bottomY = topLeft.y;
@@ -94,9 +86,6 @@ public class ViewPortWindow {
         ImVec2 windowSize = new ImVec2();
         ImGui.getContentRegionAvail(windowSize);
 
-        windowSize.x -= ImGui.getScrollX();
-        windowSize.y -= ImGui.getScrollY();
-
         float viewportX = (windowSize.x / 2.0f) - (aspectSize.x / 2.0f);
         float viewPortY = (windowSize.y / 2.0f) - (aspectSize.y / 2.0f);
 
@@ -106,9 +95,6 @@ public class ViewPortWindow {
     private static ImVec2 getLargestViewportSize() {
         ImVec2 windowSize = new ImVec2();
         ImGui.getContentRegionAvail(windowSize);
-
-        windowSize.x -= ImGui.getScrollX();
-        windowSize.y -= ImGui.getScrollY();
 
         float aspectWidth = windowSize.x;
         float aspectHeight = aspectWidth / (16.0f / 9.0f);

@@ -1,6 +1,7 @@
 package engine.input;
 
 import engine.GameWindow;
+import engine.camera.Camera;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -51,56 +52,49 @@ public class MouseListener {
         return MouseListener.mouseListener;
     }
 
-
-    public static float getWorldCoordsX() {
-        return (float) get().worldX;
-    }
-
+    // https://www.youtube.com/watch?v=b_sNaZXQoG0&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=45
     // https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
-    private static void calcWorldCoordsX(){
-        // subtracting the viewportPos.x from x gives us the start point for the viewport's accurate position
+    public static Vector2f getWorldCoordinates(){
         float currentX = getX() - get().viewPortPos.x;
-        currentX = (currentX / get().viewPortSize.x) * 2.0f - 1.0f;
-
-        Matrix4f viewProjection = new Matrix4f();
-        GameWindow.getScene().getCamera().getInverseViewMatrix()
-                .mul(GameWindow.getScene().getCamera().getInverseProjectionMatrix(),viewProjection);
-
-        Vector4f vector = new Vector4f(currentX, 0, 0, 1);
-        vector.mul(viewProjection);
-
-        get().worldX = vector.x;
-    }
-
-    // I don't need to modify the above method as described by the answer on stack overflow as
-    // I dont want to invert it and am working in 2D space not 3D
-    public static float getWorldCoordsY() {
-        return (float) get().worldY;
-    }
-
-    private static void calcWorldCoordsY(){
         float currentY =  getY() - get().viewPortPos.y;
+
+        currentX = (currentX / get().viewPortSize.x) * 2.0f - 1.0f;
         currentY = -((currentY / get().viewPortSize.y) * 2.0f - 1.0f);
 
-        Matrix4f viewProjection = new Matrix4f();
-        GameWindow.getScene().getCamera().getInverseViewMatrix().mul(GameWindow.getScene().getCamera().getInverseProjectionMatrix(), viewProjection);
+        Vector4f temp = new Vector4f(currentX, currentY, 0, 1);
+        Camera camera = GameWindow.getScene().getCamera();
+        Matrix4f inverseView = new Matrix4f(camera.getInverseViewMatrix());
+        Matrix4f inverseProjection = new Matrix4f(camera.getInverseProjectionMatrix());
 
-        Vector4f vector = new Vector4f(0, currentY, 0, 1);
-        vector.mul(viewProjection);
+        temp.mul(inverseView.mul(inverseProjection));
 
-        get().worldY = vector.y;
+        return new Vector2f(temp.x, temp.y);
+    }
+
+    public static float getWorldCoordinateX(){
+        return getWorldCoordinates().x;
+    }
+
+    public static float getWorldCoordinateY(){
+        return getWorldCoordinates().y;
+    }
+
+    public static Vector2f getScreenCoordinates(){
+        float currentX = getX() - get().viewPortPos.x;
+        float currentY =  getY() - get().viewPortPos.y;
+
+        currentX = (currentX / get().viewPortSize.x) * 2560;
+        currentY = 1600 -((currentY / get().viewPortSize.y) * 1600);
+
+        return new Vector2f(currentX, currentY);
     }
 
     public static float getScreenX(){
-        float currentX = getX() - get().viewPortPos.x;
-        currentX = (currentX / get().viewPortSize.x) * 2560;
-        return currentX;
+        return getScreenCoordinates().x;
     }
 
     public static float getScreenY(){
-        float currentY =  getY() - get().viewPortPos.y;
-        currentY = 1600 -((currentY / get().viewPortSize.y) * 1600);
-        return currentY;
+        return getScreenCoordinates().y;
     }
 
 
@@ -114,10 +108,6 @@ public class MouseListener {
         get().lastWorldY = get().worldY;
         get().xPos = xPos;
         get().yPos = yPos;
-        calcWorldCoordsX();
-        calcWorldCoordsY();
-
-
     }
 
     /**
@@ -162,14 +152,6 @@ public class MouseListener {
         return (float) get().yPos;
     }
 
-    public static float getDx() {
-        return (float) (get().lastX - get().xPos);
-    }
-
-    public static float getDy() {
-        return (float) (get().lastY - get().yPos);
-    }
-
     public static float scrollX() {
         return (float) get().scrollX;
     }
@@ -180,14 +162,6 @@ public class MouseListener {
 
     public static boolean isDragging() {
         return get().isDragging;
-    }
-
-    public static float getWorldDx(){
-        return (float) (get().lastWorldX - get().worldX);
-    }
-
-    public static float getWorldDy(){
-        return (float) (get().lastWorldY - get().worldY);
     }
 
     public static boolean mouseButtonDown(int buttonKey) {

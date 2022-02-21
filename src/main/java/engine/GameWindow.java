@@ -16,12 +16,17 @@ import engine.utility.file_utility.FileDialogManager;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 
 import static engine.utility.Constants.MONITOR_HEIGHT;
 import static engine.utility.Constants.MONITOR_WIDTH;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -52,6 +57,9 @@ public class GameWindow implements Observer {
     private Shader pickingShader;
 
     private boolean isEditorMode = true;
+
+    private long audioContext;
+    private long audioDevice;
 
     // Methods
     private GameWindow() {
@@ -98,6 +106,9 @@ public class GameWindow implements Observer {
         init();
         update();
 
+        alcDestroyContext(audioContext);
+        alcCloseDevice(audioDevice);
+
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
@@ -127,6 +138,22 @@ public class GameWindow implements Observer {
         glfwSwapInterval(1);
         // Make the window visible
         glfwShowWindow(window);
+
+        // Audio stuff
+        String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
+        audioDevice = alcOpenDevice(defaultDeviceName);
+
+        int[] attributes = {0};
+        audioContext = alcCreateContext(audioDevice, attributes);
+        alcMakeContextCurrent(audioContext);
+
+        ALCCapabilities alcCapabilities = ALC.createCapabilities(audioDevice);
+        ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+
+        if(!alCapabilities.OpenAL10){
+            System.err.println("Audio library not supported!");
+            System.exit(-1);
+        }
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,

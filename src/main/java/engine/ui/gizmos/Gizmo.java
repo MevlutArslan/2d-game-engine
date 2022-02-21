@@ -171,7 +171,7 @@ public class Gizmo extends Component {
     }
 
     private boolean checkHorizontalGizmoHoverState() {
-        Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
+        Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordinates());
         if (mousePos.x <= horizontalGizmoEntity.transform.position.x + (gizmoHeight / 2.0f) &&
                 mousePos.x >= horizontalGizmoEntity.transform.position.x - (gizmoWidth / 2.0f) &&
                 mousePos.y >= horizontalGizmoEntity.transform.position.y - (gizmoHeight / 2.0f) &&// bug here dont know why 3 works
@@ -185,7 +185,7 @@ public class Gizmo extends Component {
     }
 
     private boolean checkVerticalGizmoHoverState() {
-        Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
+        Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordinates());
         if (mousePos.x <= verticalGizmoEntity.transform.position.x + (gizmoWidth / 2.0f)&&
                 mousePos.x >= verticalGizmoEntity.transform.position.x - (gizmoWidth / 2.0f) &&
                 mousePos.y <= verticalGizmoEntity.transform.position.y + (gizmoHeight / 2.0f) &&
@@ -202,7 +202,7 @@ public class Gizmo extends Component {
     private boolean checkOmniDirectionalGizmoHoverState() {
         if (omniDirectionalGizmoEntity == null) return false;
 
-        Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
+        Vector2f mousePos = new Vector2f(MouseListener.getWorldCoordinates());
         if (mousePos.x >= omniDirectionalGizmoEntity.transform.position.x &&
                 mousePos.x <= omniDirectionalGizmoEntity.transform.position.x + omniDirectionalGizmoWidth &&
                 mousePos.y >= omniDirectionalGizmoEntity.transform.position.y + omniDirectionalGizmoWidth &&

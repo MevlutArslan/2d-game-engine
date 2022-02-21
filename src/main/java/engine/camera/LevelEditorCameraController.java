@@ -34,12 +34,10 @@ public class LevelEditorCameraController extends Component {
         }
         // need to move the camera to the opposing direction at an increasing speed over deltaTime
         if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE) && dragThreshold > 0) {
-            originalCameraPosition = new Vector2f(MouseListener.getWorldCoordsX(), MouseListener.getWorldCoordsY());
+            originalCameraPosition = new Vector2f(MouseListener.getWorldCoordinates());
             dragThreshold -= deltaTime;
         } else if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE)) {
-            Vector2f targetCameraPosition = new Vector2f();
-            targetCameraPosition.x = MouseListener.getWorldCoordsX();
-            targetCameraPosition.y = MouseListener.getWorldCoordsY();
+            Vector2f targetCameraPosition = new Vector2f(MouseListener.getWorldCoordinates());
 
             Vector2f distanceBetween = new Vector2f(targetCameraPosition).sub(originalCameraPosition);
             camera.cameraPosition.sub(distanceBetween.mul(deltaTime).mul(cameraSensitivity));

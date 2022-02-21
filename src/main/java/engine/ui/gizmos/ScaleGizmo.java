@@ -13,9 +13,9 @@ public class ScaleGizmo extends Gizmo{
     public void onUpdateEditor(float deltaTime){
         if(selectedEntity != null){
             if(horizontalGizmoActive && !verticalGizmoActive){
-                selectedEntity.transform.scale.x -= MouseListener.getWorldDx();
+                selectedEntity.transform.scale.x -= MouseListener.getWorldCoordinateX();
             }else if(verticalGizmoActive){
-                selectedEntity.transform.scale.y -= MouseListener.getWorldDy();
+                selectedEntity.transform.scale.y -= MouseListener.getWorldCoordinateY();
             }
         }
 
