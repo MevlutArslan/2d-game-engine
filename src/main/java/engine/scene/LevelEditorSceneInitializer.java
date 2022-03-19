@@ -76,7 +76,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
         );
 
         // load audio files
-        AssetPool.addSound("src/main/resources/audio/mixkit-boxer-getting-hit-2055.ogg", false);
+        AssetPool.addSound("src/main/resources/audio/mixkit-player-jumping-in-a-video-game-2043.ogg", false);
     }
 
     @Override
@@ -100,23 +100,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
         Vector2f[] texCoords = sprite.getTextureCoords();
 
         if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
-            Entity entity = EntityGenerator.generateFloorEntity();
-            editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
-        }
-
-        ImGui.popID();
-        ImGui.sameLine();
-
-        ImGui.pushID(id++);
-
-        sprite = sprites.getSprite(0);
-        texId = sprite.getTexId();
-        spriteHeight = sprite.getHeight();
-        spriteWidth = sprite.getWidth();
-        texCoords = sprite.getTextureCoords();
-
-        if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
-            Entity entity = EntityGenerator.generateEmptyBlock();
+            Entity entity = EntityGenerator.generateBuildingBlocks(sprite);
             editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
         }
 
@@ -151,4 +135,6 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
         ImGui.end();
 
     }
+
+
 }

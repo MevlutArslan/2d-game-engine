@@ -14,9 +14,12 @@ public class TranslateGizmo extends Gizmo {
     public void onUpdateEditor(float deltaTime) {
         if (selectedEntity != null) {
             if (horizontalGizmoActive && !verticalGizmoActive && !omniDirectionalGizmoActive) {
-                selectedEntity.transform.position.x -= MouseListener.getWorldCoordinateX();
+                // the ratio is different
+                selectedEntity.transform.position.x -= MouseListener.getWorldCoordinateX()/100;
+//                System.out.println(MouseListener.getWorldCoordinateX()/100);
             } else if (verticalGizmoActive && !omniDirectionalGizmoActive) {
-                selectedEntity.transform.position.y -= MouseListener.getWorldCoordinateY();
+//                System.out.println(MouseListener.getWorldCoordinateY()/80.0f);
+                selectedEntity.transform.position.y -= -1*(MouseListener.getWorldCoordinateY()/80.0f);
             } else if (omniDirectionalGizmoActive) {
                 selectedEntity.transform.position.set(MouseListener.getWorldCoordinates());
             }

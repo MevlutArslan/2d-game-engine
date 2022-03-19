@@ -31,9 +31,7 @@ public class ImGuiApp {
     private ImGuiContext context;
 
     private PropertiesPanel propertiesPanel;
-
     private ContentBrowserPanel contentBrowser;
-
 
     public void init() {
         context = ImGui.createContext();
@@ -68,13 +66,13 @@ public class ImGuiApp {
                 ImGui.setWindowFocus(null);
             }
 
-            if (!io.getWantCaptureMouse() || ViewPortWindow.getWantCaptureMouse()) {
+            if (!io.getWantCaptureMouse() || ViewPortPanel.getWantCaptureMouse()) {
                 MouseListener.mouseButtonCallback(w, button, action, mods);
             }
         });
 
         glfwSetScrollCallback(window, (w, xOffset, yOffset) -> {
-            if(!io.getWantCaptureMouse() || ViewPortWindow.getWantCaptureMouse()){
+            if(!io.getWantCaptureMouse() || ViewPortPanel.getWantCaptureMouse()){
                 MouseListener.mouseScrollCallback(w, xOffset, yOffset);
             }else{
                 MouseListener.clear();
@@ -103,7 +101,7 @@ public class ImGuiApp {
         imGuiImplGlfw.newFrame();
         ImGui.newFrame();
         enableDocking();
-        ViewPortWindow.imgui();
+        ViewPortPanel.imgui();
         currentScene.imgui();
 
         propertiesPanel.update(deltaTime, currentScene);

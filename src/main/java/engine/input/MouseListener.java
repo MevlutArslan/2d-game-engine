@@ -2,7 +2,7 @@ package engine.input;
 
 import engine.GameWindow;
 import engine.camera.Camera;
-import engine.ui.ViewPortWindow;
+import engine.ui.ViewPortPanel;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -146,7 +146,7 @@ public class MouseListener {
     }
 
     public static void mouseCursorPositionCallback(long window, double xPos, double yPos) {
-        if(!ViewPortWindow.getWantCaptureMouse()){
+        if(!ViewPortPanel.getWantCaptureMouse()){
             clear();
         }
         if(get().mouseButtonsDown > 0){

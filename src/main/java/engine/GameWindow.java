@@ -8,6 +8,7 @@ import engine.observers.Observer;
 import engine.physics.Physics2d;
 import engine.rendering.*;
 import engine.scene.LevelEditorSceneInitializer;
+import engine.scene.LevelSceneInitializer;
 import engine.scene.Scene;
 import engine.scene.SceneInitializer;
 import engine.ui.ImGuiApp;
@@ -330,7 +331,8 @@ public class GameWindow implements Observer {
                 this.isEditorMode = false;
                 currentScene.save();
                 // reset the scene
-                GameWindow.changeScene(new LevelEditorSceneInitializer());
+                GameWindow.changeScene(new LevelSceneInitializer());
+                getImGuiApp().getPropertiesPanel().clearSelected();
                 break;
             case GAME_ENGINE_STOP_PLAY:
                 this.isEditorMode = true;

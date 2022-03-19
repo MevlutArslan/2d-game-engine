@@ -44,7 +44,7 @@ public class Scene {
     }
 
     public void init() {
-        this.camera = new Camera(new Vector2f(-250, 0));
+        this.camera = new Camera(new Vector2f(0, 0));
         this.sceneInitializer.loadResources(this);
         this.sceneInitializer.init(this);
     }
@@ -112,9 +112,6 @@ public class Scene {
             }
         }
 
-        if(KeyListener.isKeyPressed(GLFW_KEY_SPACE)){
-            AssetPool.getSound("src/main/resources/audio/mixkit-boxer-getting-hit-2055.ogg").play();
-        }
     }
 
     public void save() {
@@ -285,5 +282,14 @@ public class Scene {
 
     public Physics2d getPhysics(){
         return this.physics2d;
+    }
+
+    public <T extends Component> Entity getEntityWithComponent(Class<T> cls){
+        for(Entity entity : entities){
+            if(entity.getComponent(cls) != null){
+                return entity;
+            }
+        }
+        return null;
     }
 }

@@ -26,4 +26,8 @@ public class CircleCollider extends Component {
     public Vector2f getOffset(){
         return this.offset;
     }
+
+    public void setOffset(Vector2f offset){
+        this.offset = offset;
+    }
 }

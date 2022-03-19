@@ -24,14 +24,14 @@ public class Grid2d extends Component {
 
         // grid's starting point => (x,y) / grid's size
         // -1 is necessary because it starts from right side. -1 offsets it to the left side of the first box
-        float firstX = ((cameraPos.x / Constants.GRID_SIZE) - 1) * Constants.GRID_SIZE;
-        float firstY = ((cameraPos.y / Constants.GRID_SIZE) - 1) * Constants.GRID_SIZE;
+        float firstX = ((cameraPos.x / Constants.GRID_SIZE)) * Constants.GRID_SIZE;
+        float firstY = ((cameraPos.y / Constants.GRID_SIZE)) * Constants.GRID_SIZE;
 
         int numVtLines = (int) (projectionSize.x * camera.getZoomLevel()/ Constants.GRID_SIZE) + 2;
         int numHzLines = (int) (projectionSize.y * camera.getZoomLevel()/ Constants.GRID_SIZE) + 2;
 
-        float height =  ((projectionSize.y * camera.getZoomLevel()) + Constants.GRID_SIZE * 2);
-        float width =  ((projectionSize.x * camera.getZoomLevel()) + Constants.GRID_SIZE * 2);
+        float height =  ((projectionSize.y * camera.getZoomLevel()) + (5 * Constants.GRID_SIZE));
+        float width =  ((projectionSize.x * camera.getZoomLevel()) + (5 * Constants.GRID_SIZE));
 
         int maxLines = Math.max(numVtLines, numHzLines);
 

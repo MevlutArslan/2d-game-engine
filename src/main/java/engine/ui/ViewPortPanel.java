@@ -13,7 +13,7 @@ import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 
-public class ViewPortWindow {
+public class ViewPortPanel {
 
     private static float leftX, rightX, topY, bottomY;
 
@@ -38,7 +38,7 @@ public class ViewPortWindow {
 
         ImVec2 windowSize = getLargestViewportSize();
         ImVec2 windowPos = getWindowCenterPosition(windowSize);
-        ImGui.setCursorPos(windowPos.x, windowPos.y);
+//        ImGui.setCursorPos(windowPos.x, windowPos.y);
 
         ImVec2 topLeft = new ImVec2();
         ImGui.getCursorScreenPos(topLeft);
@@ -72,8 +72,6 @@ public class ViewPortWindow {
             }
             ImGui.endDragDropTarget();
         }
-
-
         ImGui.end();
     }
 

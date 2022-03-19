@@ -29,6 +29,8 @@ public class MouseControl extends Component {
     private Vector2f boxSelectStart = new Vector2f();
     private Vector2f boxSelectEnd = new Vector2f();
 
+    private final int multiSelectMouseButton = GLFW_MOUSE_BUTTON_RIGHT;
+
     public void pickUpEntity(Entity entity) {
         if (this.selectedEntity != null) {
             this.selectedEntity.destroy();
@@ -58,6 +60,7 @@ public class MouseControl extends Component {
             selectedEntity.transform.position.x = ((int) Math.floor(x / Constants.GRID_SIZE) * Constants.GRID_SIZE) + Constants.GRID_SIZE / 2.0f;
             selectedEntity.transform.position.y = ((int) Math.floor(y / Constants.GRID_SIZE) * Constants.GRID_SIZE) + Constants.GRID_SIZE / 2.0f;
 
+            // TODO fix gizmo's not functioning
             if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
                 float halfWidth = Constants.GRID_WIDTH / 2.0f;
                 float halfHeight = Constants.GRID_HEIGHT / 2.0f;
@@ -89,7 +92,7 @@ public class MouseControl extends Component {
             }
             this.debounce = 0.2f;
 
-        } else if (MouseListener.isDragging() && MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+        } else if (MouseListener.isDragging() && MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
             if (!boxSelectSet) {
                 GameWindow.getImGuiApp().getPropertiesPanel().clearSelected();
                 boxSelectStart = MouseListener.getScreenCoordinates();

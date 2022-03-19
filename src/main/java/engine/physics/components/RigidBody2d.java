@@ -16,18 +16,19 @@ public class RigidBody2d extends Component {
     private float mass = 0;
     private Vector2f position = new Vector2f();
 
-    private BodyType bodyType = BodyType.DYNAMIC;
-
     private boolean fixedRotation = false;
 
     private boolean continuousCollision = true;
-    private transient Body rawBody = null;
+
 
     private float friction = 0.1f;
     private float angularVelocity = 0.0f;
     private float gravityScale = 1.0f;
     // Similar to Triggers in Unreal Engine.
     private boolean isSensor = false;
+
+    private transient Body rawBody = null;
+    private BodyType bodyType = BodyType.DYNAMIC;
 
     @Override
     public void start() {
@@ -37,8 +38,17 @@ public class RigidBody2d extends Component {
     public void update(float deltaTime) {
         // make sure the entity's transform is matching the physics simulation
         if (rawBody != null) {
-            this.parent.transform.position.set(rawBody.getPosition().x, rawBody.getPosition().y);
-            this.parent.transform.rotation = (float) Math.toDegrees(rawBody.getAngle());
+            if (this.bodyType == BodyType.DYNAMIC || this.bodyType == BodyType.KINEMATIC) {
+                this.parent.transform.position.set(rawBody.getPosition().x, rawBody.getPosition().y);
+                this.parent.transform.rotation = (float) Math.toDegrees(rawBody.getAngle());
+                Vec2 vel = rawBody.getLinearVelocity();
+                this.velocity.set(vel.x, vel.y);
+            } else if (this.bodyType == BodyType.STATIC) {
+                this.rawBody.setTransform(
+                        new Vec2(this.parent.transform.position.x, this.parent.transform.position.y),
+                        this.parent.transform.rotation);
+
+            }
         }
     }
 
@@ -60,7 +70,7 @@ public class RigidBody2d extends Component {
         }
     }
 
-    public float getGravityScale(){
+    public float getGravityScale() {
         return this.gravityScale;
     }
 
@@ -71,11 +81,11 @@ public class RigidBody2d extends Component {
         }
     }
 
-    public void setFriction(float friction){
+    public void setFriction(float friction) {
         this.friction = friction;
     }
 
-    public float getFriction(){
+    public float getFriction() {
         return this.friction;
     }
 
@@ -169,7 +179,7 @@ public class RigidBody2d extends Component {
         }
     }
 
-    public float getAngularVelocity(){
+    public float getAngularVelocity() {
         return this.angularVelocity;
     }
 

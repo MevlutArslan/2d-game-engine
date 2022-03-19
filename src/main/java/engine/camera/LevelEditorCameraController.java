@@ -4,7 +4,7 @@ import engine.Component;
 import engine.GameWindow;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
-import engine.ui.ViewPortWindow;
+import engine.ui.ViewPortPanel;
 import org.joml.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -29,7 +29,7 @@ public class LevelEditorCameraController extends Component {
     }
 
     public void onUpdateEditor(float deltaTime){
-        if(!ViewPortWindow.getWantCaptureMouse()){
+        if(!ViewPortPanel.getWantCaptureMouse()){
             return;
         }
         // need to move the camera to the opposing direction at an increasing speed over deltaTime

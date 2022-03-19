@@ -75,4 +75,9 @@ public class Camera {
     public void addZoomLevel(float zoomIncrement){
         zoomLevel += zoomIncrement;
     }
+
+    public void setHeightAndWidth(float height, float width){
+        this.projectionHeight = height;
+        this.projectionWidth = width;
+    }
 }

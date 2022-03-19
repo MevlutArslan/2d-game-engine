@@ -1,6 +1,7 @@
 package engine.rendering;
 
 import engine.GameWindow;
+import engine.camera.Camera;
 import engine.utility.AssetPool;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -19,7 +20,7 @@ import engine.utility.JMath;
 // https://github.com/codingminecraft/MarioYoutube/blob/6a7acf801b6831bfd6e6b462b274d091937cebc1/src/main/java/renderer/DebugDraw.java
 public class DebugDraw {
 
-    private static final int MAX_LINES = 500;
+    private static final int MAX_LINES = 5000;
     public static List<Line2d> lines = new ArrayList<>();
 
     // 2 floats for coords, 3 floats for color , 1 int for lifetime = 6
@@ -97,7 +98,7 @@ public class DebugDraw {
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
 
-        glDrawArrays(GL_LINES, 0, lines.size() * 6 * 2);
+        glDrawArrays(GL_LINES, 0, lines.size());
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -115,10 +116,16 @@ public class DebugDraw {
         addLine2d(from, to, color, 1);
     }
 
-    public static void addLine2d(Vector2f from, Vector2f to,
-                                 Vector3f color, int lifeTime) {
-        if (lines.size() >= MAX_LINES)
+    public static void addLine2d(Vector2f from, Vector2f to, Vector3f color, int lifeTime) {
+        Camera camera = GameWindow.getScene().getCamera();
+        Vector2f cameraLeft = new Vector2f(camera.cameraPosition).add(new Vector2f(-2.0f,-2.0f));
+        Vector2f cameraRight = new Vector2f(camera.cameraPosition).add(new Vector2f(camera.getProjectionSize()).mul(camera.getZoomLevel())).add(new Vector2f(4.0f, 4.0f));
+        boolean lineInView = ((from.x >= cameraLeft.x && from.x <= cameraRight.x) && (from.y >= cameraLeft.y && from.y <= cameraRight.y)) ||
+                        ((to.x >= cameraLeft.x && to.x <= cameraRight.x) && (to.y >= cameraLeft.y && to.y <= cameraRight.y));
+
+        if (lines.size() >= MAX_LINES || !lineInView) {
             return;
+        }
 
         DebugDraw.lines.add(new Line2d(from, to, color, lifeTime));
     }
