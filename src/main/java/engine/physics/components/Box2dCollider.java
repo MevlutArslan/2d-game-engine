@@ -9,10 +9,13 @@ public class Box2dCollider extends Component {
     private Vector2f halfSize = new Vector2f(1,1);
     private Vector2f origin = new Vector2f();
     private Vector2f offset = new Vector2f();
-
+    private boolean syncSizeWithParentObject = false;
 
     @Override
     public void onUpdateEditor(float deltaTime) {
+        if(syncSizeWithParentObject){
+            this.halfSize = parent.transform.scale;
+        }
         Vector2f center = new Vector2f(this.parent.transform.position).add(this.offset);
         DebugDraw.drawSquare(center, this.halfSize, (int)this.parent.transform.rotation);
     }

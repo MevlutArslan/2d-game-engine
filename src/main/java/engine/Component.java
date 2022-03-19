@@ -128,6 +128,14 @@ public abstract class Component {
                         if(ImGui.combo(name, index, enumValues, enumValues.length)){
                             field.set(this, type.getEnumConstants()[index.get()]);
                         }
+                    } else if (type == boolean.class) {
+                        boolean value = (boolean)val;
+
+                        field.set(this, CustomImGuiController.drawBoolean(name, value));
+                    }
+
+                    if (isPrivate) {
+                        field.setAccessible(false);
                     }
                 }
             }

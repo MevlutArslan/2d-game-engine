@@ -308,8 +308,25 @@ public class CustomImGuiController {
         return val[0];
     }
 
-    public static void drawComponent(Component component, String name, Entity entity, boolean allowForRemoval) {
+    public static boolean drawBoolean(String label, boolean value){
+        ImGui.pushID(label);
 
+        ImGui.columns(2);
+        ImGui.setColumnWidth(0, defaultColumnWidth);
+        ImGui.text(label);
+        ImGui.nextColumn();
+
+        boolean val = value;
+        if (ImGui.checkbox("", value)) {
+            val = !value;
+        }
+
+        ImGui.columns(1);
+        ImGui.popID();
+        return val;
+    }
+
+    public static void drawComponent(Component component, String name, Entity entity, boolean allowForRemoval) {
         final int treeNodeFlags =  ImGuiTreeNodeFlags.Framed | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.AllowItemOverlap | ImGuiTreeNodeFlags.FramePadding;
         ImVec2 contentRegionAvailable = ImGui.getContentRegionAvail();
 
