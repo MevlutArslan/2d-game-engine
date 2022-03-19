@@ -156,6 +156,8 @@ public class MouseListener {
         get().lastY = get().yPos;
         get().lastWorldX = get().worldX;
         get().lastWorldY = get().worldY;
+        get().worldX = getWorldCoordinateX();
+        get().worldY = getWorldCoordinateY();
         get().xPos = xPos;
         get().yPos = yPos;
     }
@@ -222,5 +224,13 @@ public class MouseListener {
 
     public static void setViewPortSize(Vector2f viewPortSize) {
         get().viewPortSize.set(viewPortSize);
+    }
+
+    public static double getWorldDx(){
+        return get().lastWorldX - get().worldX;
+    }
+
+    public static double getWorldDy(){
+        return get().lastWorldY - get().worldY;
     }
 }
