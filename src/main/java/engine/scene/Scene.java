@@ -6,6 +6,7 @@ import components.Transform;
 import engine.Component;
 import engine.Entity;
 import engine.camera.Camera;
+import engine.physics.PhysicsEngine;
 import engine.rendering.Renderer;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
@@ -26,6 +27,7 @@ public class Scene {
     private ArrayList<Entity> entities;
     private Renderer renderer;
     private boolean isRunning;
+    private PhysicsEngine physicsEngine;
 
     private SceneInitializer sceneInitializer;
 
@@ -34,6 +36,7 @@ public class Scene {
         this.renderer = new Renderer();
         this.entities = new ArrayList<>();
         this.isRunning = false;
+        this.physicsEngine = new PhysicsEngine();
     }
 
     public void init() {
@@ -48,6 +51,7 @@ public class Scene {
             Entity entity = entities.get(i);
             entity.start();
             this.renderer.add(entity);
+            this.physicsEngine.add(entity);
         }
         isRunning = true;
     }
@@ -62,6 +66,7 @@ public class Scene {
             entity.start();
 
             this.renderer.add(entity);
+            this.physicsEngine.add(entity);
         }
     }
 
@@ -83,6 +88,7 @@ public class Scene {
             if(entity.isDead()){
                 entities.remove(i);
                 this.renderer.destroyEntity(entity);
+                this.physicsEngine.destroyEntity(entity);
                 i--;
             }
         }
@@ -90,15 +96,16 @@ public class Scene {
 
     public void update(float deltaTime){
         this.camera.adjustProjection();
+        this.physicsEngine.update(deltaTime);
 
         for (int i = 0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
-
             entity.update(deltaTime);
 
             if(entity.isDead()){
                 entities.remove(i);
                 this.renderer.destroyEntity(entity);
+                this.physicsEngine.destroyEntity(entity);
                 i--;
             }
         }
@@ -262,8 +269,10 @@ public class Scene {
 
     public Entity createEntity(String name){
         Entity entity = new Entity(name);
+
         entity.addComponent(new Transform());
         entity.transform = entity.getComponent(Transform.class);
+
         return entity;
     }
 
@@ -278,5 +287,9 @@ public class Scene {
             }
         }
         return null;
+    }
+
+    public PhysicsEngine getPhysicsEngine() {
+        return physicsEngine;
     }
 }

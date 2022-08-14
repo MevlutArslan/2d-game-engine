@@ -87,7 +87,58 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
 
     @Override
     public void imgui() {
+        ImGui.begin("Templates");
 
+        ImVec2 buttonSize = new ImVec2();
+        ImGuiStyle style = ImGui.getStyle();
+
+        int numberOfButtons = EntityGenerator.getNumberOfTemplatesAvailable();
+        float windowVisibleX2 = ImGui.getWindowPosX() + ImGui.getWindowContentRegionMaxX();
+
+//        for (int i = 0; i < numberOfButtons; i++) {
+        int id = 0;
+        Sprite sprite = sprites.getSprite(2);
+        ImGui.pushID(id++);
+        // I need the textureId, sprite's width, height, uv coordinates
+        int texId = sprite.getTexId();
+        float spriteHeight = sprite.getHeight();
+        float spriteWidth = sprite.getWidth();
+        Vector2f[] texCoords = sprite.getTextureCoords();
+
+        if (ImGui.imageButton(texId, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            Entity entity = EntityGenerator.generateBuildingBlocks(sprite);
+            editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
+        }
+
+        ImGui.popID();
+        ImGui.sameLine();
+
+        ImGui.pushID(id++);
+
+        sprite = playerIdleSprites.getSprite(0);
+        texId = sprite.getTexId();
+        spriteHeight = sprite.getHeight();
+        spriteWidth = sprite.getWidth();
+        texCoords = sprite.getTextureCoords();
+
+        if (ImGui.imageButton(texId, spriteWidth, 32, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            Entity entity = EntityGenerator.generatePlayerEntity();
+            editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
+        }
+
+        ImGui.popID();
+        ImGui.sameLine();
+//            float lastButtonX2 = ImGui.getItemRectMaxX();
+//            float nextButtonX2 = lastButtonX2 + style.getItemSpacingX() + buttonSize.x;
+//
+//            if (i + 1 < numberOfButtons && nextButtonX2 < windowVisibleX2) {
+
+//            }
+
+
+//        }
+
+        ImGui.end();
     }
 
 
