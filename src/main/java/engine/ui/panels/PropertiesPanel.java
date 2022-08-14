@@ -4,9 +4,6 @@ import components.NonPickable;
 import components.rendering.SpriteRenderer;
 import engine.Entity;
 import engine.input.MouseListener;
-import engine.physics.components.Box2dCollider;
-import engine.physics.components.CircleCollider;
-import engine.physics.components.RigidBody2d;
 import engine.rendering.PickingTexture;
 import engine.rendering.Sprite;
 import engine.scene.Scene;
@@ -38,56 +35,33 @@ public class PropertiesPanel {
         // TODO allow for collective editing of selected entities
         if (selectedEntities.size() == 1 && selectedEntities.get(0) != null) {
             selectedEntity = selectedEntities.get(0);
+
             ImGui.begin("Properties");
+
             if (selectedEntity != null) {
                 selectedEntity.imgui();
-
-                if (ImGui.button("Add Component")) {
-                    ImGui.openPopup("AddComponent");
-                }
-
-                if (ImGui.beginPopup("AddComponent")) {
-                    if (ImGui.menuItem("Add Rigidbody")) {
-                        if (selectedEntity.getComponent(RigidBody2d.class) == null) {
-                            selectedEntity.addComponent(new RigidBody2d());
-                        }
-                    }
-
-                    if (ImGui.menuItem("Add Box Collider")) {
-                        if (selectedEntity.getComponent(Box2dCollider.class) == null &&
-                                selectedEntity.getComponent(CircleCollider.class) == null) {
-                            selectedEntity.addComponent(new Box2dCollider());
-                        }
-                    }
-
-                    if (ImGui.menuItem("Add Circle Collider")) {
-                        if (selectedEntity.getComponent(CircleCollider.class) == null &&
-                                selectedEntity.getComponent(Box2dCollider.class) == null) {
-                            selectedEntity.addComponent(new CircleCollider());
-                        }
-                    }
-
-                    ImGui.endPopup();
-                }
             }
+
             ImGui.end();
         }
+
     }
+
 
     public Entity getSelectedEntity() {
         return selectedEntities.size() == 1 ? this.selectedEntities.get(0) : null;
     }
 
-    public List<Entity> getSelectedEntities(){
+    public List<Entity> getSelectedEntities() {
         return this.selectedEntities;
     }
 
-    public void clearSelected(){
-        if(selectedEntititiesOriginalColor.size() > 0){
+    public void clearSelected() {
+        if (selectedEntititiesOriginalColor.size() > 0) {
             int i = 0;
-            for(Entity entity : selectedEntities){
+            for (Entity entity : selectedEntities) {
                 SpriteRenderer spriteRenderer = entity.getComponent(SpriteRenderer.class);
-                if(spriteRenderer != null){
+                if (spriteRenderer != null) {
                     spriteRenderer.setColor(selectedEntititiesOriginalColor.get(i));
                 }
                 i++;
@@ -97,19 +71,19 @@ public class PropertiesPanel {
         this.selectedEntititiesOriginalColor.clear();
     }
 
-    public void addSelectedEntityToEntities(Entity entity){
+    public void addSelectedEntityToEntities(Entity entity) {
         SpriteRenderer spriteRenderer = entity.getComponent(SpriteRenderer.class);
-        if(spriteRenderer != null){
+        if (spriteRenderer != null) {
             this.selectedEntititiesOriginalColor.add(new Vector4f(spriteRenderer.getColor()));
             spriteRenderer.setColor(new Vector4f(0.8f, 0.8f, 0.0f, 0.8f));
-        }else{
+        } else {
             this.selectedEntititiesOriginalColor.add(new Vector4f());
         }
         this.selectedEntities.add(entity);
     }
 
     public void setSelectedEntity(Entity selectedEntity) {
-        if(selectedEntity != null){
+        if (selectedEntity != null) {
             clearSelected();
             this.selectedEntities.add(selectedEntity);
         }

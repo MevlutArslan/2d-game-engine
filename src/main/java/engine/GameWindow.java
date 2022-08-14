@@ -5,7 +5,6 @@ import engine.input.MouseListener;
 import engine.observers.Event;
 import engine.observers.EventSystem;
 import engine.observers.Observer;
-import engine.physics.Physics2d;
 import engine.rendering.*;
 import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.LevelSceneInitializer;
@@ -79,12 +78,11 @@ public class GameWindow implements Observer {
         return GameWindow.instance;
     }
 
-    // TODO absolutely uselss method, restructure it
+    // TODO absolutely useless method, restructure it
     public static void changeScene(SceneInitializer sceneInitializer) {
         if (currentScene != null) {
             currentScene.destroy();
         }
-
 //        getImguiLayer().getPropertiesWindow().setActiveGameObject(null);
         currentScene = new Scene(sceneInitializer);
         // TODO : Change load to loadDefault or use the Overriden method with defaultLevelSrc from project's settings
@@ -164,6 +162,7 @@ public class GameWindow implements Observer {
         GL.createCapabilities();
         // https://learnopengl.com/Advanced-OpenGL/Blending
         glEnable(GL_BLEND);
+
         /* FORMULA : Cresult=Csource∗Fsource+Cdestination∗Fdestination
          *  C¯source: the source color vector. This is the color output of the fragment shader.
          *  C¯destination: the destination color vector. This is the color vector that is currently stored in the color buffer.
@@ -171,7 +170,6 @@ public class GameWindow implements Observer {
          *  Fdestination: the destination factor value. Sets the impact of the alpha value on the destination color.
          */
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
 
         frameBuffer = new FrameBuffer(MONITOR_WIDTH, MONITOR_HEIGHT);
         pickingTexture = new PickingTexture(MONITOR_WIDTH, MONITOR_HEIGHT);
@@ -181,6 +179,7 @@ public class GameWindow implements Observer {
 
         loadShaders();
 
+        // NOTE : Loading project specific scenes needs to happen here.
         GameWindow.changeScene(new LevelEditorSceneInitializer());
     }
 
@@ -219,18 +218,17 @@ public class GameWindow implements Observer {
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
-
-
+            // TODO : fix update method
             if (deltaTime >= 0) {
                 // TODO FIX TWITCHING BUG
-//                while (lag >= FIXED_TIME_STEP) {
+                while (lag >= FIXED_TIME_STEP) {
                     if(isEditorMode){
                         currentScene.onUpdateEditor(deltaTime);
                     }else{
                         currentScene.update(deltaTime);
                     }
                     lag -= FIXED_TIME_STEP;
-//                }
+                }
 
                 Renderer.bindShader(defaultShader);
                 currentScene.render();
@@ -383,8 +381,5 @@ public class GameWindow implements Observer {
         return get().frameBuffer;
     }
 
-    public static Physics2d getPhysics(){
-        return currentScene.getPhysics();
-    }
 }
 

@@ -49,6 +49,11 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
                         "src/main/resources/basicShader.fragment"
                 }
         );
+
+        AssetPool.getTexture("src/main/resources/icons/play-button.png");
+        AssetPool.getTexture("src/main/resources/icons/pause-button.png");
+        AssetPool.getTexture("src/main/resources/icons/cube.png");
+
         AssetPool.addSpriteSheet("src/main/resources/textures/spritesheet.png",
                 new SpriteSheet(AssetPool.getTexture("src/main/resources/textures/spritesheet.png"),
                         16, 16, 26, 0));
@@ -58,6 +63,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
         AssetPool.addSpriteSheet("src/main/resources/spritesheets/Biker_idle.png", new SpriteSheet(
                 AssetPool.getTexture("src/main/resources/spritesheets/Biker_idle.png"), 24, 48, 4, 0
         ));
+
 
         for (Entity entity : scene.getEntities()) {
             if (entity.getComponent(SpriteRenderer.class) != null) {
@@ -133,7 +139,6 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
 //        }
 
         ImGui.end();
-
     }
 
 
