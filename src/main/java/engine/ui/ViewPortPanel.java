@@ -5,11 +5,15 @@ import engine.input.MouseListener;
 import engine.observers.Event;
 import engine.observers.EventSystem;
 import engine.observers.EventType;
+import engine.rendering.Sprite;
+import engine.rendering.Texture;
 import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.Scene;
+import engine.utility.AssetPool;
 import engine.utility.Constants;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiButtonFlags;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 
@@ -24,13 +28,31 @@ public class ViewPortPanel {
 
         ImGui.beginMenuBar();
 
-        if (ImGui.menuItem("Play", "", isPlaying, !isPlaying)) {
-            isPlaying = true;
-            EventSystem.notify(null, new Event(EventType.GAME_ENGINE_START_PLAY));
+        Sprite sprite = new Sprite();
+        sprite.setTexture( AssetPool.getTexture("src/main/resources/icons/play-button.png"));
+        int spriteTexId = sprite.getTexId();
+        float spriteHeight = sprite.getHeight();
+        float spriteWidth = sprite.getWidth();
+        Vector2f[] texCoords = sprite.getTextureCoords();
+
+        if (ImGui.imageButton(spriteTexId, 16, 16, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)) {
+            if(!isPlaying){
+                isPlaying = true;
+                EventSystem.notify(null, new Event(EventType.GAME_ENGINE_START_PLAY));
+            }
         }
-        if (ImGui.menuItem("Stop", "", !isPlaying, isPlaying)) {
-            isPlaying = false;
-            EventSystem.notify(null, new Event(EventType.GAME_ENGINE_STOP_PLAY));
+
+        sprite.setTexture(AssetPool.getTexture("src/main/resources/icons/pause-button.png"));
+        spriteTexId = sprite.getTexId();
+        spriteHeight = sprite.getHeight();
+        spriteWidth = sprite.getWidth();
+        texCoords = sprite.getTextureCoords();
+
+        if (ImGui.imageButton(spriteTexId, 16, 16, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            if(isPlaying){
+                isPlaying = false;
+                EventSystem.notify(null, new Event(EventType.GAME_ENGINE_STOP_PLAY));
+            }
         }
 
         ImGui.endMenuBar();
