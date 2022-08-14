@@ -6,10 +6,7 @@ import components.Transform;
 import engine.Component;
 import engine.Entity;
 import engine.camera.Camera;
-import engine.input.KeyListener;
-import engine.physics.Physics2d;
 import engine.rendering.Renderer;
-import engine.utility.AssetPool;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
 import org.joml.Vector2f;
@@ -22,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-
 // A lot of things of the Scene system are taken from The Cherno, GamesWithGabe and the 'Game Engine Architecture' book.
 public class Scene {
 
@@ -31,7 +26,6 @@ public class Scene {
     private ArrayList<Entity> entities;
     private Renderer renderer;
     private boolean isRunning;
-    private Physics2d physics2d;
 
     private SceneInitializer sceneInitializer;
 
@@ -40,7 +34,6 @@ public class Scene {
         this.renderer = new Renderer();
         this.entities = new ArrayList<>();
         this.isRunning = false;
-        this.physics2d = new Physics2d();
     }
 
     public void init() {
@@ -50,12 +43,11 @@ public class Scene {
     }
 
     public void start() {
-        // using this for loop to avoid concurrent modification errors.
+        // using the traditional for loop to avoid concurrent modification errors.
         for (int i = 0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
             entity.start();
             this.renderer.add(entity);
-            this.physics2d.add(entity);
         }
         isRunning = true;
     }
@@ -66,9 +58,10 @@ public class Scene {
             entities.add(entity);
         } else {
             entities.add(entity);
+            // we are calling the start method to make sure the dynamically added entities also start
             entity.start();
+
             this.renderer.add(entity);
-            this.physics2d.add(entity);
         }
     }
 
@@ -90,24 +83,22 @@ public class Scene {
             if(entity.isDead()){
                 entities.remove(i);
                 this.renderer.destroyEntity(entity);
-                this.physics2d.destroyEntity(entity);
                 i--;
             }
         }
     }
 
     public void update(float deltaTime){
-        camera.adjustProjection();
-        this.physics2d.update(deltaTime);
+        this.camera.adjustProjection();
 
         for (int i = 0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
+
             entity.update(deltaTime);
 
             if(entity.isDead()){
                 entities.remove(i);
                 this.renderer.destroyEntity(entity);
-                this.physics2d.destroyEntity(entity);
                 i--;
             }
         }
@@ -278,10 +269,6 @@ public class Scene {
 
     public Camera getCamera() {
         return this.camera;
-    }
-
-    public Physics2d getPhysics(){
-        return this.physics2d;
     }
 
     public <T extends Component> Entity getEntityWithComponent(Class<T> cls){
