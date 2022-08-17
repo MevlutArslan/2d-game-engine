@@ -1,7 +1,7 @@
 package engine.utility;
 
 import components.Ground;
-import components.physics.CircleCollider;
+import components.physics.BoxCollider;
 import components.physics.RigidBody;
 import components.rendering.SpriteRenderer;
 import engine.Entity;
@@ -72,9 +72,8 @@ public class EntityGenerator {
         RigidBody rigidBody = new RigidBody();
         rigidBody.setBodyType(BodyType.DYNAMIC);
 
-        CircleCollider circleCollider = new CircleCollider();
-        circleCollider.setRadius(0.25f);
-
+        BoxCollider circleCollider = new BoxCollider();
+        circleCollider.setHalfSize(new Vector2f(0.25f, 0.25f));
 
         entity.addComponent(rigidBody);
         entity.addComponent(circleCollider);

@@ -1,5 +1,6 @@
 package engine.physics;
 
+import components.physics.BoxCollider;
 import components.physics.CircleCollider;
 import components.physics.RigidBody;
 import engine.Component;
@@ -9,6 +10,7 @@ import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.WorldManifold;
 import org.jbox2d.collision.shapes.CircleShape;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.Contact;
@@ -146,9 +148,14 @@ public class PhysicsEngine {
             rigidBody.setBody(body);
 
             CircleCollider circleCollider;
+            BoxCollider boxCollider;
 
             if((circleCollider = entity.getComponent(CircleCollider.class)) != null){
                 createCircleCollider(rigidBody, circleCollider);
+            }
+
+            if((boxCollider = entity.getComponent(BoxCollider.class)) != null){
+                createBoxCollider(rigidBody, boxCollider);
             }
         }
     }
@@ -161,6 +168,29 @@ public class PhysicsEngine {
                 rigidBody.setBody(null);
             }
         }
+    }
+
+    public void createBoxCollider(RigidBody rigidBody, BoxCollider boxCollider){
+        Body body = rigidBody.getBody();
+
+        if(body == null){
+            return;
+        }
+
+        PolygonShape shape = new PolygonShape();
+        Vector2f halfSize = boxCollider.getHalfSize();
+        Vector2f offset = boxCollider.getOffset();
+
+        shape.setAsBox(halfSize.x, halfSize.y, new Vec2(offset.x, offset.y), (float) Math.toRadians(rigidBody.parent.transform.rotation));
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = rigidBody.getFriction();
+        fixtureDef.userData = boxCollider.parent;
+        fixtureDef.isSensor = rigidBody.isSensor();
+        body.createFixture(fixtureDef);
+
     }
 
     public void createCircleCollider(RigidBody rigidBody, CircleCollider circleCollider){
