@@ -141,7 +141,7 @@ public class PhysicsEngine {
             bodyDef.userData = rigidBody.parent;
 
             // Radians = Degrees × π/180°. TODO : test this formula
-            bodyDef.angle = (float)(entity.transform.rotation * Math.PI / 180f);
+            bodyDef.angle = (float) Math.toRadians(entity.transform.rotation);
 
             Body body = world.createBody(bodyDef);
             body.m_mass = rigidBody.getMass();

@@ -38,14 +38,13 @@ public class RigidBody extends Component {
         if (body != null) {
             if (this.bodyType == BodyType.DYNAMIC || this.bodyType == BodyType.KINEMATIC) {
                 this.parent.transform.position.set(body.getPosition().x, body.getPosition().y);
-                // Radian measure × (180°/π)
-                this.parent.transform.rotation = (float) (body.getAngle() * (180/Math.PI));
+                this.parent.transform.rotation = (float) Math.toDegrees(body.getAngle());
                 Vec2 vel = body.getLinearVelocity();
                 this.velocity.set(vel.x, vel.y);
             } else if (this.bodyType == BodyType.STATIC) {
                 this.body.setTransform(
                         new Vec2(this.parent.transform.position.x, this.parent.transform.position.y),
-                        this.parent.transform.rotation);
+                        (float)Math.toRadians(this.parent.transform.rotation));
             }
         }
     }
