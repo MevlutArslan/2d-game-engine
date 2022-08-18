@@ -1,9 +1,11 @@
 package engine;
 
 import components.rendering.SpriteRenderer;
+import engine.rendering.DebugDraw;
 import engine.ui.editor.CustomImGuiController;
 import imgui.ImGui;
 import imgui.type.ImInt;
+import org.jbox2d.collision.ManifoldPoint;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

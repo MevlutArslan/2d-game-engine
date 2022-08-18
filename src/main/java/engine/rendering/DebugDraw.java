@@ -130,11 +130,11 @@ public class DebugDraw {
         DebugDraw.lines.add(new Line2d(from, to, color, lifeTime));
     }
 
-    public static void drawSquare(Vector2f pos, Vector2f dimensions, int rotation){
+    public static void drawSquare(Vector2f pos, Vector2f dimensions, float rotation){
         drawSquare(pos, dimensions, rotation, new Vector3f(0, 1, 0), 1);
     }
     // https://www.youtube.com/watch?v=mUVVcCxf9wQ&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=27
-    public static void drawSquare(Vector2f pos, Vector2f dimensions, int rotation, Vector3f color, int lifetime) {
+    public static void drawSquare(Vector2f pos, Vector2f dimensions, float rotation, Vector3f color, int lifetime) {
         // if I dont put it in a new Vector2f it will modify the existing one which we definetly
         // dont want to modify the origin of the square
         Vector2f bottomLeft = new Vector2f(pos).sub(new Vector2f(dimensions).mul(0.5f));
@@ -167,6 +167,7 @@ public class DebugDraw {
     public static void drawCircle(Vector2f pos, float radius){
         drawCircle(pos, radius, new Vector3f(0,1,0),1);
     }
+    
     // https://www.youtube.com/watch?v=mUVVcCxf9wQ&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=27
     public static void drawCircle(Vector2f pos, float radius, Vector3f color, int lifetime) {
         final int NUMBER_OF_VERTICES = 12;

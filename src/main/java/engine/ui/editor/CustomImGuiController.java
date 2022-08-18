@@ -305,6 +305,7 @@ public class CustomImGuiController {
 
         ImGui.columns(1);
         ImGui.popID();
+
         return val[0];
     }
 

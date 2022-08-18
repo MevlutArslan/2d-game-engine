@@ -1,7 +1,7 @@
 package engine.utility;
 
 import components.Ground;
-import components.physics.CircleCollider;
+import components.physics.BoxCollider;
 import components.physics.RigidBody;
 import components.rendering.SpriteRenderer;
 import engine.Entity;
@@ -67,17 +67,15 @@ public class EntityGenerator {
     public static Entity generateBuildingBlocks(Sprite sprite){
         // we first need an entity with our sprite assigned.
         Entity entity = generateSpriteObject(sprite,0.25f,0.25f);
-
         // we add a rigidbody and a collider to allow our player to stand on our blocks.
         RigidBody rigidBody = new RigidBody();
-        rigidBody.setBodyType(BodyType.DYNAMIC);
+        rigidBody.setBodyType(BodyType.STATIC);
 
-        CircleCollider circleCollider = new CircleCollider();
-        circleCollider.setRadius(0.25f);
-
+        BoxCollider boxCollider = new BoxCollider();
+        boxCollider.setHalfSize(entity.transform.scale);
 
         entity.addComponent(rigidBody);
-        entity.addComponent(circleCollider);
+        entity.addComponent(boxCollider);
         entity.addComponent(new Ground());
 
         return entity;

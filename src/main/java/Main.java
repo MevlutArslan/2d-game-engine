@@ -10,8 +10,5 @@ public class Main {
     public static void main(String[] args) {
 
         GameWindow.get().run();
-        // works
-//        System.out.println(FileDialogManager.openFile("png,jpg,pdf,customengine"));
-//        FileDialogManager.saveFile("DSayoay");
     }
 }

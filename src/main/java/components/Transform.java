@@ -58,10 +58,12 @@ public class Transform extends Component {
         CustomImGuiController.drawVec2Control("Scale", this.scale, 0);
         float newRotation = CustomImGuiController.dragFloat("Rotation", this.rotation);
         int newZindex = CustomImGuiController.dragInt("Z-Index", this.zIndex);
+
         if(this.rotation != newRotation){
             this.rotation = newRotation;
             this.parent.getComponent(SpriteRenderer.class).setHasChanged();
         }
+
         if(this.zIndex != newZindex){
             this.zIndex = newZindex;
             this.parent.getComponent(SpriteRenderer.class).setHasChanged();
