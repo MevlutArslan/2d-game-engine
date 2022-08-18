@@ -67,16 +67,15 @@ public class EntityGenerator {
     public static Entity generateBuildingBlocks(Sprite sprite){
         // we first need an entity with our sprite assigned.
         Entity entity = generateSpriteObject(sprite,0.25f,0.25f);
-
         // we add a rigidbody and a collider to allow our player to stand on our blocks.
         RigidBody rigidBody = new RigidBody();
-        rigidBody.setBodyType(BodyType.DYNAMIC);
+        rigidBody.setBodyType(BodyType.STATIC);
 
-        BoxCollider circleCollider = new BoxCollider();
-        circleCollider.setHalfSize(new Vector2f(0.25f, 0.25f));
+        BoxCollider boxCollider = new BoxCollider();
+        boxCollider.setHalfSize(entity.transform.scale);
 
         entity.addComponent(rigidBody);
-        entity.addComponent(circleCollider);
+        entity.addComponent(boxCollider);
         entity.addComponent(new Ground());
 
         return entity;

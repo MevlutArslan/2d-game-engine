@@ -5,16 +5,22 @@ import components.physics.CircleCollider;
 import components.physics.RigidBody;
 import engine.Component;
 import engine.Entity;
+import engine.ui.ViewPortPanel;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.callbacks.DebugDraw;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.WorldManifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Color3f;
+import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
+
+import javax.swing.text.View;
 
 // https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_dynamics.html#autotoc_md113
 public class PhysicsEngine {
@@ -142,7 +148,6 @@ public class PhysicsEngine {
 
             // Radians = Degrees × π/180°. TODO : test this formula
             bodyDef.angle = (float) Math.toRadians(entity.transform.rotation);
-
             Body body = world.createBody(bodyDef);
             body.m_mass = rigidBody.getMass();
             rigidBody.setBody(body);
@@ -157,6 +162,8 @@ public class PhysicsEngine {
             if((boxCollider = entity.getComponent(BoxCollider.class)) != null){
                 createBoxCollider(rigidBody, boxCollider);
             }
+
+
         }
     }
 
@@ -178,7 +185,7 @@ public class PhysicsEngine {
         }
 
         PolygonShape shape = new PolygonShape();
-        Vector2f halfSize = boxCollider.getHalfSize();
+        Vector2f halfSize = new Vector2f(boxCollider.getHalfSize()).mul(0.5f);
         Vector2f offset = boxCollider.getOffset();
 
         shape.setAsBox(halfSize.x, halfSize.y, new Vec2(offset.x, offset.y), (float) Math.toRadians(rigidBody.parent.transform.rotation));
