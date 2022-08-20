@@ -6,7 +6,6 @@ import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.ui.editor.CustomImGuiController;
 import engine.utility.AssetPool;
-import engine.utility.Constants;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
 
@@ -20,7 +19,6 @@ public class Entity {
 
     private boolean isDead = false;
     public transient Transform transform;
-
     // We need to seperate the entityCounter from the entityId
     // as when serializing & deserializing it will overlap and restart the counter if we keep it
     // all in a static variable
@@ -87,8 +85,9 @@ public class Entity {
         // if the component already has an id it wont generate a new one
         // which means it has been loaded in
         component.generateComponentId();
-        this.components.add(component);
         component.parent = this;
+        this.components.add(component);
+
     }
 
     public int getzIndex(){
@@ -152,4 +151,8 @@ public class Entity {
 
         return entity;
     }
+
+    
+
+
 }

@@ -128,12 +128,22 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
 
         ImGui.popID();
         ImGui.sameLine();
-//            float lastButtonX2 = ImGui.getItemRectMaxX();
-//            float nextButtonX2 = lastButtonX2 + style.getItemSpacingX() + buttonSize.x;
-//
-//            if (i + 1 < numberOfButtons && nextButtonX2 < windowVisibleX2) {
 
-//            }
+        ImGui.pushID(id++);
+
+        sprite = sprites.getSprite(1);
+        texId = sprite.getTexId();
+        spriteHeight = sprite.getHeight();
+        spriteWidth = sprite.getWidth();
+        texCoords = sprite.getTextureCoords();
+
+        if (ImGui.imageButton(texId, spriteWidth, 32, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            Entity entity = EntityGenerator.generateSensorBlock(sprite);
+            editorEntity.getComponent(MouseControl.class).pickUpEntity(entity);
+        }
+
+        ImGui.popID();
+        ImGui.sameLine();
 
 
 //        }
