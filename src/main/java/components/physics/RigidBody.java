@@ -12,7 +12,7 @@ import org.joml.Vector2f;
 
 public class RigidBody extends Component {
 
-    private transient Vector2f velocity = new Vector2f();
+    private transient Vector2f velocity = new Vector2f(0,0);
 
     private float linearDamping = 0.0f;
     private float angularDamping = 0.0f;
@@ -196,4 +196,23 @@ public class RigidBody extends Component {
         this.density = density;
         body.resetMassData();
     }
+
+    public Vector2f getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Vector2f velocity) {
+        this.velocity.set(velocity);
+        if (body != null) {
+            this.body.setLinearVelocity(new Vec2(velocity.x, velocity.y));
+        }
+    }
+
+    public void setVelocity(float x, float y) {
+        this.velocity.set(x, y);
+        if(body != null){
+            this.body.setLinearVelocity(new Vec2(x, y));
+        }
+    }
+
 }
