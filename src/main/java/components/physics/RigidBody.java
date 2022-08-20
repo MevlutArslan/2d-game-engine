@@ -1,13 +1,12 @@
 package components.physics;
 
 import engine.Component;
-import engine.GameWindow;
+import engine.EntityCategory;
 import engine.physics.CollisionGroup;
 import engine.physics.PhysicsEngine;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
 import org.joml.Vector2f;
 
 public class RigidBody extends Component {
@@ -38,6 +37,9 @@ public class RigidBody extends Component {
     private transient Body body = null;
 
     private CollisionGroup collisionGroup = CollisionGroup.ALL;
+
+    private int collisionCategory = 0;
+    private int collisionMask = 0;
 
     // to sycn up our entity with the physics world we use this method
     public void update(float deltaTime) {
@@ -213,6 +215,26 @@ public class RigidBody extends Component {
         if(body != null){
             this.body.setLinearVelocity(new Vec2(x, y));
         }
+    }
+
+    public void setCollisionMask(int mask){
+        this.collisionMask = mask;
+    }
+
+    public void addCollisionMask(int mask){
+        this.collisionMask |= mask;
+    }
+
+    public int getCollisionMask(){
+        return this.collisionMask;
+    }
+
+    public void setCollisionCategory(int category){
+        this.collisionCategory = category;
+    }
+
+    public int getCollisionCategory(){
+        return this.collisionCategory;
     }
 
 }

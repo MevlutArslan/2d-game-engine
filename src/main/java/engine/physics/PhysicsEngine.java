@@ -115,7 +115,8 @@ public class PhysicsEngine {
         fixtureDef.friction = rigidBody.getFriction();
         fixtureDef.userData = boxCollider.parent;
         fixtureDef.isSensor = rigidBody.isSensor();
-        fixtureDef.filter.groupIndex = rigidBody.getCollisionGroup().getGroupIndex();
+        fixtureDef.filter.categoryBits = rigidBody.getCollisionCategory();
+        fixtureDef.filter.maskBits = rigidBody.getCollisionMask();
 
         body.createFixture(fixtureDef);
 
