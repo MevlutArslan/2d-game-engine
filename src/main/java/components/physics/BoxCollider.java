@@ -1,7 +1,8 @@
 package components.physics;
 
-import engine.Component;
+
 import engine.physics.Collider;
+
 import engine.rendering.DebugDraw;
 import org.jbox2d.common.Color3f;
 import org.jbox2d.common.IViewportTransform;
@@ -13,6 +14,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class BoxCollider extends Collider {
+
     private Vector2f halfSize = new Vector2f();
     private Vector2f offset = new Vector2f();
 

@@ -111,6 +111,7 @@ public class PhysicsEngine {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
+
         fixtureDef.density = rigidBody.getDensity();
         fixtureDef.friction = rigidBody.getFriction();
         fixtureDef.userData = boxCollider.parent;
