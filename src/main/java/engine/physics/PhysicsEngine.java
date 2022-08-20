@@ -192,10 +192,11 @@ public class PhysicsEngine {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = rigidBody.getDensity();
         fixtureDef.friction = rigidBody.getFriction();
         fixtureDef.userData = boxCollider.parent;
         fixtureDef.isSensor = rigidBody.isSensor();
+
         body.createFixture(fixtureDef);
 
     }
@@ -214,7 +215,7 @@ public class PhysicsEngine {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = rigidBody.getDensity();
         fixtureDef.friction = rigidBody.getFriction();
         fixtureDef.userData = circleCollider.parent;
         fixtureDef.isSensor = rigidBody.isSensor();

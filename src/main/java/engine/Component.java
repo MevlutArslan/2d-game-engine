@@ -1,5 +1,6 @@
 package engine;
 
+import components.physics.RigidBody;
 import components.rendering.SpriteRenderer;
 import engine.rendering.DebugDraw;
 import engine.ui.editor.CustomImGuiController;
@@ -73,6 +74,12 @@ public abstract class Component {
                 boolean isTransient = Modifier.isTransient(field.getModifiers());
                 if (isTransient) {
                     continue;
+                }
+
+                if(this.parent.getComponent(RigidBody.class).getBody().getFixtureList() == null){
+                    if(field.getName().equals("density") || field.getName().equals("collisionGroup")){
+                        continue;
+                    }
                 }
 
                 boolean isPrivate = Modifier.isPrivate(field.getModifiers());

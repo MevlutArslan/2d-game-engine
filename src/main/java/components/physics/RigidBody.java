@@ -2,6 +2,7 @@ package components.physics;
 
 import engine.Component;
 import engine.GameWindow;
+import engine.physics.CollisionGroup;
 import engine.physics.PhysicsEngine;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -11,6 +12,7 @@ import org.joml.Vector2f;
 
 public class RigidBody extends Component {
 
+    private transient Vector2f velocity = new Vector2f();
 
     private float linearDamping = 0.0f;
     private float angularDamping = 0.0f;
@@ -18,11 +20,13 @@ public class RigidBody extends Component {
     private float mass = 0.0f;
     private float angularVelocity = 0.0f;
     private float friction = 0.0f;
-    private transient Vector2f velocity = new Vector2f();
+    private float density = 1.0f;
+
     private boolean isSensor = false;
     private boolean allowSleep = true;
     private boolean isAwake = true;
     private boolean isFixedRotation = true;
+
     // The bullet flag only affects dynamic bodies.
     private boolean isBullet = false;
 
@@ -32,6 +36,8 @@ public class RigidBody extends Component {
     private BodyType bodyType = BodyType.STATIC;
 
     private transient Body body = null;
+
+    private CollisionGroup collisionGroup = CollisionGroup.ALL;
 
     // to sycn up our entity with the physics world we use this method
     public void update(float deltaTime) {
@@ -145,6 +151,14 @@ public class RigidBody extends Component {
         this.angularVelocity = angularVelocity;
     }
 
+    public CollisionGroup getCollisionGroup() {
+        return collisionGroup;
+    }
+
+    public void setCollisionGroup(CollisionGroup collisionGroup) {
+        this.collisionGroup = collisionGroup;
+    }
+
 
     public boolean isSensor() {
         return isSensor;
@@ -171,5 +185,15 @@ public class RigidBody extends Component {
 
     public void setFriction(float friction) {
         this.friction = friction;
+    }
+
+
+    public float getDensity() {
+        return density;
+    }
+
+    public void setDensity(float density) {
+        this.density = density;
+        body.resetMassData();
     }
 }
