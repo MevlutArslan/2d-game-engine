@@ -63,6 +63,7 @@ public class EntityGenerator {
 
         // Built a custom collider because the box collider gets stuck on some of the blocks
         RigidBody rigidBody = new RigidBody();
+        rigidBody.setBodyType(BodyType.DYNAMIC);
         rigidBody.setMass(25.0f);
         rigidBody.setGravityScale(1.0f);
 
