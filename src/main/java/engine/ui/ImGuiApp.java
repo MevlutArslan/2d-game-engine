@@ -98,7 +98,7 @@ public class ImGuiApp {
         this.editorMenu.addEditorMenu(new FileMenu());
         this.editorMenu.addEditorMenu(new EditMenu());
 
-        this.console = new Console();
+        this.console = Console.getInstance();
 
         this.init();
     }
@@ -194,7 +194,4 @@ public class ImGuiApp {
         return this.propertiesPanel;
     }
 
-    public Console getConsole() {
-        return this.console;
-    }
 }
