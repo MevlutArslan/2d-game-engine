@@ -23,4 +23,6 @@ public class Constants {
     public static final String TOOLBOX_EXTENSION = "toolbox";
     public static final String SCENE_FILE_EXTENSION = "scene." + TOOLBOX_EXTENSION;
     public static final String PREFAB_FILE_EXTENSION = "prefab." + TOOLBOX_EXTENSION;
+
+    public static final String ABSOLUTE_PATH_ROOT = "/Users/mevlutarslan/IdeaProjects/2d-game-engine/";
 }

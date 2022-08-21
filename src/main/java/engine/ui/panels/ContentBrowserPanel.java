@@ -55,6 +55,8 @@ public class ContentBrowserPanel extends Component {
         for (File file : Objects.requireNonNull(currentDirectory.listFiles())) {
             ImGui.pushID(i++);
 
+            // TODO IF Prefab and it has sprite in it use it as an image for the button
+
             Texture icon = file.isDirectory() ? directoryIcon : fileIcon;
             ImGui.pushStyleColor(ImGuiCol.Button, 0, 0, 0, 0);
             ImGui.imageButton(icon.getTextureId(), thumbnailSize, thumbnailSize, 0, 1, 1, 0);

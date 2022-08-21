@@ -1,5 +1,6 @@
 package engine.ui;
 
+import engine.Entity;
 import engine.GameWindow;
 import engine.input.MouseListener;
 import engine.observers.Event;
@@ -87,7 +88,7 @@ public class ViewPortPanel {
                     GameWindow.getScene().init();
                     GameWindow.getScene().start();
                 } else if(isPrefab(path)){
-                    // do this
+                    Entity.loadEntity(path);
                 }
             }
             ImGui.endDragDropTarget();

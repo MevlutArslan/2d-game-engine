@@ -51,7 +51,7 @@ public class EntityGenerator {
     }
 
     public static Entity generatePlayerEntity(){
-        SpriteSheet spriteSheetIdle = AssetPool.getSpriteSheet("src/main/resources/spritesheets/Biker_idle.png");
+        SpriteSheet spriteSheetIdle = AssetPool.getSpriteSheet("/Users/mevlutarslan/IdeaProjects/2d-game-engine/src/main/resources/spritesheets/Biker_idle.png");
         Entity entity = generateSpriteObject(spriteSheetIdle.getSprite(0),0.35f,0.45f);
 
         // Built a custom collider because the box collider gets stuck on some of the blocks
