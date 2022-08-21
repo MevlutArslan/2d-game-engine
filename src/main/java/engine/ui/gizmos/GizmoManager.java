@@ -4,6 +4,7 @@ import engine.Component;
 import engine.GameWindow;
 import engine.input.KeyListener;
 import engine.rendering.SpriteSheet;
+import engine.ui.ViewPortPanel;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
@@ -39,11 +40,13 @@ public class GizmoManager extends Component {
             parent.getComponent(ScaleGizmo.class).setUsing();
         }
 
-        if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-            this.activeGizmo = GizmoType.TRANSLATE_GIZMO;
-        } else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
-            this.activeGizmo = GizmoType.SCALE_GIZMO;
-        }
+       if(ViewPortPanel.getWantCaptureMouse()){
+           if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+               this.activeGizmo = GizmoType.TRANSLATE_GIZMO;
+           } else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
+               this.activeGizmo = GizmoType.SCALE_GIZMO;
+           }
+       }
 
     }
 }

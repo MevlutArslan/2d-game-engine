@@ -7,6 +7,7 @@ import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.type.ImString;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -267,6 +268,20 @@ public class CustomImGuiController {
         ImGui.popID();
     }
 
+    public static void drawInputText(String label, ImString value){
+        ImGui.pushID(label);
+
+        ImGui.columns(2);
+        ImGui.setColumnWidth(0, defaultColumnWidth);
+        ImGui.text(label);
+        ImGui.nextColumn();
+
+        ImGui.inputText("", value);
+
+        ImGui.columns(1);
+        ImGui.popID();
+    }
+
     public static int dragInt(String label, int value) {
         return dragInt(label, value, defaultColumnWidth);
     }
@@ -340,7 +355,6 @@ public class CustomImGuiController {
         if (ImGui.button("+", lineHeight, lineHeight)) {
             ImGui.openPopup("Component Settings");
         }
-
 
         boolean removeComponent = false;
 

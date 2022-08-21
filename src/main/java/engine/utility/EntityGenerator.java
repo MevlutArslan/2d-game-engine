@@ -18,16 +18,8 @@ import org.jbox2d.dynamics.BodyType;
 import org.joml.Vector4f;
 
 public class EntityGenerator {
-//    We can generate a sprite object and a floor block object
-    private static final int numberOfTemplatesAvailable = 3;
-//    private static Class[] generatableEntities = new Class[numberOfGeneratableEntites];
 
-    // TODO keep track of all possible Templates to avoid repetitive code in Template tab
-//    public static Entity[] getGeneratableEntityList(){
-//        generatableEntities[0] = SpriteRenderer.class;
-//        generatableEntities[1] =
-//        return EntityGenerator.generatableEntities;
-//    }
+    private static final int numberOfTemplatesAvailable = 3;
 
     public static int getNumberOfTemplatesAvailable(){
         return numberOfTemplatesAvailable;
@@ -59,7 +51,7 @@ public class EntityGenerator {
     }
 
     public static Entity generatePlayerEntity(){
-        SpriteSheet spriteSheetIdle = AssetPool.getSpriteSheet("src/main/resources/spritesheets/Biker_idle.png");
+        SpriteSheet spriteSheetIdle = AssetPool.getSpriteSheet("/Users/mevlutarslan/IdeaProjects/2d-game-engine/src/main/resources/spritesheets/Biker_idle.png");
         Entity entity = generateSpriteObject(spriteSheetIdle.getSprite(0),0.35f,0.45f);
 
         // Built a custom collider because the box collider gets stuck on some of the blocks

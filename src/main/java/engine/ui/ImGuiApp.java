@@ -3,6 +3,7 @@ package engine.ui;
 import engine.input.MouseListener;
 import engine.rendering.PickingTexture;
 import engine.scene.Scene;
+import engine.ui.editor.Console;
 import engine.ui.editor.EditorMenu;
 import engine.ui.editor.menus.EditMenu;
 import engine.ui.editor.menus.FileMenu;
@@ -16,6 +17,8 @@ import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
 import imgui.type.ImBoolean;
 
+
+import java.io.File;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
@@ -32,6 +35,8 @@ public class ImGuiApp {
 
     private PropertiesPanel propertiesPanel;
     private ContentBrowserPanel contentBrowser;
+
+    private Console console;
 
     public void init() {
         context = ImGui.createContext();
@@ -93,6 +98,8 @@ public class ImGuiApp {
         this.editorMenu.addEditorMenu(new FileMenu());
         this.editorMenu.addEditorMenu(new EditMenu());
 
+        this.console = Console.getInstance();
+
         this.init();
     }
 
@@ -110,6 +117,8 @@ public class ImGuiApp {
         contentBrowser.update(deltaTime);
         contentBrowser.imgui();
         editorMenu.update(deltaTime);
+        console.update(deltaTime);
+
         ImGui.end();
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
@@ -147,6 +156,10 @@ public class ImGuiApp {
 
     }
 
+    public File getCurrentDirectory(){
+        return contentBrowser.getCurrentDirectory();
+    }
+
     private void setDarkThemeColors(){
         float[][] colors = ImGui.getStyle().getColors();
 
@@ -180,4 +193,5 @@ public class ImGuiApp {
     public PropertiesPanel getPropertiesPanel() {
         return this.propertiesPanel;
     }
+
 }

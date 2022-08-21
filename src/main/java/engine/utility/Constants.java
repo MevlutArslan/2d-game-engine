@@ -20,5 +20,9 @@ public class Constants {
     public static ImFont boldFont = ImGui.getIO().getFonts().addFontFromFileTTF("src/main/resources/fonts/roboto/Roboto-Bold.ttf", 18.0f);
     public static ImFont defaultFont = ImGui.getIO().getFonts().addFontFromFileTTF("src/main/resources/fonts/roboto/Roboto-Regular.ttf", 18.0f);
 
-    public static final String sceneFileType = "scene";
+    public static final String TOOLBOX_EXTENSION = "toolbox";
+    public static final String SCENE_FILE_EXTENSION = "scene." + TOOLBOX_EXTENSION;
+    public static final String PREFAB_FILE_EXTENSION = "prefab." + TOOLBOX_EXTENSION;
+
+    public static final String ABSOLUTE_PATH_ROOT = "/Users/mevlutarslan/IdeaProjects/2d-game-engine/";
 }

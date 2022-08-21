@@ -4,17 +4,25 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import components.Transform;
 import components.rendering.SpriteRenderer;
+import engine.input.MouseControl;
+import engine.scene.Scene;
+import engine.ui.editor.Console;
 import engine.ui.editor.CustomImGuiController;
 import engine.utility.AssetPool;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
+import imgui.type.ImString;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Entity {
 
     private String name;
+    private transient ImString imStringName;
     private ArrayList<Component> components;
 
     private boolean isDead = false;
@@ -31,6 +39,7 @@ public class Entity {
 
     public Entity(String name){
         this.name = name;
+        this.imStringName = new ImString(this.name);
         this.components = new ArrayList<>();
 
         this.entityId = entityCounter++;
@@ -95,6 +104,9 @@ public class Entity {
     }
 
     public void imgui(){
+        CustomImGuiController.drawInputText("entity name", imStringName);
+        this.name = imStringName.get();
+
         for(int i = 0; i < components.size(); i++){
             Component c = components.get(i);
             if(c.getClass().getDeclaredFields().length > 0){
@@ -152,7 +164,31 @@ public class Entity {
         return entity;
     }
 
-    
 
+    public String getName() {
+        return name;
+    }
 
+    public static void loadEntity(String path){
+        Gson gson = new GsonBuilder().
+                setPrettyPrinting().
+                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
+                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
+                create();
+        String loadedText = "";
+
+        try {
+            loadedText = new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        if(loadedText.equals("")){
+            Console.getInstance().addMessage("Prefab is empty!");
+            return;
+        }
+
+        Entity entity = gson.fromJson(loadedText, Entity.class);
+        GameWindow.getScene().getEntityWithComponent(MouseControl.class).getComponent(MouseControl.class).pickUpEntity(entity);
+    }
 }

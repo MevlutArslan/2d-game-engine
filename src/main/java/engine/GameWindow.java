@@ -345,7 +345,7 @@ public class GameWindow implements Observer {
                 break;
             case LOAD_LEVEL:
                 // TODO refactor this it conflicts with other load events because of the path
-                String path = FileDialogManager.openFile(Constants.sceneFileType);
+                String path = FileDialogManager.openFile(Constants.SCENE_FILE_EXTENSION);
                 Scene scene = new Scene(new LevelEditorSceneInitializer());
                 scene.load(path);
                 currentScene = scene;

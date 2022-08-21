@@ -35,6 +35,7 @@ public class MouseControl extends Component {
         if (this.selectedEntity != null) {
             this.selectedEntity.destroy();
         }
+
         selectedEntity = entity;
         this.selectedEntity.getComponent(SpriteRenderer.class).setColor(new Vector4f(0.8f, 0.8f, 0.8f, 0.5f));
         this.selectedEntity.addComponent(new NonPickable());
