@@ -38,7 +38,7 @@ public class EngineKeyShortcuts extends Component {
             }
         } else if (ctrlPressed && KeyListener.isKeyPressed(GLFW_KEY_S)) {
             EventSystem.notify(null, new Event(EventType.SAVE_LEVEL));
-        } else if (KeyListener.keyBeginPress(GLFW_KEY_BACKSPACE)) {
+        } else if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_SHIFT) && KeyListener.keyBeginPress(GLFW_KEY_BACKSPACE)) {
             for (Entity entity : selectedEntities) {
                 entity.destroy();
             }
