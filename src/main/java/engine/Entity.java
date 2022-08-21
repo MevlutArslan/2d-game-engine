@@ -8,6 +8,7 @@ import engine.ui.editor.CustomImGuiController;
 import engine.utility.AssetPool;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
+import imgui.type.ImString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class Entity {
 
     private String name;
+    private ImString imStringName;
     private ArrayList<Component> components;
 
     private boolean isDead = false;
@@ -31,6 +33,7 @@ public class Entity {
 
     public Entity(String name){
         this.name = name;
+        this.imStringName = new ImString(this.name);
         this.components = new ArrayList<>();
 
         this.entityId = entityCounter++;
@@ -95,6 +98,9 @@ public class Entity {
     }
 
     public void imgui(){
+        CustomImGuiController.drawInputText("entity name", imStringName);
+        this.name = imStringName.get();
+
         for(int i = 0; i < components.size(); i++){
             Component c = components.get(i);
             if(c.getClass().getDeclaredFields().length > 0){
@@ -152,7 +158,8 @@ public class Entity {
         return entity;
     }
 
-    
 
-
+    public String getName() {
+        return name;
+    }
 }
