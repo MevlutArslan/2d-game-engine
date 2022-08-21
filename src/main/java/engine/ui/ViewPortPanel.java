@@ -6,14 +6,12 @@ import engine.observers.Event;
 import engine.observers.EventSystem;
 import engine.observers.EventType;
 import engine.rendering.Sprite;
-import engine.rendering.Texture;
 import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.Scene;
 import engine.utility.AssetPool;
 import engine.utility.Constants;
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.flag.ImGuiButtonFlags;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 
@@ -79,7 +77,7 @@ public class ViewPortPanel {
         if (ImGui.beginDragDropTarget()) {
             int targetFlags = 0;
 
-            String path = ImGui.acceptDragDropPayload("SCENE_ITEM");
+            String path = ImGui.acceptDragDropPayload("VIEWPORT_DROPABLE");
             if (path != null) {
                 if (isScene(path)) {
                     // TODO refactor this to be reusable across the engine
@@ -88,14 +86,15 @@ public class ViewPortPanel {
                     GameWindow.setScene(scene);
                     GameWindow.getScene().init();
                     GameWindow.getScene().start();
+                } else if(isPrefab(path)){
+                    // do this
                 }
-
-
             }
             ImGui.endDragDropTarget();
         }
         ImGui.end();
     }
+
 
     public static boolean getWantCaptureMouse() {
         return MouseListener.getX() >= leftX && MouseListener.getX() <= rightX &&
@@ -128,6 +127,11 @@ public class ViewPortPanel {
     }
 
     private static boolean isScene(String path) {
-        return path.endsWith("." + Constants.sceneFileType);
+        return path.endsWith("." + Constants.SCENE_FILE_EXTENSION);
     }
+
+    private static boolean isPrefab(String path) {
+        return path.endsWith("." + Constants.PREFAB_FILE_EXTENSION);
+    }
+
 }

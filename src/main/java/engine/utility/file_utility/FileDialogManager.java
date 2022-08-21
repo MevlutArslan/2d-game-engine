@@ -1,7 +1,6 @@
 package engine.utility.file_utility;
 
 import engine.GameWindow;
-import engine.scene.Scene;
 import engine.utility.Constants;
 import org.lwjgl.PointerBuffer;
 
@@ -41,7 +40,7 @@ public class FileDialogManager {
         PointerBuffer savePath = memAllocPointer(1);
 
         try{
-            if(checkResult(NFD_SaveDialog(Constants.sceneFileType, "", savePath))){
+            if(checkResult(NFD_SaveDialog(Constants.SCENE_FILE_EXTENSION, "", savePath))){
                 String path = savePath.getStringUTF8(0);
                 GameWindow.getScene().saveAs(path);
                 nNFD_Free(savePath.get(0));
