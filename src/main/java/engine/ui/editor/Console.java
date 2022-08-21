@@ -16,8 +16,17 @@ public class Console extends EditorComponent {
 
     private static LinkedHashMap<String, LocalTime> messages;
 
-    public Console() {
+    private static Console instance = null;
+
+    private Console() {
         messages = new LinkedHashMap<>();
+    }
+
+    public static Console getInstance(){
+        if(instance == null){
+            instance = new Console();
+        }
+        return instance;
     }
 
     @Override
@@ -40,7 +49,7 @@ public class Console extends EditorComponent {
         ImGui.end();
     }
 
-    public static void addMessage(String message) {
+    public void addMessage(String message) {
         messages.put(message, LocalTime.now());
     }
 }
