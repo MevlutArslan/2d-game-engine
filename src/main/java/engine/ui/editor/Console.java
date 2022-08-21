@@ -14,10 +14,10 @@ import java.util.Map;
 
 public class Console extends EditorComponent {
 
-    private LinkedHashMap<String, LocalTime> messages;
+    private static LinkedHashMap<String, LocalTime> messages;
 
     public Console() {
-        this.messages = new LinkedHashMap<>();
+        messages = new LinkedHashMap<>();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Console extends EditorComponent {
 
         ImGui.pushStyleColor(ImGuiCol.Text, ImGui.getColorU32(255,0,0,1));
 
-        for (Map.Entry<String, LocalTime> entry : this.messages.entrySet()) {
+        for (Map.Entry<String, LocalTime> entry : messages.entrySet()) {
             // TODO : ADD Time to the text Similar to other engines
             ImGui.text(entry.getKey());
         }
@@ -40,7 +40,7 @@ public class Console extends EditorComponent {
         ImGui.end();
     }
 
-    public void addMessage(String message) {
-        this.messages.put(message, LocalTime.now());
+    public static void addMessage(String message) {
+        messages.put(message, LocalTime.now());
     }
 }
