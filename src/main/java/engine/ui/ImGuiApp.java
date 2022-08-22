@@ -71,7 +71,7 @@ public class ImGuiApp {
                 ImGui.setWindowFocus(null);
             }
 
-            if (!io.getWantCaptureMouse() || ViewPortPanel.getWantCaptureMouse()) {
+            if (io.getWantCaptureMouse() || ViewPortPanel.getWantCaptureMouse()) {
                 MouseListener.mouseButtonCallback(w, button, action, mods);
             }
         });
