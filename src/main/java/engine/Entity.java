@@ -169,26 +169,5 @@ public class Entity {
         return name;
     }
 
-    public static void loadEntity(String path){
-        Gson gson = new GsonBuilder().
-                setPrettyPrinting().
-                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
-                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
-                create();
-        String loadedText = "";
 
-        try {
-            loadedText = new String(Files.readAllBytes(Paths.get(path)));
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-
-        if(loadedText.equals("")){
-            Console.getInstance().addMessage("Prefab is empty!");
-            return;
-        }
-
-        Entity entity = gson.fromJson(loadedText, Entity.class);
-        GameWindow.getScene().getEntityWithComponent(MouseControl.class).getComponent(MouseControl.class).pickUpEntity(entity);
-    }
 }
