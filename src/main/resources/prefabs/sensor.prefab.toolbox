@@ -1,0 +1,118 @@
+{
+  "name": "sensor",
+  "components": [
+    {
+      "type": "components.Transform",
+      "properties": {
+        "position": {
+          "x": 2.875,
+          "y": 1.7648826
+        },
+        "scale": {
+          "x": 0.25,
+          "y": 0.25
+        },
+        "zIndex": 1,
+        "rotation": 0.0,
+        "allowForRemoval": false,
+        "componentId": 721
+      }
+    },
+    {
+      "type": "components.rendering.SpriteRenderer",
+      "properties": {
+        "color": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "w": 1.0
+        },
+        "sprite": {
+          "texture": {
+            "filepath": "src/main/resources/spritesheets/Tiles.png",
+            "height": 288,
+            "width": 288
+          },
+          "textureCoords": [
+            {
+              "x": 0.22222222,
+              "y": 1.0
+            },
+            {
+              "x": 0.22222222,
+              "y": 0.8888889
+            },
+            {
+              "x": 0.11111111,
+              "y": 0.8888889
+            },
+            {
+              "x": 0.11111111,
+              "y": 1.0
+            }
+          ],
+          "width": 32.0,
+          "height": 32.0
+        },
+        "allowForRemoval": false,
+        "componentId": 722
+      }
+    },
+    {
+      "type": "components.SensorReaction",
+      "properties": {
+        "allowForRemoval": true,
+        "componentId": 723
+      }
+    },
+    {
+      "type": "components.physics.RigidBody",
+      "properties": {
+        "linearDamping": 0.0,
+        "angularDamping": 0.0,
+        "gravityScale": 0.0,
+        "mass": 0.0,
+        "angularVelocity": 0.0,
+        "friction": 0.0,
+        "density": 1.0,
+        "isSensor": true,
+        "allowSleep": true,
+        "isAwake": true,
+        "isFixedRotation": true,
+        "isBullet": false,
+        "isActive": true,
+        "bodyType": "STATIC",
+        "collisionGroup": "ALL",
+        "collisionCategory": 4,
+        "collisionMask": 1,
+        "allowForRemoval": true,
+        "componentId": 724
+      }
+    },
+    {
+      "type": "components.physics.BoxCollider",
+      "properties": {
+        "halfSize": {
+          "x": 0.25,
+          "y": 0.25
+        },
+        "offset": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "allowForRemoval": true,
+        "componentId": 725
+      }
+    },
+    {
+      "type": "components.Ground",
+      "properties": {
+        "allowForRemoval": true,
+        "componentId": 726
+      }
+    }
+  ],
+  "isDead": false,
+  "entityId": 1,
+  "shouldSerialize": true
+}

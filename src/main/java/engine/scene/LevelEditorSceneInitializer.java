@@ -28,7 +28,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
     public void init(Scene scene) {
         sprites = AssetPool.getSpriteSheet("src/main/resources/spritesheets/Tiles.png");
         playerIdleSprites = AssetPool.getSpriteSheet("src/main/resources/spritesheets/Biker_idle.png");
-        SpriteSheet gizmos = AssetPool.getSpriteSheet("src/main/resources/textures/gizmos.png");
+        SpriteSheet gizmos = AssetPool.getSpriteSheet("src/main/resources/spritesheets/gizmos.png");
         editorEntity = scene.createEntity("Level editor stuff");
 
         editorEntity.setNoSerialize();
@@ -76,8 +76,8 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
             }
         }
 
-        AssetPool.addSpriteSheet("src/main/resources/textures/gizmos.png", new SpriteSheet(
-                AssetPool.getTexture("src/main/resources/textures/gizmos.png"),
+        AssetPool.addSpriteSheet("src/main/resources/spritesheets/gizmos.png", new SpriteSheet(
+                AssetPool.getTexture("src/main/resources/spritesheets/gizmos.png"),
                 24, 48, 3, 0)
         );
 

@@ -1,7 +1,11 @@
 package engine.ui;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import engine.Component;
 import engine.Entity;
 import engine.GameWindow;
+import engine.input.MouseControl;
 import engine.input.MouseListener;
 import engine.observers.Event;
 import engine.observers.EventSystem;
@@ -9,12 +13,19 @@ import engine.observers.EventType;
 import engine.rendering.Sprite;
 import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.Scene;
+import engine.ui.editor.Console;
 import engine.utility.AssetPool;
 import engine.utility.Constants;
+import engine.utility.gson_adapter.ComponentGsonAdapter;
+import engine.utility.gson_adapter.EntityGsonAdapter;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ViewPortPanel {
 
@@ -88,12 +99,36 @@ public class ViewPortPanel {
                     GameWindow.getScene().init();
                     GameWindow.getScene().start();
                 } else if(isPrefab(path)){
-                    Entity.loadEntity(path);
+                    loadEntity(path);
                 }
             }
             ImGui.endDragDropTarget();
         }
         ImGui.end();
+    }
+
+    private static void loadEntity(String path){
+        Gson gson = new GsonBuilder().
+                setPrettyPrinting().
+                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
+                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
+                create();
+
+        String loadedText = "";
+
+        try {
+            loadedText = new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        if(loadedText.equals("")){
+            Console.getInstance().addMessage("Prefab is empty!");
+            return;
+        }
+
+        Entity entity = gson.fromJson(loadedText, Entity.class);
+        GameWindow.getScene().getEntityWithComponent(MouseControl.class).getComponent(MouseControl.class).pickUpEntity(entity);
     }
 
 

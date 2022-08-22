@@ -1,0 +1,116 @@
+{
+  "name": "player_entity",
+  "components": [
+    {
+      "type": "components.Transform",
+      "properties": {
+        "position": {
+          "x": 1.7286721,
+          "y": 1.9977121
+        },
+        "scale": {
+          "x": 0.35,
+          "y": 0.45
+        },
+        "zIndex": 1,
+        "rotation": 0.0,
+        "allowForRemoval": false,
+        "componentId": 692
+      }
+    },
+    {
+      "type": "components.rendering.SpriteRenderer",
+      "properties": {
+        "color": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "w": 1.0
+        },
+        "sprite": {
+          "texture": {
+            "filepath": "src/main/resources/spritesheets/Biker_idle.png",
+            "height": 48,
+            "width": 192
+          },
+          "textureCoords": [
+            {
+              "x": 0.125,
+              "y": 1.0
+            },
+            {
+              "x": 0.125,
+              "y": 0.0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0
+            },
+            {
+              "x": 0.0,
+              "y": 1.0
+            }
+          ],
+          "width": 24.0,
+          "height": 48.0
+        },
+        "allowForRemoval": false,
+        "componentId": 693
+      }
+    },
+    {
+      "type": "components.physics.RigidBody",
+      "properties": {
+        "linearDamping": 0.0,
+        "angularDamping": 0.0,
+        "gravityScale": 1.0,
+        "mass": 25.0,
+        "angularVelocity": 0.0,
+        "friction": 0.0,
+        "density": 1.0,
+        "isSensor": false,
+        "allowSleep": true,
+        "isAwake": true,
+        "isFixedRotation": true,
+        "isBullet": false,
+        "isActive": true,
+        "bodyType": "DYNAMIC",
+        "collisionGroup": "ALL",
+        "collisionCategory": 1,
+        "collisionMask": 6,
+        "allowForRemoval": true,
+        "componentId": 694
+      }
+    },
+    {
+      "type": "components.physics.BoxCollider",
+      "properties": {
+        "halfSize": {
+          "x": 0.35,
+          "y": 0.45
+        },
+        "offset": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "allowForRemoval": true,
+        "componentId": 695
+      }
+    },
+    {
+      "type": "components.PlayerController",
+      "properties": {
+        "maxSpeed": 4.0,
+        "jumpHeight": 6.5,
+        "isFacingRight": true,
+        "moveDirection": 0,
+        "velocityMagnitude": 0.0,
+        "allowForRemoval": true,
+        "componentId": 696
+      }
+    }
+  ],
+  "isDead": false,
+  "entityId": 4,
+  "shouldSerialize": true
+}
