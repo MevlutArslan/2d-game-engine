@@ -22,8 +22,8 @@ public class Console extends EditorComponent {
         messages = new LinkedHashMap<>();
     }
 
-    public static Console getInstance(){
-        if(instance == null){
+    public static Console getInstance() {
+        if (instance == null) {
             instance = new Console();
         }
         return instance;
@@ -37,7 +37,7 @@ public class Console extends EditorComponent {
     public void imgui() {
         ImGui.begin("Console");
 
-        ImGui.pushStyleColor(ImGuiCol.Text, ImGui.getColorU32(255,0,0,1));
+        ImGui.pushStyleColor(ImGuiCol.Text, ImGui.getColorU32(255, 0, 0, 1));
 
         for (Map.Entry<String, LocalTime> entry : messages.entrySet()) {
             // TODO : ADD Time to the text Similar to other engines
