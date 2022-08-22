@@ -45,8 +45,8 @@ public class LevelSceneInitializer extends SceneInitializer {
             }
         }
 
-        AssetPool.addSpriteSheet("src/main/resources/textures/gizmos.png", new SpriteSheet(
-                AssetPool.getTexture("src/main/resources/textures/gizmos.png"),
+        AssetPool.addSpriteSheet("src/main/resources/spritesheets/gizmos.png", new SpriteSheet(
+                AssetPool.getTexture("src/main/resources/spritesheets/gizmos.png"),
                 24, 48, 3, 0)
         );
 
