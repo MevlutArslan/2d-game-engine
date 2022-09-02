@@ -14,6 +14,9 @@ import engine.ui.ImGuiApp;
 import engine.utility.AssetPool;
 import engine.utility.Constants;
 import engine.utility.file_utility.FileDialogManager;
+import imgui.ImGui;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
@@ -22,6 +25,7 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
+import engine.project_manager.Project;
 
 import static engine.utility.Constants.MONITOR_HEIGHT;
 import static engine.utility.Constants.MONITOR_WIDTH;
@@ -29,26 +33,33 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.glCheckFramebufferStatus;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * Window setup according to https://www.lwjgl.org/guide
  **/
-public class GameWindow implements Observer {
+public class ToolboxEditor implements Observer {
     // Singleton
-    private static GameWindow instance = null;
+    private static ToolboxEditor instance = null;
 
     private final double FIXED_TIME_STEP = 1.0 / 60.0;
 
-    private int height;
-    private int width;
-    private String title;
+    private int editorWindowHeight;
+    private int editorWindowWidth;
+    private int projectManagerWindowHeight;
+    private int projectManagerWindowWidth;
+
+    private String title = "Toolbox Editor";
 
     // The window handle
     private long window;
+    private long mainWindow;
 
     // Scene Manager related
     private static Scene currentScene = null;
+
+    private static Project activeProject;
 
     private ImGuiApp imGuiApp;
     private FrameBuffer frameBuffer;
@@ -57,25 +68,28 @@ public class GameWindow implements Observer {
     private Shader defaultShader;
     private Shader pickingShader;
 
-    private boolean isEditorMode = true;
+    private boolean isPlaying = false;
 
     private long audioContext;
     private long audioDevice;
 
+    private boolean projectIsLoaded = false;
+
     // Methods
-    private GameWindow() {
-        this.height = 720;
-        this.width = 1200;
-        this.title = "Game Engine";
+    private ToolboxEditor() {
+        this.editorWindowHeight = 720;
+        this.editorWindowWidth = 1200;
+        this.projectManagerWindowHeight = 550;
+        this.projectManagerWindowWidth = 700;
 
         EventSystem.addObserver(this);
     }
 
-    public static GameWindow get() {
-        if (GameWindow.instance == null) {
-            GameWindow.instance = new GameWindow();
+    public static ToolboxEditor get() {
+        if (ToolboxEditor.instance == null) {
+            ToolboxEditor.instance = new ToolboxEditor();
         }
-        return GameWindow.instance;
+        return ToolboxEditor.instance;
     }
 
     // TODO absolutely useless method, restructure it
@@ -91,14 +105,32 @@ public class GameWindow implements Observer {
         currentScene.start();
     }
 
+    private void openProject() {
+        imGuiApp.dispose();
 
-    public static ImGuiApp getImGuiApp() {
-        return get().imGuiApp;
+        configureWindowHints();
+
+        mainWindow = glfwCreateWindow(get().editorWindowWidth, get().editorWindowHeight, get().title, NULL, window);
+        if (mainWindow == NULL)
+            throw new RuntimeException("Failed to create the GLFW window");
+
+        glfwDestroyWindow(window);
+
+        window = mainWindow;
+
+        configureGlfwCallbacks();
+
+        glfwMakeContextCurrent(window);
+
+        glfwShowWindow(window);
+
+        imGuiApp = new ImGuiApp(window, pickingTexture);
+
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+        glfwSetCursorPosCallback(window, MouseListener::mouseCursorPositionCallback);
     }
 
-    public static void setScene(Scene scene) {
-        currentScene = scene;
-    }
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -123,14 +155,22 @@ public class GameWindow implements Observer {
         if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
 
-        configureWindowHints();
+//        configureWindowHints();
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
         // Create the window
-        window = glfwCreateWindow(get().width, get().height, get().title, NULL, NULL);
+        window = glfwCreateWindow(700, 550, "Editor", NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
-        configureGlfwCallbacks();
+//        configureGlfwCallbacks();
+
+        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+        });
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
@@ -150,7 +190,7 @@ public class GameWindow implements Observer {
         ALCCapabilities alcCapabilities = ALC.createCapabilities(audioDevice);
         ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
 
-        if(!alCapabilities.OpenAL10){
+        if (!alCapabilities.OpenAL10) {
             System.err.println("Audio library not supported!");
             System.exit(-1);
         }
@@ -160,6 +200,7 @@ public class GameWindow implements Observer {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
         // https://learnopengl.com/Advanced-OpenGL/Blending
         glEnable(GL_BLEND);
 
@@ -171,16 +212,16 @@ public class GameWindow implements Observer {
          */
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        frameBuffer = new FrameBuffer(MONITOR_WIDTH, MONITOR_HEIGHT);
-        pickingTexture = new PickingTexture(MONITOR_WIDTH, MONITOR_HEIGHT);
-        imGuiApp = new ImGuiApp(window, pickingTexture);
-
-        glViewport(0, 0, MONITOR_WIDTH, MONITOR_HEIGHT);
-
         loadShaders();
 
+        frameBuffer = new FrameBuffer(MONITOR_WIDTH, MONITOR_HEIGHT);
+        pickingTexture = new PickingTexture(MONITOR_WIDTH, MONITOR_HEIGHT);
+        glViewport(0, 0, MONITOR_WIDTH, MONITOR_HEIGHT);
+
+        imGuiApp = new ImGuiApp(window, pickingTexture);
+
         // NOTE : Loading project specific scenes needs to happen here.
-        GameWindow.changeScene(new LevelEditorSceneInitializer());
+        ToolboxEditor.changeScene(new LevelEditorSceneInitializer());
     }
 
     public void update() {
@@ -191,6 +232,7 @@ public class GameWindow implements Observer {
         float deltaTime = -1.0f;
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
+
         while (!glfwWindowShouldClose(window)) {
             System.out.println("FPS : " + (1.0f / deltaTime));
 
@@ -199,59 +241,61 @@ public class GameWindow implements Observer {
             beginTime = endTime;
             lag += deltaTime;
 
-
             // Poll for window events. The key callback above will only be
             // invoked during this call.
             glfwPollEvents();
 
+
             // Rendering the Mouse Picking Buffer
-            drawMousePickingBuffer();
+            if (projectIsLoaded) {
+                drawMousePickingBuffer();
 
-            currentScene.render();
-
-            disableMousePicking();
-
-            // Rendering the Game's real buffer
-            DebugDraw.beginFrame();
-            frameBuffer.bind();
-
-            glClearColor(1, 1, 1, 1);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            // TODO : fix update method
-            if (deltaTime >= 0) {
-                // TODO FIX TWITCHING BUG
-                while (lag >= FIXED_TIME_STEP) {
-                    if(isEditorMode){
-                        currentScene.onUpdateEditor(deltaTime);
-                    }else{
-                        currentScene.update(deltaTime);
-                    }
-                    lag -= FIXED_TIME_STEP;
-                }
-
-                Renderer.bindShader(defaultShader);
                 currentScene.render();
-                DebugDraw.draw();
+
+                disableMousePicking();
+
+                // Rendering the Game's real buffer
+                DebugDraw.beginFrame();
+                frameBuffer.bind();
+
+                glClearColor(1, 1, 1, 1);
+                glClear(GL_COLOR_BUFFER_BIT);
+
+                // TODO : fix update method
+                if (deltaTime >= 0) {
+                    // TODO FIX TWITCHING BUG
+                    Renderer.bindShader(defaultShader);
+//                    while (lag >= FIXED_TIME_STEP) {
+                    if (isPlaying) {
+                        currentScene.update(deltaTime);
+                    } else {
+                        currentScene.onUpdateEditor(deltaTime);
+                    }
+//                        lag -= FIXED_TIME_STEP;
+//                    }
+
+                    currentScene.render();
+                    DebugDraw.draw();
+                }
+                frameBuffer.unbind();
+
+                imGuiApp.update(deltaTime, currentScene);
+            } else {
+                imGuiApp.update(deltaTime);
             }
-
-            frameBuffer.unbind();
-
-            imGuiApp.update(deltaTime, currentScene);
 
             KeyListener.endFrame();
             MouseListener.endFrame();
 
             glfwSwapBuffers(window); // swap the color buffers
         }
-
     }
 
     public void drawMousePickingBuffer() {
         enableMousePicking();
 
         glViewport(0, 0, MONITOR_WIDTH, MONITOR_HEIGHT);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Renderer.bindShader(pickingShader);
@@ -271,6 +315,7 @@ public class GameWindow implements Observer {
         if (glfwWindowShouldClose(glfwWindow)) {
 
             imGuiApp.dispose();
+            ImGui.destroyContext();
             glfwTerminate();
         }
 
@@ -286,7 +331,6 @@ public class GameWindow implements Observer {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-
     }
 
     private void configureGlfwCallbacks() {
@@ -298,16 +342,15 @@ public class GameWindow implements Observer {
         glfwSetKeyCallback(window, KeyListener::keyCallback);
         // call the function whenever there is a mouse event
         // the '::' syntax is shorthand for () -> {}
-        glfwSetCursorPosCallback(window, MouseListener::mouseCursorPositionCallback);
         glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
 
-//        glfwSetWindowCloseCallback(window, handleWindowClose(window));
         glfwSetWindowSizeCallback(window, (window, newWidth, newHeight) -> {
-            GameWindow.setWidth(newWidth);
-            GameWindow.setHeight(newHeight);
+            ToolboxEditor.setEditorWindowWidth(newWidth);
+            ToolboxEditor.setEditorWindowHeight(newHeight);
         });
 
+        glfwSetWindowCloseCallback(window, handleWindowClose(window));
     }
 
     private void loadShaders() {
@@ -326,16 +369,16 @@ public class GameWindow implements Observer {
     public void onNotify(Entity entity, Event event) {
         switch (event.type) {
             case GAME_ENGINE_START_PLAY:
-                this.isEditorMode = false;
+                this.isPlaying = true;
                 currentScene.save();
                 // reset the scene
-                GameWindow.changeScene(new LevelSceneInitializer());
+                ToolboxEditor.changeScene(new LevelSceneInitializer());
                 getImGuiApp().getPropertiesPanel().clearSelected();
                 break;
             case GAME_ENGINE_STOP_PLAY:
-                this.isEditorMode = true;
+                this.isPlaying = false;
                 // reset to the last saved state
-                GameWindow.changeScene(new LevelEditorSceneInitializer());
+                ToolboxEditor.changeScene(new LevelEditorSceneInitializer());
                 break;
             case SAVE_AS_LEVEL:
                 FileDialogManager.saveFile();
@@ -358,7 +401,7 @@ public class GameWindow implements Observer {
     }
 
     public static Scene getScene() {
-        return GameWindow.currentScene;
+        return ToolboxEditor.currentScene;
     }
 
     public static int getHeight() {
@@ -369,17 +412,54 @@ public class GameWindow implements Observer {
         return MONITOR_WIDTH;
     }
 
-    private static void setWidth(int newWidth) {
-        get().width = newWidth;
+    private static void setEditorWindowWidth(int newWidth) {
+        get().editorWindowWidth = newWidth;
     }
 
-    private static void setHeight(int newHeight) {
-        get().height = newHeight;
+    private static void setEditorWindowHeight(int newHeight) {
+        get().editorWindowHeight = newHeight;
+    }
+
+    public int getProjectManagerWindowHeight() {
+        return projectManagerWindowHeight;
+    }
+
+    public void setProjectManagerWindowHeight(int projectManagerWindowHeight) {
+        this.projectManagerWindowHeight = projectManagerWindowHeight;
+    }
+
+    public int getProjectManagerWindowWidth() {
+        return projectManagerWindowWidth;
+    }
+
+    public void setProjectManagerWindowWidth(int projectManagerWindowWidth) {
+        this.projectManagerWindowWidth = projectManagerWindowWidth;
     }
 
     public static FrameBuffer getFramebuffer() {
         return get().frameBuffer;
     }
 
+    public static Project getProject() {
+        return activeProject;
+    }
+
+    public static void setProject(Project project) {
+        activeProject = project;
+    }
+
+
+    public static ImGuiApp getImGuiApp() {
+        return get().imGuiApp;
+    }
+
+    public static void setScene(Scene scene) {
+        currentScene = scene;
+    }
+
+    public void loadProject(Project project) {
+        projectIsLoaded = true;
+        openProject();
+    }
 }
 
