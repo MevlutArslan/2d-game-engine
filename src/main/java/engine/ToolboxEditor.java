@@ -11,12 +11,13 @@ import engine.scene.LevelSceneInitializer;
 import engine.scene.Scene;
 import engine.scene.SceneInitializer;
 import engine.ui.ImGuiApp;
+import engine.ui.ViewPortPanel;
 import engine.utility.AssetPool;
 import engine.utility.Constants;
 import engine.utility.file_utility.FileDialogManager;
 import imgui.ImGui;
-import imgui.gl3.ImGuiImplGl3;
-import imgui.glfw.ImGuiImplGlfw;
+import org.joml.Vector2f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
@@ -27,13 +28,20 @@ import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 import engine.project_manager.Project;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+
 import static engine.utility.Constants.MONITOR_HEIGHT;
 import static engine.utility.Constants.MONITOR_WIDTH;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.glCheckFramebufferStatus;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
@@ -104,33 +112,6 @@ public class ToolboxEditor implements Observer {
         currentScene.init();
         currentScene.start();
     }
-
-    private void openProject() {
-        imGuiApp.dispose();
-
-        configureWindowHints();
-
-        mainWindow = glfwCreateWindow(get().editorWindowWidth, get().editorWindowHeight, get().title, NULL, window);
-        if (mainWindow == NULL)
-            throw new RuntimeException("Failed to create the GLFW window");
-
-        glfwDestroyWindow(window);
-
-        window = mainWindow;
-
-        configureGlfwCallbacks();
-
-        glfwMakeContextCurrent(window);
-
-        glfwShowWindow(window);
-
-        imGuiApp = new ImGuiApp(window, pickingTexture);
-
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-        glfwSetCursorPosCallback(window, MouseListener::mouseCursorPositionCallback);
-    }
-
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -385,6 +366,7 @@ public class ToolboxEditor implements Observer {
                 break;
             case SAVE_LEVEL:
                 // save to currently loaded level, find a way to store it
+                currentScene.save();
                 break;
             case LOAD_LEVEL:
                 // TODO refactor this it conflicts with other load events because of the path
@@ -440,14 +422,17 @@ public class ToolboxEditor implements Observer {
         return get().frameBuffer;
     }
 
-    public static Project getProject() {
-        return activeProject;
+    public static String getResourceLocation() {
+        return activeProject.getResourceLocation();
+    }
+
+    public static String getThumbnailLocation() {
+        return activeProject.getThumbnailLocation();
     }
 
     public static void setProject(Project project) {
         activeProject = project;
     }
-
 
     public static ImGuiApp getImGuiApp() {
         return get().imGuiApp;
@@ -458,8 +443,36 @@ public class ToolboxEditor implements Observer {
     }
 
     public void loadProject(Project project) {
+        System.err.println(project);
+        activeProject = project;
         projectIsLoaded = true;
         openProject();
+    }
+
+    private void openProject() {
+        imGuiApp.dispose();
+
+        configureWindowHints();
+
+        mainWindow = glfwCreateWindow(get().editorWindowWidth, get().editorWindowHeight, get().title, NULL, window);
+        if (mainWindow == NULL)
+            throw new RuntimeException("Failed to create the GLFW window");
+
+        glfwDestroyWindow(window);
+
+        window = mainWindow;
+
+        configureGlfwCallbacks();
+
+        glfwMakeContextCurrent(window);
+
+        glfwShowWindow(window);
+
+        imGuiApp = new ImGuiApp(window, pickingTexture);
+
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+        glfwSetCursorPosCallback(window, MouseListener::mouseCursorPositionCallback);
     }
 }
 
