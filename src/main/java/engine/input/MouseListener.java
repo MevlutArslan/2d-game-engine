@@ -1,6 +1,6 @@
 package engine.input;
 
-import engine.GameWindow;
+import engine.ToolboxEditor;
 import engine.camera.Camera;
 import engine.ui.ViewPortPanel;
 import org.joml.Matrix4f;
@@ -76,7 +76,7 @@ public class MouseListener {
         currentY = -((currentY / get().viewPortSize.y) * 2.0f - 1.0f);
 
         Vector4f temp = new Vector4f(currentX, currentY, 0, 1);
-        Camera camera = GameWindow.getScene().getCamera();
+        Camera camera = ToolboxEditor.getScene().getCamera();
         Matrix4f inverseView = new Matrix4f(camera.getInverseViewMatrix());
         Matrix4f inverseProjection = new Matrix4f(camera.getInverseProjectionMatrix());
 
@@ -96,12 +96,12 @@ public class MouseListener {
     public static Vector2f screenToWorld(Vector2f screenCoords){
         // WorldCoords =  ScreenCoords * InverseView * InverseProjection
         Vector2f normalizedScreenCoords = new Vector2f(
-                screenCoords.x / GameWindow.getWidth(),
-                screenCoords.y / GameWindow.getHeight()
+                screenCoords.x / ToolboxEditor.getWidth(),
+                screenCoords.y / ToolboxEditor.getHeight()
         );
         // normalized device coords between -1,1
         normalizedScreenCoords.mul(2.0f).sub(new Vector2f(1.0f, 1.0f));
-        Camera camera = GameWindow.getScene().getCamera();
+        Camera camera = ToolboxEditor.getScene().getCamera();
 
         Vector4f temp = new Vector4f(normalizedScreenCoords.x, normalizedScreenCoords.y, 0, 1);
         Matrix4f inverseView = new Matrix4f(camera.getInverseViewMatrix());
@@ -113,7 +113,7 @@ public class MouseListener {
     }
 
     public static Vector2f worldToScreen(Vector2f worldCoords){
-        Camera camera = GameWindow.getScene().getCamera();
+        Camera camera = ToolboxEditor.getScene().getCamera();
         Vector4f normalizedDeviceCoordsPos = new Vector4f(worldCoords.x, worldCoords.y, 0, 1);
         Matrix4f view = new Matrix4f(camera.getViewMatrix());
         Matrix4f projection = new Matrix4f(camera.getProjectionMatrix());
@@ -122,7 +122,7 @@ public class MouseListener {
         Vector2f windowSpace = new Vector2f(normalizedDeviceCoordsPos.x,
                 normalizedDeviceCoordsPos.y).mul(1.0f / normalizedDeviceCoordsPos.w);
         windowSpace.add(new Vector2f(1.0f, 1.0f).mul(0.5f));
-        windowSpace.mul(new Vector2f(GameWindow.getWidth(), GameWindow.getHeight()));
+        windowSpace.mul(new Vector2f(ToolboxEditor.getWidth(), ToolboxEditor.getHeight()));
 
         return windowSpace;
     }
@@ -226,11 +226,19 @@ public class MouseListener {
         get().viewPortSize.set(viewPortSize);
     }
 
+    public static Vector2f getViewportPos(){
+        return get().viewPortPos;
+    }
+
     public static double getWorldDx(){
         return get().lastWorldX - get().worldX;
     }
 
     public static double getWorldDy(){
         return get().lastWorldY - get().worldY;
+    }
+
+    public static Vector2f getViewportSize() {
+        return get().viewPortSize;
     }
 }

@@ -70,7 +70,8 @@ public class ImGuiApp {
         ImGuiIO io = ImGui.getIO(); // static function
         setDarkThemeColors();
 
-//        io.setIniFilename(ToolboxEditor.getProject().getEditorConfigurationLocation());
+        ImGui.loadIniSettingsFromDisk(ToolboxEditor.getEditorConfigurationLocation());
+//        io.setIniFilename();
         io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
 
         io.setFontDefault(Constants.defaultFont);

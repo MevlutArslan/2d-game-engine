@@ -1,6 +1,6 @@
 package engine.rendering;
 
-import engine.GameWindow;
+import engine.ToolboxEditor;
 import engine.camera.Camera;
 import engine.utility.AssetPool;
 import org.joml.Vector2f;
@@ -91,8 +91,8 @@ public class DebugDraw {
         shader.compile();
         shader.bind();
 
-        shader.uploadMat4f("uProjection", GameWindow.getScene().getCamera().getProjectionMatrix());
-        shader.uploadMat4f("uView", GameWindow.getScene().getCamera().getViewMatrix());
+        shader.uploadMat4f("uProjection", ToolboxEditor.getScene().getCamera().getProjectionMatrix());
+        shader.uploadMat4f("uView", ToolboxEditor.getScene().getCamera().getViewMatrix());
 
         glBindVertexArray(vaoId);
         glEnableVertexAttribArray(0);
@@ -117,7 +117,7 @@ public class DebugDraw {
     }
 
     public static void addLine2d(Vector2f from, Vector2f to, Vector3f color, int lifeTime) {
-        Camera camera = GameWindow.getScene().getCamera();
+        Camera camera = ToolboxEditor.getScene().getCamera();
         Vector2f cameraLeft = new Vector2f(camera.cameraPosition).add(new Vector2f(-2.0f,-2.0f));
         Vector2f cameraRight = new Vector2f(camera.cameraPosition).add(new Vector2f(camera.getProjectionSize()).mul(camera.getZoomLevel())).add(new Vector2f(4.0f, 4.0f));
         boolean lineInView = ((from.x >= cameraLeft.x && from.x <= cameraRight.x) && (from.y >= cameraLeft.y && from.y <= cameraRight.y)) ||
