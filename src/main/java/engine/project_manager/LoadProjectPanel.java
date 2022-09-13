@@ -22,9 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
+import java.util.*;
 
 import static engine.utility.Constants.PROJECT_FILE_EXTENSION;
+import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
+import static org.lwjgl.opengl.GL11.glPixelStorei;
 
 public class LoadProjectPanel {
 
@@ -41,6 +43,8 @@ public class LoadProjectPanel {
     private String path = "";
     ImString pathReferance = new ImString(200);
 
+    private LinkedHashMap<String, Project> projects;
+
     public LoadProjectPanel() {
         projectsDirectory = new File(projectsDirectoryAdress);
         directoryIcon = AssetPool.getTexture("src/main/resources/icons/DirectoryIcon.png");
@@ -48,6 +52,16 @@ public class LoadProjectPanel {
         projectIconAsSprite = new Sprite();
         projectIconAsSprite.setTexture(projectIcon);
         textureCoords = projectIconAsSprite.getTextureCoords();
+        projects = new LinkedHashMap<>();
+
+        for (File file : Objects.requireNonNull(projectsDirectory.listFiles())) {
+            // change row when index % 3 == 0
+            // otherwise change column
+            if (file.getName().endsWith(PROJECT_FILE_EXTENSION)) {
+                String displayName = file.getName().substring(0, file.getName().length() - 16);
+                projects.put(displayName, loadProject(file.getPath()));
+            }
+        }
     }
 
     public void imgui() {
@@ -63,22 +77,29 @@ public class LoadProjectPanel {
 
         ImGui.sameLine();
         if (ImGui.button("Load")) {
-            System.err.println(pathReferance.get());
             Project project = loadProject(path);
             ToolboxEditor.get().loadProject(project);
         }
 
         // We will only read files that end with the extension .project.toolbox
-        for (File file : Objects.requireNonNull(projectsDirectory.listFiles())) {
-            if (file.getName().endsWith(PROJECT_FILE_EXTENSION)) {
-                String displayName = file.getName().substring(0, file.getName().length() - 16);
-                // TODO show project's thumbnail as projectIcon and fix loading project by button click
-                if (ImGui.imageButton(projectIcon.getTextureId(), 64,64, textureCoords[0].x, textureCoords[0].y, textureCoords[2].x, textureCoords[2].y)) {
 
-//                    ToolboxEditor.get().loadProject(project);
+        if (ImGui.beginTable("Projects", 3)) {
+            for (Map.Entry<String, Project> entry : projects.entrySet()) {
+                String displayName = entry.getKey();
+                Project project = entry.getValue();
+                // TODO show project's thumbnail as projectIcon and fix loading project by button click
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+                Texture thumbnail = AssetPool.getTexture(project.getThumbnailLocation());
+                ImGui.tableNextColumn();
+                if (ImGui.imageButton(thumbnail.getTextureId(), 200, 100, 0, 1, 1, 0)) {
+                    ToolboxEditor.get().loadProject(project);
                 }
                 ImGui.textWrapped(displayName);
+
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
             }
+            ImGui.endTable();
         }
     }
 
