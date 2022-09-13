@@ -252,7 +252,8 @@ public class ToolboxEditor implements Observer {
                     } else {
                         currentScene.onUpdateEditor(deltaTime);
                     }
-//                        lag -= FIXED_TIME_STEP;
+
+                    lag -= FIXED_TIME_STEP;
 //                    }
 
                     currentScene.render();
@@ -358,6 +359,7 @@ public class ToolboxEditor implements Observer {
                 break;
             case GAME_ENGINE_STOP_PLAY:
                 this.isPlaying = false;
+                setProjectThumbnail();
                 // reset to the last saved state
                 ToolboxEditor.changeScene(new LevelEditorSceneInitializer());
                 break;
@@ -426,6 +428,13 @@ public class ToolboxEditor implements Observer {
         return activeProject.getResourceLocation();
     }
 
+    public static String getEditorConfigurationLocation(){
+        if(activeProject == null){
+            return "imgui.ini";
+        }
+        return activeProject.getEditorConfigurationLocation();
+    }
+
     public static String getThumbnailLocation() {
         return activeProject.getThumbnailLocation();
     }
@@ -443,7 +452,6 @@ public class ToolboxEditor implements Observer {
     }
 
     public void loadProject(Project project) {
-        System.err.println(project);
         activeProject = project;
         projectIsLoaded = true;
         openProject();
@@ -473,6 +481,46 @@ public class ToolboxEditor implements Observer {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         glfwSetCursorPosCallback(window, MouseListener::mouseCursorPositionCallback);
+    }
+
+    public void setProjectThumbnail() {
+        String thumbnailPath = getThumbnailLocation();
+
+        Vector2f viewportPos = MouseListener.getViewportPos();
+        Vector2f viewportSize = MouseListener.getViewportSize();
+
+        int width = (int) (viewportSize.x * 1.5f);
+        int height = (int) (viewportSize.y * 1.5f);
+
+        FloatBuffer imageData = BufferUtils.createFloatBuffer(width * height * 3);
+
+        glReadPixels((int) viewportPos.x, (int) viewportPos.y + height, width, height, GL_RGB, GL_FLOAT, imageData);
+        imageData.rewind();
+
+        BufferedImage image = new BufferedImage(
+                width, height, BufferedImage.TYPE_INT_RGB
+        );
+
+        int[] rgbArray = new int[width * height];
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                int r = (int) (imageData.get() * 255) << 16;
+                int g = (int) (imageData.get() * 255) << 8;
+                int b = (int) (imageData.get() * 255);
+                int i = ((height - 1) - y) * width + x;
+                rgbArray[i] = r + g + b;
+            }
+        }
+
+        // set content
+        image.setRGB(0, 0, width, height, rgbArray, 0, width);
+        // save it
+        File outputfile = new File(thumbnailPath);
+        try {
+            ImageIO.write(image, "png", outputfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
