@@ -15,7 +15,6 @@ public class ProjectGsonAdapter implements JsonSerializer<Project>, JsonDeserial
         result.addProperty("name", project.getName());
         result.addProperty("location", project.getLocation());
         result.addProperty("resourceLocation", project.getResourceLocation());
-        result.addProperty("thumbnail", project.getThumbnail());
         result.addProperty("editorConfigurationLocation", project.getEditorConfigurationLocation());
 
         return result;
@@ -25,12 +24,16 @@ public class ProjectGsonAdapter implements JsonSerializer<Project>, JsonDeserial
     public Project deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         String type = jsonObject.get("type").getAsString();
-        JsonElement element = jsonObject.get("properties");
 
-        try {
-            return jsonDeserializationContext.deserialize(element, Class.forName(type));
-        } catch (ClassNotFoundException e) {
-            throw new JsonParseException("Unknown element type : " + type);
-        }
+        String name = jsonObject.get("name").getAsString();
+        String location = jsonObject.get("location").getAsString();
+        String resourceLocation = jsonObject.get("resourceLocation").getAsString();
+        String editorConfigurationLocation = jsonObject.get("editorConfigurationLocation").getAsString();
+
+        Project project = new Project(name, location);
+        project.setResourceLocation(resourceLocation);
+        project.setEditorConfigurationLocation(editorConfigurationLocation);
+
+        return project;
     }
 }
