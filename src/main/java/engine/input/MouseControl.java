@@ -4,7 +4,7 @@ import components.NonPickable;
 import components.rendering.SpriteRenderer;
 import engine.Component;
 import engine.Entity;
-import engine.GameWindow;
+import engine.ToolboxEditor;
 import engine.rendering.DebugDraw;
 import engine.rendering.PickingTexture;
 import engine.scene.Scene;
@@ -39,21 +39,21 @@ public class MouseControl extends Component {
         selectedEntity = entity;
         this.selectedEntity.getComponent(SpriteRenderer.class).setColor(new Vector4f(0.8f, 0.8f, 0.8f, 0.5f));
         this.selectedEntity.addComponent(new NonPickable());
-        GameWindow.getScene().addEntityToScene(selectedEntity);
+        ToolboxEditor.getScene().addEntityToScene(selectedEntity);
     }
 
     public void place() {
         Entity entity = this.selectedEntity.copy();
         entity.getComponent(SpriteRenderer.class).setColor(new Vector4f(1, 1, 1, 1));
         entity.removeComponent(NonPickable.class);
-        GameWindow.getScene().addEntityToScene(entity);
+        ToolboxEditor.getScene().addEntityToScene(entity);
     }
 
     @Override
     public void onUpdateEditor(float deltaTime) {
         debounce -= deltaTime;
-        PickingTexture pickingTexture = GameWindow.getImGuiApp().getPropertiesPanel().getPickingTexture();
-        Scene currentScene = GameWindow.getScene();
+        PickingTexture pickingTexture = ToolboxEditor.getImGuiApp().getPropertiesPanel().getPickingTexture();
+        Scene currentScene = ToolboxEditor.getScene();
 
         if (selectedEntity != null) {
             float x = MouseListener.getWorldCoordinateX();
@@ -87,15 +87,15 @@ public class MouseControl extends Component {
 
             // TODO : Fix overlapping gizmo picks
             if (pickedEntity != null && pickedEntity.getComponent(NonPickable.class) == null) {
-                GameWindow.getImGuiApp().getPropertiesPanel().setSelectedEntity(pickedEntity);
+                ToolboxEditor.getImGuiApp().getPropertiesPanel().setSelectedEntity(pickedEntity);
             } else if (pickedEntity == null && !MouseListener.isDragging()) {
-                GameWindow.getImGuiApp().getPropertiesPanel().setSelectedEntity(null);
+                ToolboxEditor.getImGuiApp().getPropertiesPanel().setSelectedEntity(null);
             }
             this.debounce = 0.2f;
 
         } else if (MouseListener.isDragging() && MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
             if (!boxSelectSet) {
-                GameWindow.getImGuiApp().getPropertiesPanel().clearSelected();
+                ToolboxEditor.getImGuiApp().getPropertiesPanel().clearSelected();
                 boxSelectStart = MouseListener.getScreenCoordinates();
                 boxSelectSet = true;
             }
@@ -134,16 +134,16 @@ public class MouseControl extends Component {
             }
 
             for (Integer entityId : uniqueIds) {
-                Entity entity = GameWindow.getScene().getEntityById(entityId);
+                Entity entity = ToolboxEditor.getScene().getEntityById(entityId);
                 if (entity != null && entity.getComponent(NonPickable.class) == null) {
-                    GameWindow.getImGuiApp().getPropertiesPanel().addSelectedEntityToEntities(entity);
+                    ToolboxEditor.getImGuiApp().getPropertiesPanel().addSelectedEntityToEntities(entity);
                 }
             }
         }
     }
 
     private boolean blockExistsInSquare(float x, float y) {
-        PropertiesPanel propertiesPanel = GameWindow.getImGuiApp().getPropertiesPanel();
+        PropertiesPanel propertiesPanel = ToolboxEditor.getImGuiApp().getPropertiesPanel();
         Vector2f start = new Vector2f(x, y);
         Vector2f end = new Vector2f(start).add(new Vector2f(Constants.GRID_WIDTH, Constants.GRID_HEIGHT));
         Vector2f startScreenf = MouseListener.worldToScreen(start);
@@ -154,7 +154,7 @@ public class MouseControl extends Component {
 
         for (int i = 0; i < entityIds.length; i++) {
             if (entityIds[i] >= 0) {
-                Entity entity = GameWindow.getScene().getEntityById((int) entityIds[i]);
+                Entity entity = ToolboxEditor.getScene().getEntityById((int) entityIds[i]);
                 if (entity.getComponent(NonPickable.class) == null) {
                     return true;
                 }

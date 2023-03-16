@@ -5,20 +5,31 @@ import com.google.gson.GsonBuilder;
 import components.Transform;
 import engine.Component;
 import engine.Entity;
+import engine.ToolboxEditor;
 import engine.camera.Camera;
+import engine.input.MouseListener;
 import engine.physics.PhysicsEngine;
+import engine.rendering.DebugDraw;
 import engine.rendering.Renderer;
 import engine.utility.gson_adapter.ComponentGsonAdapter;
 import engine.utility.gson_adapter.EntityGsonAdapter;
 import org.joml.Vector2f;
+import org.lwjgl.BufferUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.lwjgl.opengl.GL11.*;
+
 
 // A lot of things of the Scene system are taken from The Cherno, GamesWithGabe and the 'Game Engine Architecture' book.
 public class Scene {
@@ -26,10 +37,14 @@ public class Scene {
     private Camera camera;
     private ArrayList<Entity> entities;
     private Renderer renderer;
-    private boolean isRunning;
     private PhysicsEngine physicsEngine;
+    private boolean isRunning;
 
     private SceneInitializer sceneInitializer;
+
+    private String path;
+
+    private Gson gson;
 
     public Scene(SceneInitializer sceneInitializer) {
         this.sceneInitializer = sceneInitializer;
@@ -37,6 +52,11 @@ public class Scene {
         this.entities = new ArrayList<>();
         this.isRunning = false;
         this.physicsEngine = new PhysicsEngine();
+        this.gson = new GsonBuilder().
+                setPrettyPrinting().
+                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
+                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
+                create();
     }
 
     public void init() {
@@ -51,6 +71,7 @@ public class Scene {
             Entity entity = entities.get(i);
             entity.start();
             this.renderer.add(entity);
+            // TODO : make this optional
             this.physicsEngine.add(entity);
         }
         isRunning = true;
@@ -85,7 +106,7 @@ public class Scene {
             Entity entity = entities.get(i);
             entity.onUpdateEditor(deltaTime);
 
-            if(entity.isDead()){
+            if (entity.isDead()) {
                 entities.remove(i);
                 this.renderer.destroyEntity(entity);
                 this.physicsEngine.destroyEntity(entity);
@@ -94,7 +115,7 @@ public class Scene {
         }
     }
 
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
         this.camera.adjustProjection();
         this.physicsEngine.update(deltaTime);
 
@@ -102,22 +123,16 @@ public class Scene {
             Entity entity = entities.get(i);
             entity.update(deltaTime);
 
-            if(entity.isDead()){
+            if (entity.isDead()) {
                 entities.remove(i);
                 this.renderer.destroyEntity(entity);
                 this.physicsEngine.destroyEntity(entity);
                 i--;
             }
         }
-
     }
 
     public void save() {
-        Gson gson = new GsonBuilder().
-                setPrettyPrinting().
-                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
-                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
-                create();
         try {
             // TODO connect to project setting's asset directory
             FileWriter fileWriter = new FileWriter("level.json");
@@ -135,11 +150,6 @@ public class Scene {
     }
 
     public void saveAs(String fileName) {
-        Gson gson = new GsonBuilder().
-                setPrettyPrinting().
-                registerTypeAdapter(Component.class, new ComponentGsonAdapter()).
-                registerTypeAdapter(Entity.class, new EntityGsonAdapter()).
-                create();
         try {
             // TODO connect to project setting's asset directory
             FileWriter fileWriter = new FileWriter(fileName);
@@ -154,6 +164,7 @@ public class Scene {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+
     }
 
     public void load() {
@@ -253,21 +264,21 @@ public class Scene {
         return entity.orElse(null);
     }
 
-    public void destroy(){
-        for( Entity entity : entities){
+    public void destroy() {
+        for (Entity entity : entities) {
             entity.destroy();
         }
     }
 
-    public List<Entity> getEntities(){
+    public List<Entity> getEntities() {
         return this.entities;
     }
 
-    public SceneInitializer getSceneInitializer(){
+    public SceneInitializer getSceneInitializer() {
         return this.sceneInitializer;
     }
 
-    public Entity createEntity(String name){
+    public Entity createEntity(String name) {
         Entity entity = new Entity(name);
 
         entity.addComponent(new Transform());
@@ -280,9 +291,9 @@ public class Scene {
         return this.camera;
     }
 
-    public <T extends Component> Entity getEntityWithComponent(Class<T> cls){
-        for(Entity entity : entities){
-            if(entity.getComponent(cls) != null){
+    public <T extends Component> Entity getEntityWithComponent(Class<T> cls) {
+        for (Entity entity : entities) {
+            if (entity.getComponent(cls) != null) {
                 return entity;
             }
         }
@@ -292,4 +303,6 @@ public class Scene {
     public PhysicsEngine getPhysicsEngine() {
         return physicsEngine;
     }
+
+
 }

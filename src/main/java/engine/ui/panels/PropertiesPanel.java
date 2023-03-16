@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import components.rendering.SpriteRenderer;
 import engine.Component;
 import engine.Entity;
-import engine.GameWindow;
+import engine.ToolboxEditor;
 import engine.rendering.PickingTexture;
 import engine.scene.Scene;
 import engine.ui.editor.Console;
@@ -80,7 +80,7 @@ public class PropertiesPanel {
     }
 
     public void saveEntityAsPrefab(Entity selectedEntity, String prefabName) throws Exception {
-        File currentDirectory = GameWindow.getImGuiApp().getCurrentDirectory();
+        File currentDirectory = ToolboxEditor.getImGuiApp().getCurrentDirectory();
         String fileName = prefabName+ "." + Constants.PREFAB_FILE_EXTENSION;
 
         for(File file : Objects.requireNonNull(currentDirectory.listFiles())){

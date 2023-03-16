@@ -1,6 +1,8 @@
 package engine.ui;
 
+import engine.ToolboxEditor;
 import engine.input.MouseListener;
+import engine.project_manager.ProjectManagerPanel;
 import engine.rendering.PickingTexture;
 import engine.scene.Scene;
 import engine.ui.editor.Console;
@@ -22,11 +24,14 @@ import java.io.File;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 //https://blog.conan.io/2019/06/26/An-introduction-to-the-Dear-ImGui-library.html
 public class ImGuiApp {
-
     private long window = 0;
+
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
 
@@ -38,12 +43,35 @@ public class ImGuiApp {
 
     private Console console;
 
+    private WindowType openWindow = WindowType.PROJECT_MANAGER;
+
+    public ImGuiApp(long window){
+        this.window = window;
+
+        this.init();
+    }
+
+    public ImGuiApp(long window, PickingTexture pickingTexture) {
+        this.window = window;
+        this.propertiesPanel = new PropertiesPanel(pickingTexture);
+        this.contentBrowser = new ContentBrowserPanel("src/main/resources");
+
+        this.editorMenu = new EditorMenu();
+        this.editorMenu.addEditorMenu(new FileMenu());
+        this.editorMenu.addEditorMenu(new EditMenu());
+
+        this.console = Console.getInstance();
+
+        this.init();
+    }
+
     public void init() {
         context = ImGui.createContext();
-        ImGuiIO io = ImGui.getIO();
+        ImGuiIO io = ImGui.getIO(); // static function
         setDarkThemeColors();
 
-        io.setIniFilename("imgui.ini");
+        ImGui.loadIniSettingsFromDisk(ToolboxEditor.getEditorConfigurationLocation());
+//        io.setIniFilename();
         io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
 
         io.setFontDefault(Constants.defaultFont);
@@ -77,9 +105,9 @@ public class ImGuiApp {
         });
 
         glfwSetScrollCallback(window, (w, xOffset, yOffset) -> {
-            if(!io.getWantCaptureMouse() || ViewPortPanel.getWantCaptureMouse()){
+            if (!io.getWantCaptureMouse() || ViewPortPanel.getWantCaptureMouse()) {
                 MouseListener.mouseScrollCallback(w, xOffset, yOffset);
-            }else{
+            } else {
                 MouseListener.clear();
             }
         });
@@ -89,25 +117,12 @@ public class ImGuiApp {
         imGuiImplGl3.init("#version 330");
     }
 
-    public ImGuiApp(long window, PickingTexture pickingTexture) {
-        this.window = window;
-        this.propertiesPanel = new PropertiesPanel(pickingTexture);
-        this.contentBrowser = new ContentBrowserPanel("src/main/resources");
-
-        this.editorMenu = new EditorMenu();
-        this.editorMenu.addEditorMenu(new FileMenu());
-        this.editorMenu.addEditorMenu(new EditMenu());
-
-        this.console = Console.getInstance();
-
-        this.init();
-    }
-
-
     public void update(float deltaTime, Scene currentScene) {
         imGuiImplGlfw.newFrame();
         ImGui.newFrame();
+
         enableDocking();
+
         ViewPortPanel.imgui();
         currentScene.imgui();
 
@@ -119,15 +134,25 @@ public class ImGuiApp {
         editorMenu.update(deltaTime);
         console.update(deltaTime);
 
+        // this end is for the dockspace
         ImGui.end();
+
+        ImGui.render();
+        imGuiImplGl3.renderDrawData(ImGui.getDrawData());
+    }
+
+    public void update(float deltaTime) {
+        imGuiImplGlfw.newFrame();
+        ImGui.newFrame();
+
+        ProjectManagerPanel.getInstance().imgui();
+
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
     }
 
     public void dispose() {
-        imGuiImplGlfw.dispose();
         imGuiImplGl3.dispose();
-        ImGui.destroyContext();
     }
 
     // https://skia.googlesource.com/external/github.com/ocornut/imgui/+/refs/heads/docking/imgui_demo.cpp
@@ -156,11 +181,11 @@ public class ImGuiApp {
 
     }
 
-    public File getCurrentDirectory(){
+    public File getCurrentDirectory() {
         return contentBrowser.getCurrentDirectory();
     }
 
-    private void setDarkThemeColors(){
+    private void setDarkThemeColors() {
         float[][] colors = ImGui.getStyle().getColors();
 
         colors[ImGuiCol.WindowBg] = new float[]{0.1f, 0.105f, 0.11f, 1.0f};
@@ -194,4 +219,16 @@ public class ImGuiApp {
         return this.propertiesPanel;
     }
 
+    public WindowType getOpenWindow() {
+        return openWindow;
+    }
+
+    public void setOpenWindow(WindowType openWindow) {
+        this.openWindow = openWindow;
+        System.err.println("Shit goes sideways here!");
+    }
+
+    public void setPropertiesPanel(PickingTexture pickingTexture) {
+        this.propertiesPanel = new PropertiesPanel(pickingTexture);
+    }
 }

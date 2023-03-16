@@ -2,7 +2,7 @@ package engine.rendering;
 
 import components.rendering.SpriteRenderer;
 import engine.Entity;
-import engine.GameWindow;
+import engine.ToolboxEditor;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -135,9 +135,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
         }
         Shader shader = Renderer.getCurrentShader();
         shader.bind();
-        shader.uploadMat4f("uProjection", GameWindow.getScene().getCamera().getProjectionMatrix());
+        shader.uploadMat4f("uProjection", ToolboxEditor.getScene().getCamera().getProjectionMatrix());
 
-        shader.uploadMat4f("uView", GameWindow.getScene().getCamera().getViewMatrix());
+        shader.uploadMat4f("uView", ToolboxEditor.getScene().getCamera().getViewMatrix());
 
         // bind textures
         for (int i = 0; i < textures.size(); i++) {

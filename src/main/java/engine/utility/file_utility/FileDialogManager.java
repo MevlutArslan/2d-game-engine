@@ -1,6 +1,6 @@
 package engine.utility.file_utility;
 
-import engine.GameWindow;
+import engine.ToolboxEditor;
 import engine.utility.Constants;
 import org.lwjgl.PointerBuffer;
 
@@ -18,14 +18,14 @@ public class FileDialogManager {
 
     /**
      * @param filter is expected to be in Applescript format
-     *              "png,jpg,pdf;customengine"
+     *              "png,jpg,pdf;toolbox"
      */
     public static String openFile(String filter) {
         String selectedFilePath = "";
         PointerBuffer outPath = memAllocPointer(1);
 
         try {
-            if (checkResult(NFD_OpenDialog(filter, "", outPath))) {
+            if (checkResult(NFD_OpenDialog(filter, "src/main/resources/projects", outPath))) {
                 selectedFilePath = outPath.getStringUTF8(0);
                 nNFD_Free(outPath.get(0));
             }
@@ -36,13 +36,28 @@ public class FileDialogManager {
         return selectedFilePath;
     }
 
+    public static String getChosenLocation(){
+        PointerBuffer savePath = memAllocPointer(1);
+        String path = "";
+        try{
+            if(checkResult(NFD_PickFolder("",  savePath))){
+                path = savePath.getStringUTF8(0);
+                nNFD_Free(savePath.get(0));
+            }
+        }finally {
+            memFree(savePath);
+        }
+
+        return path;
+    }
+
     public static void saveFile(){
         PointerBuffer savePath = memAllocPointer(1);
 
         try{
             if(checkResult(NFD_SaveDialog(Constants.SCENE_FILE_EXTENSION, "", savePath))){
                 String path = savePath.getStringUTF8(0);
-                GameWindow.getScene().saveAs(path);
+                ToolboxEditor.getScene().saveAs(path);
                 nNFD_Free(savePath.get(0));
             }
         }finally {

@@ -1,12 +1,10 @@
 package engine.ui.gizmos;
 
 import components.NonPickable;
-import components.Transform;
 import components.rendering.SpriteRenderer;
 import engine.Component;
 import engine.Entity;
-import engine.GameWindow;
-import engine.input.KeyListener;
+import engine.ToolboxEditor;
 import engine.input.MouseListener;
 import engine.rendering.Sprite;
 import engine.ui.panels.PropertiesPanel;
@@ -71,8 +69,8 @@ public class Gizmo extends Component {
         this.horizontalGizmoSprite = this.horizontalGizmoEntity.getComponent(SpriteRenderer.class);
         this.verticalGizmoSprite = this.verticalGizmoEntity.getComponent(SpriteRenderer.class);
 
-        GameWindow.getScene().addEntityToScene(horizontalGizmoEntity);
-        GameWindow.getScene().addEntityToScene(verticalGizmoEntity);
+        ToolboxEditor.getScene().addEntityToScene(horizontalGizmoEntity);
+        ToolboxEditor.getScene().addEntityToScene(verticalGizmoEntity);
     }
 
     public Gizmo(Sprite sprite, Sprite omniDirectionalGizmoSprite, PropertiesPanel propertiesPanel) {
@@ -90,9 +88,9 @@ public class Gizmo extends Component {
         this.verticalGizmoSprite = this.verticalGizmoEntity.getComponent(SpriteRenderer.class);
         this.omniDirectionalGizmoSprite = this.omniDirectionalGizmoEntity.getComponent(SpriteRenderer.class);
 
-        GameWindow.getScene().addEntityToScene(horizontalGizmoEntity);
-        GameWindow.getScene().addEntityToScene(verticalGizmoEntity);
-        GameWindow.getScene().addEntityToScene(omniDirectionalGizmoEntity);
+        ToolboxEditor.getScene().addEntityToScene(horizontalGizmoEntity);
+        ToolboxEditor.getScene().addEntityToScene(verticalGizmoEntity);
+        ToolboxEditor.getScene().addEntityToScene(omniDirectionalGizmoEntity);
     }
 
     @Override

@@ -6,9 +6,10 @@ import engine.Component;
 import java.lang.reflect.Type;
 
 // https://www.javacodegeeks.com/2012/04/json-with-gson-and-abstract-classes.html
-public class ComponentGsonAdapter implements JsonSerializer<Component> ,JsonDeserializer<Component> {
+public class ComponentGsonAdapter implements JsonSerializer<Component>, JsonDeserializer<Component> {
+
     @Override
-    public JsonElement serialize(Component src, Type typeOfSrc, JsonSerializationContext jsonSerializationContext){
+    public JsonElement serialize(Component src, Type typeOfSrc, JsonSerializationContext jsonSerializationContext) {
         JsonObject result = new JsonObject();
         // TODO make this general, including the package details can create problems while loading scene from someone else's projects.
         result.add("type", new JsonPrimitive(src.getClass().getCanonicalName()));
@@ -23,10 +24,11 @@ public class ComponentGsonAdapter implements JsonSerializer<Component> ,JsonDese
         String type = jsonObject.get("type").getAsString();
         JsonElement element = jsonObject.get("properties");
 
-        try{
+        try {
             return jsonDeserializationContext.deserialize(element, Class.forName(type));
-        } catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new JsonParseException("Unknown element type : " + type);
         }
     }
+
 }
