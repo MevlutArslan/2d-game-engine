@@ -62,7 +62,7 @@ public class ContentBrowserPanel extends Component {
             ImGui.imageButton(icon.getTextureId(), thumbnailSize, thumbnailSize, 0, 1, 1, 0);
 
             // Any file with toolbox extention can be drag and droppped on the viewport.
-            if (file.getPath().contains(".toolbox_")) {
+            if (file.getPath().endsWith(".toolbox")) {
                 if (ImGui.beginDragDropSource()) {
                     String itemPath = file.getPath();
 

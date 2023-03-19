@@ -1,12 +1,14 @@
 
-import engine.ToolboxEditor;
+import engine.GameWindow;
+
+import static org.lwjgl.system.MemoryUtil.memFree;
+
+//import org.lwjgl.util.nfd.NativeFileDialog
 
 public class Main {
 
     public static void main(String[] args) {
 
-        ToolboxEditor.get().run();
-//        new ProjectManagerWindow().run();
+        GameWindow.get().run();
     }
 }
-

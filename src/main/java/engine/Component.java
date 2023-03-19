@@ -76,7 +76,7 @@ public abstract class Component {
                     continue;
                 }
 
-                if(this.parent.getComponent(RigidBody.class) != null && this.parent.getComponent(RigidBody.class).getBody().getFixtureList() == null){
+                if(this.parent.getComponent(RigidBody.class).getBody().getFixtureList() == null){
                     if(field.getName().equals("density") || field.getName().equals("collisionGroup")){
                         continue;
                     }
