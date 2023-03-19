@@ -4,14 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import engine.Component;
 import engine.Entity;
-import engine.ToolboxEditor;
+import engine.GameWindow;
 import engine.input.MouseControl;
 import engine.input.MouseListener;
 import engine.observers.Event;
 import engine.observers.EventSystem;
 import engine.observers.EventType;
 import engine.rendering.Sprite;
-import engine.rendering.Texture;
 import engine.scene.LevelEditorSceneInitializer;
 import engine.scene.Scene;
 import engine.ui.editor.Console;
@@ -81,7 +80,7 @@ public class ViewPortPanel {
         rightX = topLeft.x + windowSize.x;
         topY = topLeft.y + windowSize.y;
 
-        int textureId = ToolboxEditor.getFramebuffer().getTextureId();
+        int textureId = GameWindow.getFramebuffer().getTextureId();
         ImGui.image(textureId, windowSize.x, windowSize.y, 0, 1, 1, 0);
 
         MouseListener.setViewPortPos(new Vector2f(topLeft.x, topLeft.y));
@@ -96,9 +95,9 @@ public class ViewPortPanel {
                     // TODO refactor this to be reusable across the engine
                     Scene scene = new Scene(new LevelEditorSceneInitializer());
                     scene.load(path);
-                    ToolboxEditor.setScene(scene);
-                    ToolboxEditor.getScene().init();
-                    ToolboxEditor.getScene().start();
+                    GameWindow.setScene(scene);
+                    GameWindow.getScene().init();
+                    GameWindow.getScene().start();
                 } else if(isPrefab(path)){
                     loadEntity(path);
                 }
@@ -129,7 +128,7 @@ public class ViewPortPanel {
         }
 
         Entity entity = gson.fromJson(loadedText, Entity.class);
-        ToolboxEditor.getScene().getEntityWithComponent(MouseControl.class).getComponent(MouseControl.class).pickUpEntity(entity);
+        GameWindow.getScene().getEntityWithComponent(MouseControl.class).getComponent(MouseControl.class).pickUpEntity(entity);
     }
 
 
@@ -164,11 +163,11 @@ public class ViewPortPanel {
     }
 
     private static boolean isScene(String path) {
-        return path.endsWith(Constants.SCENE_FILE_EXTENSION);
+        return path.endsWith("." + Constants.SCENE_FILE_EXTENSION);
     }
 
     private static boolean isPrefab(String path) {
-        return path.endsWith(Constants.PREFAB_FILE_EXTENSION);
+        return path.endsWith("." + Constants.PREFAB_FILE_EXTENSION);
     }
 
 }

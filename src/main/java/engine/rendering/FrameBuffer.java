@@ -22,11 +22,13 @@ public class FrameBuffer {
 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboId);
 
+
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
             throw new IllegalCallerException("Error with the framebuffer!");
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     }
 
     public void bind(){
